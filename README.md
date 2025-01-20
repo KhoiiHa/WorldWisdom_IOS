@@ -1,51 +1,55 @@
-# Name der App
+# WorldWisdom
 
-**Füge hier einen kurzen, knackigen Slogan ein, um deine App zu bewerben.**
+**“Entdecke die Weisheit der Welt in einer App”**
 
-Beschreibe hier in ein paar Sätzen, was deine App bietet.
+WorldWisdom ist eine Zitat-App, die eine Sammlung inspirierender Zitate von Persönlichkeiten aus verschiedenen Bereichen wie Literatur, Wissenschaft und Philosophie bietet.  
+Ziel der App ist es, Menschen zu motivieren und zu inspirieren, um ihre persönliche und berufliche Entwicklung zu fördern.  
 
-Für wen ist sie geeignet? Welches Problem löst sie? Was macht deine App anders/besser als andere Apps?
-Vermeide es, hier allzusehr in technische Details zu gehen.
+Die App richtet sich an Menschen, die Inspiration und Motivation suchen, darunter Studenten, Berufstätige und kreative Köpfe. Sie bietet einzigartige Funktionen wie Filteroptionen und eine Sammlung von Lieblingszitaten.
 
+---
 
 ## Design
-Füge hier am Ende die Screenshots deiner App ein (achte hierbei auf die Guidelines).
+(*Screenshots werden später hinzugefügt.*)
 
-<p>
-  <img src="./img/screen1.png" width="200">
-  <img src="./img/screen2.png" width="200">
-  <img src="./img/screen3.png" width="200">
-</p>
-
+---
 
 ## Features
-Hier kommen alle Features rein, welche deine App bietet.
+- [ ] Abruf inspirierender Zitate über die **ZenQuotes API**.  
+- [ ] Benutzer können ihre Lieblingszitate speichern.  
+- [ ] Filteroptionen für Zitate (z. B. Motivation, Erfolg, Glück).  
+- [ ] Detailansicht für Autoren.  
+- [ ] Sammlung gespeicherter Lieblingszitate auf einem eigenen Screen anzeigen.  
 
-**Tipp: Du kannst diese Punkte auch am Anfang ausfüllen und mit der Zeit abhaken, sodass am Ende eine vollständige Liste entsteht.**
-
-- [x] Feature 1
-- [x] Feature 2
-- [ ] ...
-
+---
 
 ## Technischer Aufbau
 
 #### Projektaufbau
-Eine kurze Beschreibung deiner Ordnerstruktur und Architektur (MVVM, Repositories) um Außenstehenden zu helfen, sich in deinem Projekt zurecht zu finden.
+Die App basiert auf dem **MVVM-Muster** (Model-View-ViewModel), um eine klare Trennung zwischen Logik und UI zu gewährleisten.  
+- **Views**: UI-Komponenten, die mit SwiftUI umgesetzt werden.  
+- **ViewModels**: Geschäftslogik und API-Aufrufe.  
+- **Models**: Datenstrukturen für Zitate und Autoren.  
 
 #### Datenspeicherung
-Welche Daten speicherst du? Wo und wie (Firebase, Core Data)? Erkläre hier auch, warum du den jeweiligen Dienst nutzt (offline-first, Sync usw.).
+Die App verwendet **Firebase** für:  
+- **Authentication**: Anonyme Anmeldung und E-Mail/Passwort-Registrierung.  
+- **Storage**: Speicherung von benutzerspezifischen Daten wie Lieblingszitaten.  
+
+**Warum Firebase?**  
+Firebase bietet eine einfache Integration in iOS-Projekte und unterstützt Echtzeit-Datenabgleich sowie Skalierbarkeit.
 
 #### API Calls
-Welche APIs verwendest du?
+Die App nutzt die **ZenQuotes API**, um Zitate dynamisch abzurufen.  
 
 #### 3rd-Party Frameworks
-Verwendest du Frameworks, die nicht von dir stammen? Bspw. Swift Packages für Firebase, fertige SwiftUI-Views o.Ä.? Gib diese hier an.
+- **Firebase SDK**: Für Authentication und Storage.  
+- **URLSession**: Für API-Aufrufe.  
 
+---
 
 ## Ausblick
-Beschreibe hier, wo die Reise nach deinem Praxisprojekt hin geht. Was möchtest du in Zukunft noch ergänzen?
-
-- [ ] Geplantes Feature 1
-- [ ] Geplantes Feature 2
-- [ ] ...
+- [ ] Community-Funktion: Benutzer können eigene Zitate einreichen.  
+- [ ] Möglichkeit, Zitate anderer Benutzer zu liken oder zu kommentieren.  
+- [ ] Integration von Bildern und Medien.  
+- [ ] Mehrsprachige App-Unterstützung.  
