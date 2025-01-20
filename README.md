@@ -15,13 +15,12 @@ Die App richtet sich an Menschen, die Inspiration und Motivation suchen, darunte
 ---
 
 ## Features
+- [ ] **Benutzer bleiben angemeldet (App-Status speichern)** 
 - [ ] Abruf inspirierender Zitate über die **ZenQuotes API**.  
 - [ ] Benutzer können ihre Lieblingszitate speichern.  
 - [ ] Filteroptionen für Zitate (z. B. Motivation, Erfolg, Glück).  
 - [ ] Detailansicht für Autoren.  
-- [ ] Sammlung gespeicherter Lieblingszitate auf einem eigenen Screen anzeigen.  
-- [ ] **Benutzer bleiben angemeldet (App-Status speichern)**  
-- [ ] **Fehlermeldungen und Validierung hinzufügen (Benutzereingaben prüfen)**
+- [ ] Sammlung gespeicherter Lieblingszitate auf einem eigenen Screen anzeigen.   
 
 ---
 
@@ -36,7 +35,7 @@ Die App basiert auf dem **MVVM-Muster** (Model-View-ViewModel), um eine klare Tr
 #### Datenspeicherung
 Die App verwendet **Firebase** für:  
 - **Authentication**: Anonyme Anmeldung und E-Mail/Passwort-Registrierung.  
-- **Storage**: Speicherung von benutzerspezifischen Daten wie Lieblingszitaten, damit Benutzer ihre Zitate über verschiedene Geräte hinweg gespeichert haben.
+- **Storage**: Speicherung von benutzerspezifischen Daten wie Lieblingszitaten.
 
 **Warum Firebase?**  
 Firebase bietet eine einfache Integration in iOS-Projekte und unterstützt Echtzeit-Datenabgleich sowie Skalierbarkeit.
@@ -58,8 +57,8 @@ Die App nutzt die **ZenQuotes API**, um Zitate dynamisch abzurufen.
 ---
 
 ## Ausblick
-- [ ] **Push-Benachrichtigungen**: Benachrichtigungen für neue Zitate oder Updates.
-- [ ] **Community-Funktion**: Benutzer können eigene Zitate einreichen.  
+- [ ] Push-Benachrichtigungen: Benachrichtigungen für neue Zitate oder Updates.
+- [ ] Community-Funktion: Benutzer können eigene Zitate einreichen.  
 - [ ] Möglichkeit, Zitate anderer Benutzer zu liken oder zu kommentieren.  
 - [ ] Integration von Bildern und Medien in Zitate.
 - [ ] Mehrsprachige App-Unterstützung.
