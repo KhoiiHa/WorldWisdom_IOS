@@ -20,6 +20,8 @@ Die App richtet sich an Menschen, die Inspiration und Motivation suchen, darunte
 - [ ] Filteroptionen für Zitate (z. B. Motivation, Erfolg, Glück).  
 - [ ] Detailansicht für Autoren.  
 - [ ] Sammlung gespeicherter Lieblingszitate auf einem eigenen Screen anzeigen.  
+- [ ] **Benutzer bleiben angemeldet (App-Status speichern)**  
+- [ ] **Fehlermeldungen und Validierung hinzufügen (Benutzereingaben prüfen)**
 
 ---
 
@@ -34,10 +36,17 @@ Die App basiert auf dem **MVVM-Muster** (Model-View-ViewModel), um eine klare Tr
 #### Datenspeicherung
 Die App verwendet **Firebase** für:  
 - **Authentication**: Anonyme Anmeldung und E-Mail/Passwort-Registrierung.  
-- **Storage**: Speicherung von benutzerspezifischen Daten wie Lieblingszitaten.  
+- **Storage**: Speicherung von benutzerspezifischen Daten wie Lieblingszitaten, damit Benutzer ihre Zitate über verschiedene Geräte hinweg gespeichert haben.
 
 **Warum Firebase?**  
 Firebase bietet eine einfache Integration in iOS-Projekte und unterstützt Echtzeit-Datenabgleich sowie Skalierbarkeit.
+
+#### Fehlerbehandlung und Validierung
+- **E-Mail und Passwort-Validierung**: Die App überprüft die Richtigkeit von Benutzereingaben, z. B. das E-Mail-Format und die Passwortlänge.  
+- **Fehlermeldungen**: Benutzer werden mit klaren Fehlermeldungen versorgt, wenn etwas bei der Anmeldung oder Registrierung schiefgeht.
+
+#### App-Status speichern
+- **Benutzer bleiben angemeldet**: Die App speichert den Anmeldestatus des Benutzers, sodass dieser nach dem Neustart der App automatisch eingeloggt wird.
 
 #### API Calls
 Die App nutzt die **ZenQuotes API**, um Zitate dynamisch abzurufen.  
@@ -49,7 +58,8 @@ Die App nutzt die **ZenQuotes API**, um Zitate dynamisch abzurufen.
 ---
 
 ## Ausblick
-- [ ] Community-Funktion: Benutzer können eigene Zitate einreichen.  
+- [ ] **Push-Benachrichtigungen**: Benachrichtigungen für neue Zitate oder Updates.
+- [ ] **Community-Funktion**: Benutzer können eigene Zitate einreichen.  
 - [ ] Möglichkeit, Zitate anderer Benutzer zu liken oder zu kommentieren.  
-- [ ] Integration von Bildern und Medien.  
-- [ ] Mehrsprachige App-Unterstützung.  
+- [ ] Integration von Bildern und Medien in Zitate.
+- [ ] Mehrsprachige App-Unterstützung.
