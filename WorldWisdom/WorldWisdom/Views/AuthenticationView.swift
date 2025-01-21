@@ -12,10 +12,10 @@ struct AuthenticationView: View {
 
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var isLoading: Bool = false
 
     var body: some View {
         VStack {
-            // Benutzerinformationen anzeigen
             if let user = viewModel.user {
                 Text("Angemeldeter Benutzer: \(user.email ?? "Unbekannt")")
                     .foregroundColor(.green)
@@ -27,35 +27,51 @@ struct AuthenticationView: View {
                     .padding()
             }
 
-            // Eingabefelder und Buttons wie zuvor
-            TextField("E-Mail", text: $email)
-                .padding()
-                .keyboardType(.emailAddress)
+            Form {
+                Section(header: Text("Benutzeranmeldung")) {
+                    TextField("E-Mail", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
 
-            SecureField("Passwort", text: $password)
-                .padding()
-
-            HStack {
-                Button("Registrieren") {
-                    Task {
-                        await viewModel.registerUser(email: email, password: password)
-                    }
+                    SecureField("Passwort", text: $password)
                 }
-                .padding()
 
-                Button("Anmelden") {
-                    Task {
-                        await viewModel.loginUser(email: email, password: password)
+                Section {
+                    Button("Registrieren") {
+                        guard !email.isEmpty, !password.isEmpty else {
+                            viewModel.errorMessage = "Bitte füllen Sie alle Felder aus."
+                            return
+                        }
+                        isLoading = true
+                        Task {
+                            await viewModel.registerUser(email: email, password: password)
+                            isLoading = false
+                        }
                     }
-                }
-                .padding()
+                    .disabled(isLoading)
 
-                Button("Anonyme Anmeldung") {
-                    Task {
-                        await viewModel.anonymousLogin()
+                    Button("Anmelden") {
+                        guard !email.isEmpty, !password.isEmpty else {
+                            viewModel.errorMessage = "Bitte füllen Sie alle Felder aus."
+                            return
+                        }
+                        isLoading = true
+                        Task {
+                            await viewModel.loginUser(email: email, password: password)
+                            isLoading = false
+                        }
                     }
+                    .disabled(isLoading)
+
+                    Button("Anonyme Anmeldung") {
+                        isLoading = true
+                        Task {
+                            await viewModel.anonymousLogin()
+                            isLoading = false
+                        }
+                    }
+                    .disabled(isLoading)
                 }
-                .padding()
             }
 
             if let errorMessage = viewModel.errorMessage {
@@ -63,13 +79,24 @@ struct AuthenticationView: View {
                     .foregroundColor(.red)
                     .padding()
             }
+
+            if isLoading {
+                ProgressView("Wird verarbeitet...")
+                    .padding()
+            }
         }
         .padding()
         .onAppear {
-            viewModel.checkCurrentUser() // Prüft beim Start, ob der Benutzer eingeloggt ist
+            viewModel.checkCurrentUser()
         }
+        .alert("Fehler", isPresented: .constant(viewModel.errorMessage != nil), actions: {
+            Button("OK", role: .cancel) { viewModel.errorMessage = nil }
+        }, message: {
+            Text(viewModel.errorMessage ?? "")
+        })
     }
 }
+
 #Preview {
     AuthenticationView()
 }

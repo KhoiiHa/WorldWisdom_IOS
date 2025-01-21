@@ -8,24 +8,30 @@
 import SwiftUI
 import FirebaseAuth
 import Foundation
+import FirebaseFirestore
 
 @MainActor
 class UserViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var errorMessage: String?
-    @Published var user: User? // Speichern der Benutzerinformation
-    
+    @Published var user: FireUser?
+
     // Funktion für die Registrierung mit E-Mail und Passwort
     func registerUser(email: String, password: String) async {
         do {
-            // Firebase-Registrierung mit async/await
-            let authResult = try await Auth.auth().createUser(withEmail: email, password: password)
+            // Registrierung über den FirebaseManager
+            let authResult = try await FirebaseManager.shared.registerUser(email: email, password: password)
             self.isLoggedIn = true
-            self.user = authResult.user // Benutzerdaten speichern
-            print("Benutzer erfolgreich registriert. UID: \(user?.uid ?? "Unbekannt")")
-        } catch let error as NSError {
-            // Fehlerbehandlung anhand des Firebase-Fehlers
-            self.errorMessage = self.getErrorMessage(error: error)
+
+            // Benutzer in Firestore speichern
+            let newUser = FireUser(id: authResult.user.uid, email: email, uid: authResult.user.uid)
+            self.user = newUser
+            print("Benutzer erfolgreich registriert. UID: \(newUser.uid)")
+
+            // Benutzer in Firestore speichern
+            try await FirebaseManager.shared.createUserInFirestore(id: authResult.user.uid, email: email)
+        } catch {
+            self.errorMessage = "Fehler bei der Registrierung: \(error.localizedDescription)"
             print(self.errorMessage ?? "Unbekannter Fehler")
         }
     }
@@ -33,23 +39,43 @@ class UserViewModel: ObservableObject {
     // Funktion für die Anmeldung mit E-Mail und Passwort
     func loginUser(email: String, password: String) async {
         do {
-            // Firebase-Anmeldung mit async/await
-            let authResult = try await Auth.auth().signIn(withEmail: email, password: password)
+            // Anmeldung über den FirebaseManager
+            let authResult = try await FirebaseManager.shared.loginUser(email: email, password: password)
             self.isLoggedIn = true
-            self.user = authResult.user // Benutzerdaten speichern
-            print("Benutzer erfolgreich angemeldet. UID: \(user?.uid ?? "Unbekannt")")
-        } catch let error as NSError {
-            // Fehlerbehandlung anhand des Firebase-Fehlers
-            self.errorMessage = self.getErrorMessage(error: error)
+
+            // Benutzerinformationen speichern
+            let loggedInUser = FireUser(id: authResult.user.uid, email: email, uid: authResult.user.uid)
+            self.user = loggedInUser
+            print("Benutzer erfolgreich angemeldet. UID: \(loggedInUser.uid)")
+        } catch {
+            self.errorMessage = "Fehler bei der Anmeldung: \(error.localizedDescription)"
             print(self.errorMessage ?? "Unbekannter Fehler")
         }
     }
-    
+
+    // Funktion für anonyme Anmeldung
+    func anonymousLogin() async {
+        do {
+            // Anonyme Anmeldung über den FirebaseManager
+            let authResult = try await FirebaseManager.shared.anonymousLogin()
+            self.isLoggedIn = true
+
+            // Benutzerinformationen speichern
+            let anonymousUser = FireUser(id: authResult.user.uid, email: nil, uid: authResult.user.uid)
+            self.user = anonymousUser
+            print("Anonyme Anmeldung erfolgreich. UID: \(anonymousUser.uid)")
+        } catch {
+            self.errorMessage = "Fehler bei der anonymen Anmeldung: \(error.localizedDescription)"
+            print(self.errorMessage ?? "Unbekannter Fehler")
+        }
+    }
+
     // Funktion, um beim Start zu prüfen, ob der Benutzer bereits angemeldet ist
     func checkCurrentUser() {
-        if let currentUser = Auth.auth().currentUser {
+        if let currentUser = FirebaseManager.shared.getCurrentUser() {
             self.isLoggedIn = true
-            self.user = currentUser
+            let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, uid: currentUser.uid)
+            self.user = existingUser
             print("Aktueller Benutzer: \(currentUser.email ?? "Unbekannt")")
         } else {
             self.isLoggedIn = false
@@ -58,34 +84,16 @@ class UserViewModel: ObservableObject {
         }
     }
 
-    // Funktion für anonyme Anmeldung
-    func anonymousLogin() async {
+    // Funktion zum Abmelden
+    func signOut() async {
         do {
-            // Anonyme Anmeldung mit async/await
-            let authResult = try await Auth.auth().signInAnonymously()
-            self.isLoggedIn = true
-            self.user = authResult.user // Benutzerdaten speichern
-            print("Anonyme Anmeldung erfolgreich. UID: \(user?.uid ?? "Unbekannt")")
-        } catch let error as NSError {
-            // Fehlerbehandlung anhand des Firebase-Fehlers
-            self.errorMessage = self.getErrorMessage(error: error)
+            try FirebaseManager.shared.signOut()
+            self.isLoggedIn = false
+            self.user = nil
+            print("Benutzer abgemeldet.")
+        } catch {
+            self.errorMessage = "Fehler beim Abmelden: \(error.localizedDescription)"
             print(self.errorMessage ?? "Unbekannter Fehler")
-        }
-    }
-
-    // Fehlerbehandlungsfunktion für Firebase Fehler
-    private func getErrorMessage(error: NSError) -> String {
-        switch error.code {
-        case AuthErrorCode.emailAlreadyInUse.rawValue:
-            return "Die E-Mail-Adresse wird bereits verwendet."
-        case AuthErrorCode.invalidEmail.rawValue:
-            return "Die E-Mail-Adresse ist ungültig."
-        case AuthErrorCode.wrongPassword.rawValue:
-            return "Falsches Passwort."
-        case AuthErrorCode.userNotFound.rawValue:
-            return "Benutzer nicht gefunden."
-        default:
-            return "Unbekannter Fehler."
         }
     }
 }
