@@ -11,15 +11,15 @@ struct LoginView: View {
     // Bindings für die Eingabefelder
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var isLoading: Bool = false // Ladezustand
+    @State private var isLoading: Bool = false
+    @State private var isLoggedIn: Bool = false  // Neuer Zustand für die Navigation
 
     // Instanz des ViewModels
     @ObservedObject var userViewModel: UserViewModel
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
-                // Titel der Seite
                 Text("Login")
                     .font(.largeTitle)
                     .padding()
@@ -50,6 +50,11 @@ struct LoginView: View {
                             isLoading = true // Ladezustand aktivieren
                             await userViewModel.loginUser(email: email, password: password)
                             isLoading = false // Ladezustand deaktivieren
+                            
+                            // Wenn der Benutzer erfolgreich eingeloggt ist, zur HomeView navigieren
+                            if userViewModel.user != nil {
+                                isLoggedIn = true
+                            }
                         }
                     }) {
                         Text("Anmelden")
@@ -73,21 +78,15 @@ struct LoginView: View {
                         .accessibilityHint(errorMessage)
                 }
 
-                // Navigation zur HomeView nach erfolgreichem Login
-                if let user = userViewModel.user {
-                    NavigationLink(destination: HomeView()) {
-                        Text("Zur HomeView")
-                            .foregroundColor(.blue)
-                            .padding()
-                    }
-                }
-                
                 Spacer()
             }
             .padding()
             .onAppear {
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
                 userViewModel.checkCurrentUser()
+            }
+            .navigationDestination(isPresented: $isLoggedIn) {
+                HomeView(userViewModel: userViewModel) // Weiterleitung zur HomeView nach erfolgreichem Login
             }
         }
     }

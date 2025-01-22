@@ -8,29 +8,34 @@
 import SwiftUI
 
 struct HomeView: View {
-    // Beispiel-Text, der die erfolgreiche Anmeldung zeigt
-    @State private var userEmail: String? = "Beispiel@benutzer.com"
+    // Bindung zur Instanz von UserViewModel
+    @ObservedObject var userViewModel: UserViewModel
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Text("Willkommen zur HomeView!")
                     .font(.largeTitle)
                     .padding()
 
-                if let email = userEmail {
+                if let email = userViewModel.user?.email {
                     Text("Angemeldeter Benutzer: \(email)")
                         .padding()
                         .foregroundColor(.green)
+                } else {
+                    Text("Kein Benutzer angemeldet")
+                        .padding()
+                        .foregroundColor(.red)
                 }
 
                 Spacer()
 
-                // Beispielbutton, um die Anmeldung zu beenden (log-out)
+                // Abmelden-Button
                 Button("Abmelden") {
-                    // Hier kannst du die Logik zum Abmelden implementieren, zum Beispiel:
-                    // userViewModel.logoutUser()
-                    print("Benutzer abgemeldet")
+                    Task {
+                        await userViewModel.signOut() 
+                        print("Benutzer abgemeldet")
+                    }
                 }
                 .padding()
                 .background(Color.red)
@@ -39,12 +44,13 @@ struct HomeView: View {
 
                 Spacer()
             }
-            .navigationBarTitle("Home", displayMode: .inline)
+            .navigationTitle("Home")
+            .navigationBarTitleDisplayMode(.inline)
             .padding()
         }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(userViewModel: UserViewModel())
 }

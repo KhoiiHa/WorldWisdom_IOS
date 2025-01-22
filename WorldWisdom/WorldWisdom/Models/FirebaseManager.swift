@@ -15,7 +15,7 @@ class FirebaseManager {
 
     // Zentralisierte Instanzen
     private let auth = Auth.auth()
-    let store = Firestore.firestore()
+    private let store = Firestore.firestore()
     private let storage = Storage.storage()
 
     var currentUser: User? {
@@ -44,6 +44,19 @@ class FirebaseManager {
 
 
     // MARK: - Firestore Funktionen
+    
+    // Benutzer in Firestore erstellen
+       func createUserInFirestore(id: String, email: String) async throws {
+           let userData: [String: Any] = [
+               "id": id,
+               "email": email,
+               "createdAt": Timestamp(date: Date())
+           ]
+           
+           // Speichern der Benutzerdaten in Firestore
+           try await store.collection("users").document(id).setData(userData)
+           print("Benutzer erfolgreich in Firestore gespeichert: \(email)")
+       }
 
     // Zitat-Metadaten speichern (Text, Autor, Kategorie) in Firestore
     func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {

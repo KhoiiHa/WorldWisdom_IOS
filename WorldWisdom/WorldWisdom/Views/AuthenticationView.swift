@@ -13,9 +13,10 @@ struct AuthenticationView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLoading: Bool = false
+    @State private var navigateToHome: Bool = false // Um die Navigation dynamisch zu steuern
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if let user = viewModel.user {
                     Text("Angemeldeter Benutzer: \(user.email ?? "Unbekannt")")
@@ -24,12 +25,8 @@ struct AuthenticationView: View {
                     Text("UID: \(user.uid)")
                         .padding()
 
-                    // Navigation zur HomeView nach erfolgreichem Login
-                    NavigationLink(destination: HomeView()) {
-                        Text("Zur HomeView")
-                            .foregroundColor(.blue)
-                            .padding()
-                    }
+                    // Direkt zur HomeView navigieren, wenn der Benutzer erfolgreich eingeloggt ist
+                    EmptyView()
                 } else {
                     Text("Bitte melden Sie sich an oder registrieren Sie sich.")
                         .padding()
@@ -54,6 +51,9 @@ struct AuthenticationView: View {
                             Task {
                                 await viewModel.registerUser(email: email, password: password)
                                 isLoading = false
+                                if viewModel.user != nil {
+                                    navigateToHome = true // Nach erfolgreicher Registrierung zur HomeView navigieren
+                                }
                             }
                         }
                         .disabled(isLoading)
@@ -67,6 +67,9 @@ struct AuthenticationView: View {
                             Task {
                                 await viewModel.loginUser(email: email, password: password)
                                 isLoading = false
+                                if viewModel.user != nil {
+                                    navigateToHome = true // Nach erfolgreichem Login zur HomeView navigieren
+                                }
                             }
                         }
                         .disabled(isLoading)
@@ -76,6 +79,9 @@ struct AuthenticationView: View {
                             Task {
                                 await viewModel.anonymousLogin()
                                 isLoading = false
+                                if viewModel.user != nil {
+                                    navigateToHome = true // Nach erfolgreicher anonymer Anmeldung zur HomeView navigieren
+                                }
                             }
                         }
                         .disabled(isLoading)
@@ -102,6 +108,9 @@ struct AuthenticationView: View {
             }, message: {
                 Text(viewModel.errorMessage ?? "")
             })
+            .navigationDestination(isPresented: $navigateToHome) {
+                HomeView(userViewModel: viewModel)// zur HomeView navigiert, wenn der Benutzer erfolgreich eingeloggt oder registriert wurde
+            }
         }
     }
 }
