@@ -11,10 +11,11 @@ struct LoginView: View {
     // Bindings für die Eingabefelder
     @State private var email: String = ""
     @State private var password: String = ""
-    
+    @State private var isLoading: Bool = false // Ladezustand
+
     // Instanz des ViewModels
     @ObservedObject var userViewModel: UserViewModel
-    
+
     var body: some View {
         VStack {
             // Titel der Seite
@@ -28,33 +29,47 @@ struct LoginView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .autocapitalization(.none)
                 .keyboardType(.emailAddress)
-            
+                .accessibilityLabel("E-Mail-Eingabefeld")
+                .accessibilityHint("Gib deine E-Mail-Adresse ein")
+
             // Eingabefeld für das Passwort
             SecureField("Passwort", text: $password)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .accessibilityLabel("Passwort-Eingabefeld")
+                .accessibilityHint("Gib dein Passwort ein")
             
             // Anmeldebutton
-            Button(action: {
-                Task {
-                    // Login durchführen
-                    await userViewModel.loginUser(email: email, password: password)
+            if isLoading {
+                ProgressView() // Ladeindikator
+                    .padding(.top, 20)
+            } else {
+                Button(action: {
+                    Task {
+                        isLoading = true // Ladezustand aktivieren
+                        await userViewModel.loginUser(email: email, password: password)
+                        isLoading = false // Ladezustand deaktivieren
+                    }
+                }) {
+                    Text("Anmelden")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .accessibilityLabel("Anmeldebutton")
+                        .accessibilityHint("Klicke hier, um dich anzumelden")
                 }
-            }) {
-                Text("Anmelden")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                .padding(.top, 20)
             }
-            .padding(.top, 20)
             
             // Anzeige einer Fehlermeldung, falls vorhanden
             if let errorMessage = userViewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .padding(.top, 10)
+                    .accessibilityLabel("Fehlermeldung")
+                    .accessibilityHint(errorMessage)
             }
             
             Spacer()
@@ -67,13 +82,6 @@ struct LoginView: View {
     }
 }
 
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        // Hier kannst du die LoginView im Preview-Modus anzeigen
-        LoginView(userViewModel: UserViewModel())
-    }
-}
-
 #Preview {
-    LoginView(userViewModel: <#UserViewModel#>)
+    LoginView(userViewModel: UserViewModel())
 }

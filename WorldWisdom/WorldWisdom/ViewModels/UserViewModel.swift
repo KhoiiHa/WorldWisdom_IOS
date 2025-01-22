@@ -72,8 +72,9 @@ class UserViewModel: ObservableObject {
 
     // Funktion, um beim Start zu prüfen, ob der Benutzer bereits angemeldet ist
     func checkCurrentUser() {
-        if let currentUser = FirebaseManager.shared.getCurrentUser() {
+        if let currentUser = FirebaseManager.shared.currentUser { // Verwende currentUser statt getCurrentUser
             self.isLoggedIn = true
+            // Direkt auf die Eigenschaften des User-Objekts zugreifen
             let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, uid: currentUser.uid)
             self.user = existingUser
             print("Aktueller Benutzer: \(currentUser.email ?? "Unbekannt")")
@@ -90,7 +91,7 @@ class UserViewModel: ObservableObject {
             try FirebaseManager.shared.signOut()
             self.isLoggedIn = false
             self.user = nil
-            print("Benutzer abgemeldet.")
+            print("Benutzer abgemeldet: \(self.user?.email ?? "Unbekannt").")
         } catch {
             self.errorMessage = "Fehler beim Abmelden: \(error.localizedDescription)"
             print(self.errorMessage ?? "Unbekannter Fehler")

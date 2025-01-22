@@ -6,58 +6,126 @@
 //
 
 import FirebaseAuth
-import Foundation
 import FirebaseFirestore
+import FirebaseStorage
 
 class FirebaseManager {
 
-    static let shared = FirebaseManager() 
+    static let shared = FirebaseManager()
+
+    // Zentralisierte Instanzen
+    private let auth = Auth.auth()
+    let store = Firestore.firestore()
+    private let storage = Storage.storage()
+
+    var currentUser: User? {
+        auth.currentUser
+    }
 
     private init() {}
 
-    // Funktion zur Benutzerregistrierung
+    // MARK: - Auth Funktionen
+
     func registerUser(email: String, password: String) async throws -> AuthDataResult {
-        return try await Auth.auth().createUser(withEmail: email, password: password)
+        return try await auth.createUser(withEmail: email, password: password)
     }
 
-    // Funktion zur Benutzeranmeldung
     func loginUser(email: String, password: String) async throws -> AuthDataResult {
-        return try await Auth.auth().signIn(withEmail: email, password: password)
+        return try await auth.signIn(withEmail: email, password: password)
     }
 
-    // Funktion zur anonymer Anmeldung
     func anonymousLogin() async throws -> AuthDataResult {
-        return try await Auth.auth().signInAnonymously()
+        return try await auth.signInAnonymously()
     }
 
-    // Funktion, um den aktuellen Benutzer zu holen
-    func getCurrentUser() -> User? {
-        return Auth.auth().currentUser
-    }
-
-    // Funktion zum Abmelden
     func signOut() throws {
-        try Auth.auth().signOut()
+        try auth.signOut()
     }
 
-    // Funktion zum Speichern der Benutzerdaten in Firestore
-    func createUserInFirestore(id: String, email: String) async throws {
-        let databank = Firestore.firestore()
-        let userData: [String: Any] = [
-            "email": email,
+
+    // MARK: - Firestore Funktionen
+
+    // Zitat-Metadaten speichern (Text, Autor, Kategorie) in Firestore
+    func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {
+        let quoteData: [String: Any] = [
+            "quoteText": quoteText,
+            "author": author,
+            "category": category,
             "createdAt": Timestamp(date: Date())
         ]
-        try await databank.collection("users").document(id).setData(userData)
+        
+        // Speichern der Zitat-Daten in Firestore unter der Sammlung 'quotes'
+        try await store.collection("quotes").document(quoteId).setData(quoteData)
     }
 
-    // Funktion zum Abrufen der Benutzerdaten aus Firestore
-    func fetchUserFromFirestore(id: String) async throws -> FireUser? {
-        let databank = Firestore.firestore()
-        let userDocument = try await databank.collection("users").document(id).getDocument()
+    // Zitat-Metadaten aus Firestore holen
+    func fetchQuoteMetadata(quoteId: String) async throws -> [String: Any]? {
+        let documentSnapshot = try await store.collection("quotes").document(quoteId).getDocument()
+        return documentSnapshot.data()
+    }
 
-        if let userData = userDocument.data(), let email = userData["email"] as? String {
-            return FireUser(id: id, email: email, uid: id)
+    // Funktionen für favorisierte Zitate
+    func saveFavoriteQuote(quote: Quote) async throws {
+        guard let currentUser = auth.currentUser else { return }
+        
+        let favoriteQuoteData: [String: Any] = [
+            "quoteText": quote.quoteText,
+            "author": quote.author,
+            "category": quote.category ?? "Uncategorized",
+            "createdAt": Timestamp(date: Date())
+        ]
+        
+        // Speichern des favorisierten Zitats in der Sammlung 'favorites' für den aktuellen Nutzer
+        try await store.collection("users")
+            .document(currentUser.uid)
+            .collection("favorites")
+            .document(quote.quoteText) // Speichern mit dem Text des Zitats als Dokument-ID
+            .setData(favoriteQuoteData)
+    }
+
+    func fetchFavoriteQuotes() async throws -> [Quote]? {
+        guard let currentUser = auth.currentUser else { return nil }
+        
+        // Abrufen der favorisierten Zitate des aktuellen Nutzers aus Firestore
+        let snapshot = try await store.collection("users")
+            .document(currentUser.uid)
+            .collection("favorites")
+            .getDocuments()
+        
+        return snapshot.documents.compactMap { document in
+            try? document.data(as: Quote.self)
         }
-        return nil
+    }
+
+    // MARK: - Storage Funktionen
+
+    // Funktion zum Hochladen einer Datei in Firebase Storage
+    func uploadFile(data: Data, to path: String) async throws {
+        let ref = storage.reference().child(path)
+        _ = try await ref.putDataAsync(data)
+    }
+
+    // Funktion zum Hochladen eines Zitatbildes und Abrufen der Download-URL
+    func uploadQuoteImage(imageData: Data, quoteId: String) async throws -> String {
+        let fileName = "image.png" // Beispiel-Dateiname für das Bild
+        let path = "quoteImages/\(quoteId)/\(fileName)" // Definierter Speicherpfad
+        try await uploadFile(data: imageData, to: path)
+        
+        // Hole den Download-URL des hochgeladenen Bildes
+        let ref = storage.reference().child(path)
+        let downloadURL = try await ref.downloadURL()
+        return downloadURL.absoluteString // Rückgabe des Download-Links
+    }
+    
+    // Funktion zum Hochladen einer Zitat-Datei (z.B. Text) und Abrufen der Download-URL
+    func uploadQuoteFile(fileData: Data, quoteId: String) async throws -> String {
+        let fileName = "quote.txt" // Beispiel-Dateiname für die Zitat-Datei
+        let path = "quoteFiles/\(quoteId)/\(fileName)" // Speicherpfad für Zitat-Datei
+        try await uploadFile(data: fileData, to: path)
+        
+        // Hole den Download-URL der hochgeladenen Datei
+        let ref = storage.reference().child(path)
+        let downloadURL = try await ref.downloadURL()
+        return downloadURL.absoluteString // Rückgabe des Download-Links
     }
 }
