@@ -1,6 +1,6 @@
 # WorldWisdom 🌟📖
 
-**“Entdecke die Weisheit der Welt in einer App”** 🌍💬
+# **“Entdecke die Weisheit der Welt in einer App”** 🌍💬
 
 WorldWisdom ist eine Zitat-App, die eine Sammlung inspirierender Zitate von Persönlichkeiten aus verschiedenen Bereichen wie Literatur, Wissenschaft und Philosophie bietet. Sie hilft Nutzern, sich zu motivieren und zu inspirieren, um ihre persönliche und berufliche Entwicklung zu fördern. 🚀💡
 
@@ -36,7 +36,8 @@ Die App folgt dem **MVVM-Designmuster** (Model-View-ViewModel), um eine klare Tr
 #### Datenspeicherung 💾
 Die App nutzt **Firebase** für:  
 - **Authentication**: Sichere Anmeldung via E-Mail/Passwort oder anonyme Anmeldung 🔑  
-- **Storage**: Speicherung von benutzerspezifischen Daten wie Lieblingszitaten 📥
+- **Firestore Database**: Speicherung von benutzerspezifischen Daten wie Anmeldedaten und Lieblingszitaten 📥  
+- **Storage**: Speicherung von Medien wie Bildern oder langen Zitat-Texten 📸💬
 
 **Warum Firebase?**  
 Firebase bietet eine einfache Integration in iOS-Projekte und unterstützt Echtzeit-Datenabgleich sowie Skalierbarkeit 🌐.
