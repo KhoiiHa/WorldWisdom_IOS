@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    // Bindung zur Instanz von UserViewModel
     @ObservedObject var userViewModel: UserViewModel
+    @State private var isLoggedOut = false
 
     var body: some View {
         NavigationStack {
@@ -17,24 +17,24 @@ struct HomeView: View {
                 Text("Willkommen zur HomeView!")
                     .font(.largeTitle)
                     .padding()
-
-                if let email = userViewModel.user?.email {
-                    Text("Angemeldeter Benutzer: \(email)")
-                        .padding()
-                        .foregroundColor(.green)
-                } else {
-                    Text("Kein Benutzer angemeldet")
-                        .padding()
-                        .foregroundColor(.red)
+                if let user = userViewModel.user {
+                    if let email = user.email {
+                        Text("Angemeldeter Benutzer: \(email)")
+                            .padding()
+                            .foregroundColor(.green)
+                    } else {
+                        Text("Anonym angemeldet. UID: \(user.uid)")
+                            .padding()
+                            .foregroundColor(.blue)
+                    }
                 }
-
                 Spacer()
 
                 // Abmelden-Button
                 Button("Abmelden") {
                     Task {
-                        await userViewModel.signOut() 
-                        print("Benutzer abgemeldet")
+                        await userViewModel.signOut()
+                        isLoggedOut = true
                     }
                 }
                 .padding()
@@ -47,6 +47,9 @@ struct HomeView: View {
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .padding()
+            .navigationDestination(isPresented: $isLoggedOut) {
+                AuthenticationView()
+            }
         }
     }
 }

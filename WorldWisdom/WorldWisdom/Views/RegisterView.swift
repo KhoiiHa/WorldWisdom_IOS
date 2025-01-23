@@ -75,7 +75,10 @@ struct RegisterView: View {
                         .accessibilityLabel("Fehlermeldung")
                         .accessibilityHint(errorMessage)
                 }
-
+                // Zurück zur AuthenticationView Button
+                NavigationLink("Zurück zur Anmeldung", destination: AuthenticationView())
+                    .foregroundColor(.blue)
+                    .padding(.top, 20)
                 Spacer()
             }
             .padding()

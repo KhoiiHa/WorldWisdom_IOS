@@ -42,19 +42,10 @@ struct AuthenticationView: View {
                     }
 
                     Section {
-                        Button("Registrieren") {
-                            guard !email.isEmpty, !password.isEmpty else {
-                                viewModel.errorMessage = "Bitte füllen Sie alle Felder aus."
-                                return
-                            }
-                            isLoading = true
-                            Task {
-                                await viewModel.registerUser(email: email, password: password)
-                                isLoading = false
-                                if viewModel.user != nil {
-                                    navigateToHome = true // Nach erfolgreicher Registrierung zur HomeView navigieren
-                                }
-                            }
+                        
+                        NavigationLink(destination: RegisterView(userViewModel: viewModel)) {
+                            Text("Jetzt registrieren")
+                                .foregroundColor(.blue)
                         }
                         .disabled(isLoading)
 

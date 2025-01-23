@@ -8,17 +8,25 @@
 import SwiftUI
 import Firebase
 
+
 @main
 struct WorldWisdomApp: App {
-   
+    
+    @StateObject private var userViewModel = UserViewModel()
+    
     init() {
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.debug) // Optional: Setze das Log-Level
     }
-
+    
     var body: some Scene {
         WindowGroup {
-            AuthenticationView()
+            if userViewModel.isLoggedIn {
+                HomeView(userViewModel: userViewModel)
+                    .environmentObject(userViewModel)
+            } else {
+                AuthenticationView()
+            }
         }
     }
 }

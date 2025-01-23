@@ -59,6 +59,7 @@ class UserViewModel: ObservableObject {
         do {
             let authResult = try await FirebaseManager.shared.registerUser(email: email, password: password)
             self.isLoggedIn = true
+            self.saveLoginStatus(isLoggedIn: true)
 
             let newUser = FireUser(id: authResult.user.uid, email: email, uid: authResult.user.uid)
             self.user = newUser
@@ -86,6 +87,7 @@ class UserViewModel: ObservableObject {
         do {
             let authResult = try await FirebaseManager.shared.loginUser(email: email, password: password)
             self.isLoggedIn = true
+            self.saveLoginStatus(isLoggedIn: true)
 
             let loggedInUser = FireUser(id: authResult.user.uid, email: email, uid: authResult.user.uid)
             self.user = loggedInUser
@@ -101,6 +103,7 @@ class UserViewModel: ObservableObject {
         do {
             let authResult = try await FirebaseManager.shared.anonymousLogin()
             self.isLoggedIn = true
+            self.saveLoginStatus(isLoggedIn: true)
 
             let anonymousUser = FireUser(id: authResult.user.uid, email: nil, uid: authResult.user.uid)
             self.user = anonymousUser
@@ -131,7 +134,8 @@ class UserViewModel: ObservableObject {
     func signOut() async {
         do {
             try FirebaseManager.shared.signOut()
-            self.isLoggedIn = false
+            self.isLoggedIn = true
+            self.saveLoginStatus(isLoggedIn: true)
             self.user = nil
             print("Benutzer abgemeldet: \(self.user?.email ?? "Unbekannt").")
         } catch {
@@ -143,19 +147,38 @@ class UserViewModel: ObservableObject {
     // MARK: - Firestore Funktionen
 
     // Funktion zum Abrufen der Lieblingszitate
-    func fetchFavoriteQuotes(for userId: String) async {
-        do {
-            let snapshot = try await Firestore.firestore()
-                .collection("favoriteQuotes")
-                .whereField("userId", isEqualTo: userId)
-                .getDocuments()
+        func fetchFavoriteQuotes() async {
+            guard let userId = user?.uid else { return }
+            
+            do {
+                let snapshot = try await Firestore.firestore()
+                    .collection("favoriteQuotes")
+                    .whereField("userId", isEqualTo: userId)
+                    .getDocuments()
 
-            let quotes = snapshot.documents.compactMap { document in
-                try? document.data(as: FavoriteQuote.self)
+                let quotes = snapshot.documents.compactMap { document in
+                    try? document.data(as: FavoriteQuote.self)
+                }
+                self.favoriteQuotes = quotes
+            } catch {
+                print("Fehler beim Abrufen der Zitate: \(error.localizedDescription)")
             }
-            self.favoriteQuotes = quotes
-        } catch {
-            print("Fehler beim Abrufen der Zitate: \(error.localizedDescription)")
         }
-    }
+
+        // Funktion zum Speichern der Benutzerdaten
+        func saveUserData() {
+            guard let userId = user?.uid else { return }
+
+            let db = Firestore.firestore()
+            db.collection("users").document(userId).setData([
+                "email": user?.email ?? "",
+                "favoriteQuotes": [] 
+            ]) { error in
+                if let error = error {
+                    print("Fehler beim Speichern der Daten: \(error.localizedDescription)")
+                } else {
+                    print("Daten erfolgreich gespeichert!")
+                }
+            }
+        }
 }
