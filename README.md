@@ -19,7 +19,8 @@ Die App richtet sich an Menschen, die nach Inspiration suchen – von Studenten 
 - [ ] **Benutzer bleiben angemeldet (App-Status speichern)** 🔐  
 - [ ] **Inspirierende Zitate**: Abruf von Zitate über die **ZenQuotes API** 🌍💬  
 - [ ] **Lieblingszitate speichern**: Nutzer können Zitate speichern, um sie jederzeit wieder anzusehen 💖  
-- [ ] **Filteroptionen**: Zitate nach Kategorien wie **Motivation**, **Erfolg**, **Glück** filtern 🔍  
+- [ ] **Filteroptionen**: Zitate nach Kategorien wie **Motivation**, **Erfolg**, **Glück** filtern 🔍
+- [ ] **Suchoptionen**: Zitate nach Kategorien und Autoren suchen 🔍    
 - [ ] **Autoren-Detailansicht**: Mehr Informationen über die Persönlichkeiten hinter den Zitaten ✍️👤  
 - [ ] **Zitate Sammlung**: Eigene Sammlung der Lieblingszitate auf einem separaten Screen 📚🌟  
 
@@ -45,9 +46,6 @@ Firebase bietet eine einfache Integration in iOS-Projekte und unterstützt Echtz
 #### Fehlerbehandlung & Validierung 🛡️
 - **E-Mail und Passwort**: Verifizierung der Eingaben für eine sichere Anmeldung 💬✅  
 - **Fehlermeldungen**: Klare und hilfreiche Hinweise bei fehlerhaften Eingaben 🚫💡
-
-#### App-Status speichern 🔒
-- **Benutzer bleiben eingeloggt**: Die App speichert den Anmeldestatus, sodass Nutzer beim nächsten Start automatisch eingeloggt werden 🔄
 
 #### API Calls 🌐
 Die App ruft Zitate aus der **ZenQuotes API** ab, um den Nutzern ständig frische Weisheiten zu bieten 🧠💭
