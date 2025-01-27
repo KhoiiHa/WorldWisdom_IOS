@@ -82,9 +82,9 @@ class FirebaseManager {
         guard let currentUser = auth.currentUser else { return }
         
         let favoriteQuoteData: [String: Any] = [
-            "quoteText": quote.quoteText,
+            "quoteText": quote.quote, // Hier 'quote' verwenden
             "author": quote.author,
-            "category": quote.category ?? "Uncategorized",
+            "category": quote.category,
             "createdAt": Timestamp(date: Date())
         ]
         
@@ -92,7 +92,7 @@ class FirebaseManager {
         try await store.collection("users")
             .document(currentUser.uid)
             .collection("favorites")
-            .document(quote.quoteText) // Speichern mit dem Text des Zitats als Dokument-ID
+            .document(quote.quote) // Hier 'quote' verwenden
             .setData(favoriteQuoteData)
     }
 
