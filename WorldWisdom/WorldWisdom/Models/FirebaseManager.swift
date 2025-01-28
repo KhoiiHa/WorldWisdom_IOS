@@ -8,11 +8,13 @@
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
+import Firebase
 
 class FirebaseManager {
     
 
     static let shared = FirebaseManager()
+    
 
     // Zentralisierte Instanzen
     private let auth = Auth.auth()
@@ -47,17 +49,17 @@ class FirebaseManager {
     // MARK: - Firestore Funktionen
     
     // Benutzer in Firestore erstellen
-       func createUserInFirestore(id: String, email: String) async throws {
-           let userData: [String: Any] = [
-               "id": id,
-               "email": email,
-               "createdAt": Timestamp(date: Date())
-           ]
-           
-           // Speichern der Benutzerdaten in Firestore
-           try await store.collection("users").document(id).setData(userData)
-           print("Benutzer erfolgreich in Firestore gespeichert: \(email)")
-       }
+    func createUserInFirestore(id: String, email: String) async throws {
+        let userData: [String: Any] = [
+            "id": id,
+            "email": email,
+            "createdAt": Timestamp(date: Date())
+        ]
+        
+        // Speichern der Benutzerdaten in Firestore
+        try await store.collection("users").document(id).setData(userData)
+        print("Benutzer erfolgreich in Firestore gespeichert: \(email)")
+    }
 
     // Zitat-Metadaten speichern (Text, Autor, Kategorie) in Firestore
     func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {
@@ -93,7 +95,7 @@ class FirebaseManager {
         try await store.collection("users")
             .document(currentUser.uid)
             .collection("favorites")
-            .document(quote.quote) // Hier 'quote' verwenden
+            .document(quote.quote) 
             .setData(favoriteQuoteData)
     }
 
@@ -112,6 +114,16 @@ class FirebaseManager {
             quote?.isFavorite = true // Wir markieren es als Favorit
             return quote
         }
+    }
+        
+    func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
+        // Referenz auf das Dokument in Firestore
+        let quoteRef = store.collection("quotes").document(quote.id)
+        
+        // Aktualisieren des Favoritenstatus
+        try await quoteRef.updateData([
+            "isFavorite": isFavorite
+        ])
     }
 
     // MARK: - Storage Funktionen

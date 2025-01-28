@@ -11,7 +11,7 @@
 		A69D121D2D380DDE00EC70D9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A69D121C2D380DDE00EC70D9 /* FirebaseAuth */; };
 		A69D121F2D380DDE00EC70D9 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = A69D121E2D380DDE00EC70D9 /* FirebaseCore */; };
 		A69D12212D380DDE00EC70D9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12202D380DDE00EC70D9 /* FirebaseCrashlytics */; };
-		A69D12232D380DDE00EC70D9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12222D380DDE00EC70D9 /* FirebaseDatabase */; };
+		A69D12232D380DDE00EC70D9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12222D380DDE00EC70D9 /* FirebaseDatabase */; settings = {ATTRIBUTES = (Required, ); }; };
 		A69D12252D380DDE00EC70D9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12242D380DDE00EC70D9 /* FirebaseFirestore */; };
 		A69D12272D380DDE00EC70D9 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12262D380DDE00EC70D9 /* FirebaseStorage */; };
 /* End PBXBuildFile section */

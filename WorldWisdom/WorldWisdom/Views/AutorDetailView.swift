@@ -11,11 +11,11 @@ struct AutorDetailView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel // ViewModel für das Zitat
     let quote: Quote // Nutzt die Quote-Struktur
     
-    @State private var isFavorite: Bool
-    
+    @State private var isFavorite: Bool // Favoritenstatus innerhalb der View
+
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
-        self._isFavorite = State(initialValue: quote.isFavorite)
+        self._isFavorite = State(initialValue: quote.isFavorite) // Initialisieren mit dem Wert aus der Quote-Struktur
         self.quoteViewModel = quoteViewModel
     }
     
@@ -93,7 +93,7 @@ struct AutorDetailView: View {
     
     // Funktion zum Umschalten des Favoritenstatus
     private func toggleFavoriteStatus() {
-        isFavorite.toggle()
+        isFavorite.toggle() // Favoritenstatus toggeln
         
         // Hier kann eine Funktion im ViewModel aufgerufen werden, um den Favoritenstatus zu speichern
         quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)

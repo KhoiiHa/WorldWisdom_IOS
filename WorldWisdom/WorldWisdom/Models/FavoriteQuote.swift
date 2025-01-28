@@ -7,6 +7,7 @@
 
 import FirebaseFirestore
 
+
 struct FavoriteQuote: Codable, Identifiable {
     @DocumentID var id: String?
     let text: String       // Der Zitattext

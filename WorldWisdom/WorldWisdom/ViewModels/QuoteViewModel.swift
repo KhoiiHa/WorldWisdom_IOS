@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import Firebase
 
 @MainActor
 class QuoteViewModel: ObservableObject {
@@ -24,11 +25,9 @@ class QuoteViewModel: ObservableObject {
             // Abrufen von mehreren zufälligen Zitaten
             let fetchedQuotes = try await QuoteService.shared.fetchMultipleQuotes()
             self.quotes = fetchedQuotes // Zitate zuweisen
-        } catch let error as NSError {
-            // Fehlerbehandlung mit Firebase-spezifischen Fehlern
-            self.errorMessage = AuthError.handleFirebaseError(error)
         } catch {
-            self.errorMessage = "Fehler beim Laden der Zitate: \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
 
@@ -38,11 +37,9 @@ class QuoteViewModel: ObservableObject {
             // Abrufen eines einzelnen zufälligen Zitats
             let fetchedQuote = try await QuoteService.shared.fetchRandomQuote()
             self.quotes = [fetchedQuote] // Nur das zufällige Zitat anzeigen
-        } catch let error as NSError {
-            // Fehlerbehandlung mit Firebase-spezifischen Fehlern
-            self.errorMessage = AuthError.handleFirebaseError(error)
         } catch {
-            self.errorMessage = "Fehler beim Laden des Zitats: \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
 
@@ -52,26 +49,21 @@ class QuoteViewModel: ObservableObject {
             // Abrufen von Zitaten nach einer bestimmten Kategorie
             let fetchedQuotes = try await QuoteService.shared.fetchQuotesByCategory(category: category)
             self.quotes = fetchedQuotes // Zitate zuweisen
-        } catch let error as NSError {
-            // Fehlerbehandlung mit Firebase-spezifischen Fehlern
-            self.errorMessage = AuthError.handleFirebaseError(error)
         } catch {
-            self.errorMessage = "Fehler beim Laden der Zitate: \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
 
-    // Lädt Zitate durch eine Suchanfrage (mit async und throws)
+    // Lädt Zitate durch eine Suchanfrage
     func searchQuotes(query: String) async throws {
         do {
             // Abrufen von Zitaten, die der Suchanfrage entsprechen
             let fetchedQuotes = try await QuoteService.shared.searchQuotes(query: query)
             self.quotes = fetchedQuotes // Zitate zuweisen
-        } catch let error as NSError {
-            // Fehlerbehandlung mit Firebase-spezifischen Fehlern
-            self.errorMessage = AuthError.handleFirebaseError(error)
-            throw error // Fehler weiterwerfen
         } catch {
-            self.errorMessage = "Fehler bei der Suche: \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
             throw error // Fehler weiterwerfen
         }
     }
@@ -82,11 +74,9 @@ class QuoteViewModel: ObservableObject {
             // Abrufen von Zitaten eines bestimmten Autors
             let fetchedQuotes = try await QuoteService.shared.fetchAuthorQuotes(authorName: author)
             self.quotes = fetchedQuotes // Zitate zuweisen
-        } catch let error as NSError {
-            // Fehlerbehandlung mit Firebase-spezifischen Fehlern
-            self.errorMessage = AuthError.handleFirebaseError(error)
         } catch {
-            self.errorMessage = "Fehler beim Laden der Zitate von \(author): \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
 
@@ -96,10 +86,9 @@ class QuoteViewModel: ObservableObject {
             // Hier holen wir die Kategorien von der API
             let fetchedCategories = try await QuoteService.shared.fetchCategories()
             self.categories = fetchedCategories // Kategorien speichern
-        } catch let error as NSError {
-            self.errorMessage = AuthError.handleFirebaseError(error)
         } catch {
-            self.errorMessage = "Fehler beim Laden der Kategorien: \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
     
@@ -110,34 +99,27 @@ class QuoteViewModel: ObservableObject {
                 self.quotes = fetchedQuotes // Setzt die abgerufenen Zitate
             }
         } catch {
-            self.errorMessage = "Fehler beim Abrufen der Favoriten: \(error.localizedDescription)"
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
             throw error // Werfe den Fehler weiter, damit er im catch-Block von FavoriteView gefangen wird
         }
     }
     
-    // Funktion, um den Favoritenstatus eines Zitats zu aktualisieren
+    // Funktion zum Aktualisieren des Favoritenstatus eines Zitats
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) {
-        // Überprüfen, ob die Zitat-ID vorhanden und nicht leer ist
-        guard !quote.id.isEmpty else {
-            errorMessage = "Zitat-ID ist ungültig."
-            return
+        // Suchen des Zitats in der Liste
+        if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
+            quotes[index].isFavorite = isFavorite
         }
         
-        // Referenz zum Firestore-Dokument
-        let quoteRef = database.collection("quotes").document(quote.id)
-        
-        // Update der Favoriten-Eigenschaft in der Datenbank
-        quoteRef.updateData([
-            "isFavorite": isFavorite
-        ]) { error in
-            if let error = error {
-                // Fehlerbehandlung, falls das Update fehlschlägt
-                self.errorMessage = "Fehler beim Aktualisieren des Favoritenstatus: \(error.localizedDescription)"
-            } else {
-                // Erfolgreiche Aktualisierung
-                if let index = self.quotes.firstIndex(where: { $0.id == quote.id }) {
-                    self.quotes[index].isFavorite = isFavorite
-                }
+        // Aktualisieren des Favoritenstatus in Firestore
+        Task {
+            do {
+                // Aufruf der Methode aus FirebaseManager
+                try await firebaseManager.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
+            } catch {
+                let handledError = QuoteError.handleError(error)
+                self.errorMessage = handledError.errorDescription
             }
         }
     }
