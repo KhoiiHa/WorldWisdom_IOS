@@ -12,7 +12,7 @@ class QuoteService {
     static let shared = QuoteService()
 
     // Basis-URL für Mockoon
-    private let baseURL = "http://localhost:3000" // Mockoon läuft lokal auf Port 3000
+    private let baseURL = "http://localhost:3001" // Mockoon läuft lokal auf Port 3001
 
     // Abrufen von Daten und Decodieren von JSON
     private func fetchData<T: Decodable>(from url: URL) async throws -> T {

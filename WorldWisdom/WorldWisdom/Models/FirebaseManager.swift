@@ -107,7 +107,10 @@ class FirebaseManager {
             .getDocuments()
         
         return snapshot.documents.compactMap { document in
-            try? document.data(as: Quote.self)
+            // Umwandeln des Firebase-Dokuments in ein Quote-Objekt
+            var quote = try? document.data(as: Quote.self)
+            quote?.isFavorite = true // Wir markieren es als Favorit
+            return quote
         }
     }
 
