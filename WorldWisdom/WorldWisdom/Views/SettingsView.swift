@@ -9,7 +9,64 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            List {
+                // Sektion: Benutzereinstellungen
+                Section(header: Text("Benutzereinstellungen")) {
+                    NavigationLink(destination: Text("Profil bearbeiten")) {
+                        HStack {
+                            Image(systemName: "person.circle")
+                                .foregroundColor(.blue)
+                            Text("Profil bearbeiten")
+                        }
+                    }
+                    
+                    NavigationLink(destination: Text("Benachrichtigungseinstellungen")) {
+                        HStack {
+                            Image(systemName: "bell")
+                                .foregroundColor(.blue)
+                            Text("Benachrichtigungen")
+                        }
+                    }
+                }
+                
+                // Sektion: App-Informationen
+                Section(header: Text("App-Informationen")) {
+                    NavigationLink(destination: Text("Datenschutzrichtlinien")) {
+                        HStack {
+                            Image(systemName: "lock.shield")
+                                .foregroundColor(.green)
+                            Text("Datenschutz")
+                        }
+                    }
+                    
+                    NavigationLink(destination: Text("Über die App")) {
+                        HStack {
+                            Image(systemName: "info.circle")
+                                .foregroundColor(.green)
+                            Text("Über die App")
+                        }
+                    }
+                }
+                
+                // Sektion: Aktionen
+                Section {
+                    Button(action: {
+                        // Logout-Logik hier einfügen
+                        print("Benutzer ausgeloggt")
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.right.square")
+                                .foregroundColor(.red)
+                            Text("Abmelden")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("Einstellungen")
+        }
     }
 }
 

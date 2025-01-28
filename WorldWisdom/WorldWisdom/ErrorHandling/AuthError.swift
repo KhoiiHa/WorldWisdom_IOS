@@ -32,8 +32,13 @@ enum AuthError: LocalizedError {
         }
     }
 
-    // Statische Methode zur Fehlerbehandlung mit NSError
-    static func handleError(_ error: NSError) -> String {
+    // Fehlerbehandlung für benutzerdefinierte Fehlercodes oder andere Fehler
+    static func handleCustomError(_ message: String) -> String {
+        return AuthError.customError(message).errorDescription ?? "Unbekannter Fehler"
+    }
+    
+    // Statische Methode zur Fehlerbehandlung mit Firebase-Fehlercode
+    static func handleFirebaseError(_ error: NSError) -> String {
         // Firebase-spezifische Fehlerbehandlung
         switch error.code {
         case AuthErrorCode.invalidEmail.rawValue:
@@ -45,10 +50,5 @@ enum AuthError: LocalizedError {
         default:
             return AuthError.unknownError.errorDescription ?? "Unbekannter Fehler"
         }
-    }
-    
-    // Fehlerbehandlung für benutzerdefinierte Fehlercodes oder andere Fehler
-    static func handleCustomError(_ message: String) -> String {
-        return AuthError.customError(message).errorDescription ?? "Unbekannter Fehler"
     }
 }
