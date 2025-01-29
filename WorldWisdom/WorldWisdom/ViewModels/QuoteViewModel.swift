@@ -106,21 +106,18 @@ class QuoteViewModel: ObservableObject {
     }
     
     // Funktion zum Aktualisieren des Favoritenstatus eines Zitats
-    func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) {
+    func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
         // Suchen des Zitats in der Liste
         if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
             quotes[index].isFavorite = isFavorite
         }
         
-        // Aktualisieren des Favoritenstatus in Firestore
-        Task {
-            do {
-                // Aufruf der Methode aus FirebaseManager
-                try await firebaseManager.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
-            } catch {
-                let handledError = QuoteError.handleError(error)
-                self.errorMessage = handledError.errorDescription
-            }
+        do {
+            // Aufruf der Methode aus FirebaseManager zum Aktualisieren des Favoritenstatus
+            try await firebaseManager.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
+        } catch {
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
 }

@@ -42,7 +42,6 @@ struct AuthenticationView: View {
                     }
 
                     Section {
-                        
                         NavigationLink(destination: RegisterView(userViewModel: viewModel)) {
                             Text("Jetzt registrieren")
                                 .foregroundColor(.blue)
@@ -102,7 +101,7 @@ struct AuthenticationView: View {
                 Text(viewModel.errorMessage ?? "")
             })
             .navigationDestination(isPresented: $navigateToHome) {
-                HomeView(userViewModel: viewModel)// zur HomeView navigiert, wenn der Benutzer erfolgreich eingeloggt oder registriert wurde
+                HomeView(userViewModel: viewModel) // Zur HomeView navigieren, wenn der Benutzer erfolgreich eingeloggt oder registriert wurde
             }
         }
     }

@@ -60,7 +60,11 @@ struct AutorDetailView: View {
                         .padding(.horizontal)
                 }
                 
-                Button(action: toggleFavoriteStatus) {
+                Button(action: {
+                    Task {
+                        await toggleFavoriteStatus() // asynchrone Funktion wird hier aufgerufen
+                    }
+                }) {
                     HStack {
                         Image(systemName: isFavorite ? "heart.fill" : "heart")
                             .foregroundColor(isFavorite ? .red : .gray)
@@ -122,9 +126,9 @@ struct AutorDetailView: View {
         searchResults = results
     }
     
-    private func toggleFavoriteStatus() {
+    private func toggleFavoriteStatus() async {
         isFavorite.toggle() // Favoritenstatus toggeln
-        quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
+        await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
     }
 }
 
