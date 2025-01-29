@@ -83,8 +83,11 @@ struct RegisterView: View {
             }
             .padding()
             .onAppear {
+                
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
-                userViewModel.checkCurrentUser()
+                Task {
+                    await userViewModel.checkCurrentUser()
+                }
             }
             .navigationDestination(isPresented: $isRegistered) {
                 HomeView(userViewModel: userViewModel) // Weiterleitung zur HomeView nach erfolgreicher Registrierung

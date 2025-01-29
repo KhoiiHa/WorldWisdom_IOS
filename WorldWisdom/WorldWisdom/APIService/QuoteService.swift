@@ -75,4 +75,16 @@ class QuoteService {
         let url = URL(string: "\(baseURL)/api/favorites")!
         return try await fetchData(from: url)
     }
+
+    // Suchen von Zitaten anhand eines bestimmten Tags
+    func searchQuotesByTags(tag: String) async throws -> [Quote] {
+        let url = URL(string: "\(baseURL)/api/quotes/tags/\(tag)")!
+        return try await fetchData(from: url)
+    }
+
+    // Suchen von Zitaten anhand eines Tags und Autors
+    func searchQuotesByTagAndAuthor(tag: String, author: String) async throws -> [Quote] {
+        let url = URL(string: "\(baseURL)/api/quotes/tags/\(tag)/author/\(author)")!
+        return try await fetchData(from: url)
+    }
 }

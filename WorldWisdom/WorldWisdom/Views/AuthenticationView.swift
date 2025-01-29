@@ -92,7 +92,9 @@ struct AuthenticationView: View {
             }
             .padding()
             .onAppear {
-                viewModel.checkCurrentUser()
+                Task {
+                    await viewModel.checkCurrentUser()
+                }
             }
             .alert("Fehler", isPresented: .constant(viewModel.errorMessage != nil), actions: {
                 Button("OK", role: .cancel) { viewModel.errorMessage = nil }

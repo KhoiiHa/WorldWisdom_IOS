@@ -15,69 +15,77 @@ struct ExplorerView: View {
     @State private var errorMessage: String? = nil // Fehlernachricht speichern
     
     var body: some View {
-        VStack {
-            Text("Explorer View")
-                .font(.largeTitle)
+        NavigationView {
+            VStack {
+                Text("Explorer View")
+                    .font(.largeTitle)
+                    .padding()
+
+                // Suchleiste für Autoren
+                TextField("Suche nach Autoren...", text: $searchQuery, onCommit: {
+                    // Wenn die Eingabetaste gedrückt wird, suche nach einem Autor
+                    searchQuotes()
+                })
+                .padding()
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
                 .padding()
 
-            // Suchleiste
-            TextField("Suche nach Zitaten...", text: $searchQuery, onCommit: {
-                // Wenn die Eingabetaste gedrückt wird, suche nach Zitaten
-                searchQuotes()
-            })
-            .padding()
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(10)
-            .padding()
-
-            // Fehlernachricht anzeigen
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding()
-            }
-
-            // Kategorien anzeigen
-            List(quoteViewModel.categories, id: \.self) { category in
-                Button(action: {
-                    // Wenn eine Kategorie ausgewählt wird, lade Zitate dieser Kategorie
-                    loadQuotesByCategory(category)
-                }) {
-                    Text(category)
-                        .font(.headline)
+                // Fehlernachricht anzeigen
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
                         .padding()
                 }
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(8)
-            }
 
-            // Anzeige der Zitate
-            if isLoading {
-                ProgressView("Lade Zitate...") // Ladeindikator
-                    .padding()
-            } else {
-                List(quoteViewModel.quotes, id: \.id) { quote in
-                    VStack(alignment: .leading) {
-                        Text(quote.quote)
-                            .font(.body)
-                        Text("- \(quote.author)")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                // Kategorien anzeigen
+                List(quoteViewModel.categories, id: \.self) { category in
+                    Button(action: {
+                        // Wenn eine Kategorie ausgewählt wird, lade Zitate dieser Kategorie
+                        loadQuotesByCategory(category)
+                    }) {
+                        Text(category)
+                            .font(.headline)
+                            .padding()
                     }
-                    .padding(.vertical, 5)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
+                }
+
+                // Anzeige der Zitate
+                if isLoading {
+                    ProgressView("Lade Zitate...") // Ladeindikator
+                        .padding()
+                } else {
+                    List(quoteViewModel.quotes, id: \.id) { quote in
+                        VStack(alignment: .leading) {
+                            Text(quote.quote)
+                                .font(.body)
+                            Text("- \(quote.author)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.vertical, 5)
+                        // NavigationLink zu AutorDetailView
+                        NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
+                            Text(quote.author)
+                                .font(.body)
+                                .foregroundColor(.blue)
+                                .padding(.top, 5)
+                        }
+                    }
+                }
+
+                Spacer()
+            }
+            .onAppear {
+                Task {
+                    await quoteViewModel.loadCategories()
                 }
             }
-
-            Spacer()
+            .padding()
         }
-        .onAppear {
-
-            Task {
-                await quoteViewModel.loadCategories() // Lädt die Kategorien asynchron
-            }
-        }
-        .padding()
     }
     
     private func searchQuotes() {

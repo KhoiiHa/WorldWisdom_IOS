@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AutorDetailView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel // ViewModel für das Zitat
+    @State private var searchQuery: String = "" // Suchbegriff speichern
+    @State private var searchResults: [Quote] = [] // Ergebnisse der Suche
     let quote: Quote // Nutzt die Quote-Struktur
     
     @State private var isFavorite: Bool // Favoritenstatus innerhalb der View
@@ -22,27 +24,35 @@ struct AutorDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Autorname
+                // Suchleiste
+                TextField("Nach Autor suchen...", text: $searchQuery, onCommit: {
+                    searchAuthors() // Bei Enter drücken nach Autor suchen
+                })
+                .padding()
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
+                .padding()
+
+                // Zitat Details
                 Text(quote.author)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
                     .padding(.top)
                 
-                // Kategorie oder Tags anzeigen
                 Text("Kategorie: \(quote.category)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
                 
-                // Zitat
                 Text("\"\(quote.quote)\"")
                     .font(.title2)
-                    .italic() // Kursivschrift für das Zitat
+                    .italic()
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal)
                 
-                // Tags (falls vorhanden)
+                // Tags anzeigen
                 if !quote.tags.isEmpty {
                     Text("Tags: \(quote.tags.joined(separator: ", "))")
                         .font(.footnote)
@@ -50,7 +60,6 @@ struct AutorDetailView: View {
                         .padding(.horizontal)
                 }
                 
-                // Favoriten Button
                 Button(action: toggleFavoriteStatus) {
                     HStack {
                         Image(systemName: isFavorite ? "heart.fill" : "heart")
@@ -66,8 +75,8 @@ struct AutorDetailView: View {
                     .shadow(radius: 5)
                 }
                 .padding(.top)
-                
-                // Link zur Quelle
+
+                // Quellen-Link
                 if let url = URL(string: quote.source), UIApplication.shared.canOpenURL(url) {
                     Link("Mehr über \(quote.author)", destination: url)
                         .font(.headline)
@@ -80,6 +89,19 @@ struct AutorDetailView: View {
                         .padding(.top)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
+
+                // Suchergebnisse (falls vorhanden)
+                if !searchResults.isEmpty {
+                    Text("Ergebnisse für \(searchQuery):")
+                        .font(.headline)
+                        .padding(.top)
+
+                    ForEach(searchResults, id: \.id) { result in
+                        Text(result.quote)
+                            .font(.body)
+                            .padding(.top, 5)
+                    }
+                }
                 
                 Spacer()
             }
@@ -87,15 +109,21 @@ struct AutorDetailView: View {
         }
         .navigationTitle("Autor Details")
         .onAppear {
-            // Optional: Bei der Anzeige weitere Funktionen aufrufen, z.B. Favoritenstatus überprüfen
+            // Optional: Funktionen bei Anzeige der View aufrufen, z.B. Favoritenstatus überprüfen
         }
     }
+
+    // Funktion zum Suchen nach Autoren
+    private func searchAuthors() {
+        guard !searchQuery.isEmpty else { return }
+        
+        // Simuliere eine Autoren-Suche
+        let results = quoteViewModel.quotes.filter { $0.author.lowercased().contains(searchQuery.lowercased()) }
+        searchResults = results
+    }
     
-    // Funktion zum Umschalten des Favoritenstatus
     private func toggleFavoriteStatus() {
         isFavorite.toggle() // Favoritenstatus toggeln
-        
-        // Hier kann eine Funktion im ViewModel aufgerufen werden, um den Favoritenstatus zu speichern
         quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
     }
 }

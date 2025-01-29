@@ -83,7 +83,9 @@ struct LoginView: View {
             .padding()
             .onAppear {
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
-                userViewModel.checkCurrentUser()
+                Task {
+                    await userViewModel.checkCurrentUser()
+                }
             }
             .navigationDestination(isPresented: $isLoggedIn) {
                 HomeView(userViewModel: userViewModel) // Weiterleitung zur HomeView nach erfolgreichem Login

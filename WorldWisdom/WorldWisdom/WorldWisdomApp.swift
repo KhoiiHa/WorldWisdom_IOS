@@ -8,7 +8,6 @@
 import SwiftUI
 import Firebase
 
-
 @main
 struct WorldWisdomApp: App {
     
@@ -21,11 +20,24 @@ struct WorldWisdomApp: App {
     
     var body: some Scene {
         WindowGroup {
+            // Überprüfe, ob der Benutzer eingeloggt ist und zeige MainTabView an
             if userViewModel.isLoggedIn {
-                HomeView(userViewModel: userViewModel)
-                    .environmentObject(userViewModel)
+                MainTabView() // Zeigt MainTabView an, wenn der Nutzer eingeloggt ist
+                    .environmentObject(userViewModel) // Übergibt das userViewModel an die MainTabView
+                    .onAppear {
+                        // Benutzerstatus beim Start überprüfen
+                        Task {
+                            await userViewModel.checkCurrentUser()
+                        }
+                    }
             } else {
-                AuthenticationView()
+                AuthenticationView() // Zeigt die AuthenticationView an, wenn der Nutzer nicht eingeloggt ist
+                    .onAppear {
+                        // Benutzerstatus beim Start überprüfen
+                        Task {
+                            await userViewModel.checkCurrentUser()
+                        }
+                    }
             }
         }
     }

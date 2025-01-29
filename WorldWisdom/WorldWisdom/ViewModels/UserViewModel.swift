@@ -18,6 +18,12 @@ class UserViewModel: ObservableObject {
     @Published var favoriteQuotes: [FavoriteQuote] = []
 
     // MARK: - Anmeldestatus Funktionen
+    
+    init() {
+        Task {
+            await checkCurrentUser()
+        }
+    }
 
     // Funktion zum Speichern des Anmeldestatus
     private func saveLoginStatus(isLoggedIn: Bool) {
@@ -117,7 +123,7 @@ class UserViewModel: ObservableObject {
     // MARK: - Benutzerstatus Funktionen
 
     // Funktion, um beim Start zu prüfen, ob der Benutzer bereits angemeldet ist
-    func checkCurrentUser() {
+    func checkCurrentUser() async {
         if let currentUser = FirebaseManager.shared.currentUser {
             self.isLoggedIn = true
             let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, uid: currentUser.uid)
