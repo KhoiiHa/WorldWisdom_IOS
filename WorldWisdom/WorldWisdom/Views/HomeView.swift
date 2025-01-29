@@ -9,10 +9,10 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
-    @State private var isLoggedOut = false
-    @StateObject private var quoteViewModel = QuoteViewModel() // Hinzufügen des QuoteViewModels
+    @StateObject private var quoteViewModel = QuoteViewModel() // ViewModel für Zitate
     @State private var isLoading = false // Ladeindikator
-    
+    @State private var selectedCategory: String? // Ausgewählte Kategorie
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -21,63 +21,79 @@ struct HomeView: View {
                     .font(.largeTitle)
                     .padding()
 
-                // Benutzerinfo anzeigen
+                // Benutzerinfo
                 if let user = userViewModel.user {
-                    if let email = user.email {
-                        Text("Angemeldeter Benutzer: \(email)")
-                            .padding()
-                            .foregroundColor(.green)
-                    } else {
-                        Text("Anonym angemeldet. UID: \(user.uid)")
-                            .padding()
-                            .foregroundColor(.blue)
-                    }
+                    Text(user.email ?? "Anonym angemeldet. UID: \(user.uid)")
+                        .padding()
+                        .foregroundColor(user.email != nil ? .green : .blue)
                 }
 
-                // Anzeige der Zitate
+                // Falls Zitate gerade laden → Lade-Animation
                 if isLoading {
-                    ProgressView("Lade Zitate...") // Ladeindikator
+                    ProgressView("Lade Zitate...")
                         .padding()
-                } else {
-                    if let errorMessage = quoteViewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
-                    } else {
-                        List(quoteViewModel.quotes) { quote in
-                            VStack(alignment: .leading) {
-                                Text(quote.quote)
-                                    .font(.body)
-                                Text("- \(quote.author)")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                
-                                // Button, um Zitat als Favorit zu speichern
-                                Button(action: {
-                                    Task {
-                                        do {
-                                            try await FirebaseManager.shared.saveFavoriteQuote(quote: quote)
-                                            print("Zitat erfolgreich als Favorit gespeichert!")
-                                        } catch {
-                                            print("Fehler beim Speichern des Favoriten: \(error.localizedDescription)")
-                                        }
-                                    }
-                                }) {
-                                    Text("Favorisieren")
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
+                }
+
+                // Falls Fehler auftritt, zeige Fehlermeldung
+                if let errorMessage = quoteViewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                }
+
+                // Zitate anzeigen, falls vorhanden
+                List(quoteViewModel.quotes) { quote in
+                    VStack(alignment: .leading) {
+                        Text(quote.quote)
+                            .font(.body)
+                        Text("- \(quote.author)")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        
+                        // Favoriten-Button
+                        Button(action: {
+                            Task {
+                                do {
+                                    try await FirebaseManager.shared.saveFavoriteQuote(quote: quote)
+                                    print("Zitat als Favorit gespeichert!")
+                                } catch {
+                                    print("Fehler beim Speichern: \(error.localizedDescription)")
                                 }
                             }
-                            .padding(.vertical, 5)
+                        }) {
+                            Text("Favorisieren")
+                                .font(.caption)
+                                .foregroundColor(.blue)
                         }
+                    }
+                    .padding(.vertical, 5)
+                }
+
+                // Picker zur Auswahl einer Kategorie
+                Picker("Kategorie wählen", selection: $selectedCategory) {
+                    Text("Alle Kategorien").tag(nil as String?)
+                    ForEach(quoteViewModel.categories, id: \.self) { category in
+                        Text(category).tag(category as String?)
+                    }
+                }
+                .pickerStyle(.menu)
+                .onChange(of: selectedCategory, initial: true) { oldValue, newValue in
+                    Task {
+                        isLoading = true
+                        if let category = newValue {
+                            await quoteViewModel.loadQuotesByCategory(category: category)
+                        } else {
+                            await quoteViewModel.loadMultipleQuotes()
+                        }
+                        isLoading = false
                     }
                 }
 
-                // Button zum Abrufen zufälliger Zitate
+                // Button für neue zufällige Zitate
                 Button("Lade zufällige Zitate") {
                     Task {
                         isLoading = true
-                        await quoteViewModel.loadRandomQuote() // Lädt ein zufälliges Zitat
+                        await quoteViewModel.loadMultipleQuotes()
                         isLoading = false
                     }
                 }
@@ -85,19 +101,17 @@ struct HomeView: View {
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(10)
-                .padding(.top)
 
-                Spacer()
-
-                // Abmelden-Button
-                Button("Abmelden") {
+                // Button für EIN einzelnes zufälliges Zitat
+                Button("Lade ein zufälliges Zitat") {
                     Task {
-                        await userViewModel.signOut()
-                        isLoggedOut = true
+                        isLoading = true
+                        await quoteViewModel.loadRandomQuote()
+                        isLoading = false
                     }
                 }
                 .padding()
-                .background(Color.red)
+                .background(Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(10)
 
@@ -106,13 +120,13 @@ struct HomeView: View {
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .padding()
-            .navigationDestination(isPresented: $isLoggedOut) {
-                AuthenticationView()
-            }
         }
         .onAppear {
             Task {
-                await quoteViewModel.loadMultipleQuotes() // Zitate beim Laden der View abrufen
+                isLoading = true
+                await quoteViewModel.loadMultipleQuotes()
+                await quoteViewModel.loadCategories() // Kategorien laden
+                isLoading = false
             }
         }
     }

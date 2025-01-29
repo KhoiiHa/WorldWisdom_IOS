@@ -36,7 +36,8 @@ struct MainTabView: View {
                         author: "John Doe", quote: "Sample quote",
                         category: "Motivation", // Beispiel Kategorie
                         tags: ["inspiration", "life"], // Beispiel Tags
-                        isFavorite: false, // Beispiel: Zitat ist nicht favorisiert
+                        isFavorite: false,
+                        description: "Albert Einstein was a theoretical physicist known for developing the theory of relativity.", // Beispiel: Zitat ist nicht favorisiert
                         source: "Wikipedia" // Beispiel Quelle
                     ),
                     quoteViewModel: QuoteViewModel() // Übergabe des QuoteViewModels

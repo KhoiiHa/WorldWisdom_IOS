@@ -26,8 +26,9 @@ class QuoteViewModel: ObservableObject {
             let fetchedQuotes = try await QuoteService.shared.fetchMultipleQuotes()
             self.quotes = fetchedQuotes // Zitate zuweisen
         } catch {
-            let handledError = QuoteError.handleError(error)
+            let handledError = QuoteError.handleError(error) // Hier wird der Fehler umgewandelt
             self.errorMessage = handledError.errorDescription
+            print("Fehler: \(self.errorMessage ?? "Kein Fehler")")
         }
     }
 

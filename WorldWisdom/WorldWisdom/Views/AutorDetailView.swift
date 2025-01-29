@@ -141,6 +141,7 @@ struct AutorDetailView: View {
             category: "Inspiration",
             tags: ["Knowledge", "Imagination"],
             isFavorite: false,
+            description: "Albert Einstein was a theoretical physicist known for developing the theory of relativity.",
             source: "https://en.wikipedia.org/wiki/Albert_Einstein"
         ),
         quoteViewModel: QuoteViewModel() // ViewModel hier einfügen

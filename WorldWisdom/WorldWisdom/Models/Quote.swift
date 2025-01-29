@@ -15,5 +15,6 @@ struct Quote: Identifiable, Codable {
     var category: String
     var tags: [String]
     var isFavorite: Bool
+    var description: String
     var source: String // für die Wikipedia-URL
 }
