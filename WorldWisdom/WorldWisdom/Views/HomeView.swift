@@ -41,15 +41,16 @@ struct HomeView: View {
                         .padding()
                 }
 
-                // Zitate anzeigen, falls vorhanden
-                List(quoteViewModel.quotes) { quote in
+                // Zeige das zufällige Zitat, falls vorhanden
+                if let quote = quoteViewModel.quotes.first {
                     VStack(alignment: .leading) {
                         Text(quote.quote)
                             .font(.body)
+                            .padding(.bottom, 5)
                         Text("- \(quote.author)")
                             .font(.caption)
                             .foregroundColor(.gray)
-                        
+
                         // Favoriten-Button
                         Button(action: {
                             Task {
@@ -66,47 +67,14 @@ struct HomeView: View {
                                 .foregroundColor(.blue)
                         }
                     }
-                    .padding(.vertical, 5)
+                    .padding()
                 }
 
-                // Picker zur Auswahl einer Kategorie
-                Picker("Kategorie wählen", selection: $selectedCategory) {
-                    Text("Alle Kategorien").tag(nil as String?)
-                    ForEach(quoteViewModel.categories, id: \.self) { category in
-                        Text(category).tag(category as String?)
-                    }
-                }
-                .pickerStyle(.menu)
-                .onChange(of: selectedCategory, initial: true) { oldValue, newValue in
-                    Task {
-                        isLoading = true
-                        if let category = newValue {
-                            await quoteViewModel.loadQuotesByCategory(category: category)
-                        } else {
-                            await quoteViewModel.loadMultipleQuotes()
-                        }
-                        isLoading = false
-                    }
-                }
-
-                // Button für neue zufällige Zitate
-                Button("Lade zufällige Zitate") {
-                    Task {
-                        isLoading = true
-                        await quoteViewModel.loadMultipleQuotes()
-                        isLoading = false
-                    }
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-
-                // Button für EIN einzelnes zufälliges Zitat
+                // Button für ein zufälliges Zitat
                 Button("Lade ein zufälliges Zitat") {
                     Task {
                         isLoading = true
-                        await quoteViewModel.loadRandomQuote()
+                        await quoteViewModel.loadRandomQuote() // Lade ein zufälliges Zitat
                         isLoading = false
                     }
                 }
@@ -124,8 +92,8 @@ struct HomeView: View {
         .onAppear {
             Task {
                 isLoading = true
-                await quoteViewModel.loadMultipleQuotes()
-                await quoteViewModel.loadCategories() // Kategorien laden
+                await quoteViewModel.loadRandomQuote() // Beim Start ein zufälliges Zitat laden
+                await quoteViewModel.loadCategories() // Kategorien laden (falls benötigt)
                 isLoading = false
             }
         }

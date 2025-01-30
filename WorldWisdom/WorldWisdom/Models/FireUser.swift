@@ -9,5 +9,7 @@
 struct FireUser: Codable {
     let id: String
     let email: String?
-    let uid: String  
+    let name: String?
+    let uid: String
+    var favoriteQuoteIds: [String]? // Liste von favorisierten Zitat-IDs
 }

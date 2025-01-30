@@ -12,11 +12,11 @@ import Firebase
 @MainActor
 class QuoteViewModel: ObservableObject {
     @Published var quotes: [Quote] = [] // Alle Zitate, die abgerufen wurden
+    @Published var randomQuote: Quote? // Ein zufälliges Zitat
     @Published var categories: [String] = [] // Kategorien, die abgerufen wurden
     @Published var errorMessage: String? // Fehlernachricht (z. B. bei Netzwerkfehlern)
     
     private var firebaseManager = FirebaseManager.shared // Zugriff auf den FirebaseManager
-    
     private var database = Firestore.firestore()
 
     // Lädt mehrere Zitate (z. B. zufällige Zitate)
@@ -37,7 +37,7 @@ class QuoteViewModel: ObservableObject {
         do {
             // Abrufen eines einzelnen zufälligen Zitats
             let fetchedQuote = try await QuoteService.shared.fetchRandomQuote()
-            self.quotes = [fetchedQuote] // Nur das zufällige Zitat anzeigen
+            self.randomQuote = fetchedQuote // Ein einzelnes zufälliges Zitat speichern
         } catch {
             let handledError = QuoteError.handleError(error)
             self.errorMessage = handledError.errorDescription
