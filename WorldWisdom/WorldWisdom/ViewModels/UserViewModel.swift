@@ -67,7 +67,7 @@ class UserViewModel: ObservableObject {
             self.isLoggedIn = true
             self.saveLoginStatus(isLoggedIn: true)
 
-            let newUser = FireUser(id: authResult.user.uid, email: email, uid: authResult.user.uid)
+            let newUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: nil)
             self.user = newUser
             print("Benutzer erfolgreich registriert. UID: \(newUser.uid)")
 
@@ -95,7 +95,7 @@ class UserViewModel: ObservableObject {
             self.isLoggedIn = true
             self.saveLoginStatus(isLoggedIn: true)
 
-            let loggedInUser = FireUser(id: authResult.user.uid, email: email, uid: authResult.user.uid)
+            let loggedInUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: nil)
             self.user = loggedInUser
             print("Benutzer erfolgreich angemeldet. UID: \(loggedInUser.uid)")
         } catch {
@@ -111,7 +111,7 @@ class UserViewModel: ObservableObject {
             self.isLoggedIn = true
             self.saveLoginStatus(isLoggedIn: true)
 
-            let anonymousUser = FireUser(id: authResult.user.uid, email: nil, uid: authResult.user.uid)
+            let anonymousUser = FireUser(id: authResult.user.uid, email: nil, name: nil, uid: authResult.user.uid, favoriteQuoteIds: nil)
             self.user = anonymousUser
             print("Anonyme Anmeldung erfolgreich. UID: \(anonymousUser.uid)")
         } catch {
@@ -126,7 +126,7 @@ class UserViewModel: ObservableObject {
     func checkCurrentUser() async {
         if let currentUser = FirebaseManager.shared.currentUser {
             self.isLoggedIn = true
-            let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, uid: currentUser.uid)
+            let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, name: nil, uid: currentUser.uid, favoriteQuoteIds: nil)
             self.user = existingUser
             print("Aktueller Benutzer: \(currentUser.email ?? "Unbekannt")")
         } else {
@@ -140,10 +140,10 @@ class UserViewModel: ObservableObject {
     func signOut() async {
         do {
             try FirebaseManager.shared.signOut()
-            self.isLoggedIn = true
-            self.saveLoginStatus(isLoggedIn: true)
+            self.isLoggedIn = false
+            self.saveLoginStatus(isLoggedIn: false)
             self.user = nil
-            print("Benutzer abgemeldet: \(self.user?.email ?? "Unbekannt").")
+            print("Benutzer abgemeldet.")
         } catch {
             self.errorMessage = "Fehler beim Abmelden: \(error.localizedDescription)"
             print(self.errorMessage ?? "Unbekannter Fehler")
@@ -153,38 +153,39 @@ class UserViewModel: ObservableObject {
     // MARK: - Firestore Funktionen
 
     // Funktion zum Abrufen der Lieblingszitate
-        func fetchFavoriteQuotes() async {
-            guard let userId = user?.uid else { return }
-            
-            do {
-                let snapshot = try await Firestore.firestore()
-                    .collection("favoriteQuotes")
-                    .whereField("userId", isEqualTo: userId)
-                    .getDocuments()
+    func fetchFavoriteQuotes() async {
+        guard let userId = user?.uid else { return }
+        
+        do {
+            let snapshot = try await Firestore.firestore()
+                .collection("favoriteQuotes")
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments()
 
-                let quotes = snapshot.documents.compactMap { document in
-                    try? document.data(as: FavoriteQuote.self)
-                }
-                self.favoriteQuotes = quotes
-            } catch {
-                print("Fehler beim Abrufen der Zitate: \(error.localizedDescription)")
+            let quotes = snapshot.documents.compactMap { document in
+                try? document.data(as: FavoriteQuote.self)
+            }
+            self.favoriteQuotes = quotes
+        } catch {
+            print("Fehler beim Abrufen der Zitate: \(error.localizedDescription)")
+        }
+    }
+
+    // Funktion zum Speichern der Benutzerdaten
+    func saveUserData() {
+        guard let userId = user?.uid else { return }
+
+        let db = Firestore.firestore()
+        db.collection("users").document(userId).setData([
+            "email": user?.email ?? "",
+            "name": user?.name ?? "", // Name hinzufügen
+            "favoriteQuoteIds": user?.favoriteQuoteIds ?? [] // Liste der favorisierten Zitate hinzufügen
+        ]) { error in
+            if let error = error {
+                print("Fehler beim Speichern der Daten: \(error.localizedDescription)")
+            } else {
+                print("Daten erfolgreich gespeichert!")
             }
         }
-
-        // Funktion zum Speichern der Benutzerdaten
-        func saveUserData() {
-            guard let userId = user?.uid else { return }
-
-            let db = Firestore.firestore()
-            db.collection("users").document(userId).setData([
-                "email": user?.email ?? "",
-                "favoriteQuotes": [] 
-            ]) { error in
-                if let error = error {
-                    print("Fehler beim Speichern der Daten: \(error.localizedDescription)")
-                } else {
-                    print("Daten erfolgreich gespeichert!")
-                }
-            }
-        }
+    }
 }

@@ -12,12 +12,11 @@ struct AutorDetailView: View {
     @State private var searchQuery: String = "" // Suchbegriff speichern
     @State private var searchResults: [Quote] = [] // Ergebnisse der Suche
     let quote: Quote // Nutzt die Quote-Struktur
-    
     @State private var isFavorite: Bool // Favoritenstatus innerhalb der View
 
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
-        self._isFavorite = State(initialValue: quote.isFavorite) // Initialisieren mit dem Wert aus der Quote-Struktur
+        self._isFavorite = State(initialValue: quote.isFavorite ?? false) // Standardwert false, falls isFavorite nil ist
         self.quoteViewModel = quoteViewModel
     }
     
