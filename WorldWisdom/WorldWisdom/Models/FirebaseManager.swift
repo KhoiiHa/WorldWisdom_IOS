@@ -12,9 +12,7 @@ import Firebase
 
 class FirebaseManager {
     
-    
     static let shared = FirebaseManager()
-    
     
     // Zentralisierte Instanzen
     private let auth = Auth.auth()
@@ -45,10 +43,8 @@ class FirebaseManager {
         try auth.signOut()
     }
     
-    
     // MARK: - Firestore Funktionen
     
-    // Benutzer in Firestore erstellen
     func createUserInFirestore(id: String, email: String) async throws {
         let userData: [String: Any] = [
             "id": id,
@@ -56,12 +52,10 @@ class FirebaseManager {
             "createdAt": Timestamp(date: Date())
         ]
         
-        // Speichern der Benutzerdaten in Firestore
         try await store.collection("users").document(id).setData(userData)
         print("Benutzer erfolgreich in Firestore gespeichert: \(email)")
     }
     
-    // Zitat-Metadaten speichern (Text, Autor, Kategorie) in Firestore
     func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {
         let quoteData: [String: Any] = [
             "quoteText": quoteText,
@@ -70,57 +64,49 @@ class FirebaseManager {
             "createdAt": Timestamp(date: Date())
         ]
         
-        // Speichern der Zitat-Daten in Firestore unter der Sammlung 'quotes'
         try await store.collection("quotes").document(quoteId).setData(quoteData)
     }
     
-    // Zitat-Metadaten aus Firestore holen
     func fetchQuoteMetadata(quoteId: String) async throws -> [String: Any]? {
         let documentSnapshot = try await store.collection("quotes").document(quoteId).getDocument()
         return documentSnapshot.data()
     }
     
     // Funktionen für favorisierte Zitate
+    
     func saveFavoriteQuote(quote: Quote) async throws {
         guard let currentUser = auth.currentUser else { return }
         
         let favoriteQuoteData: [String: Any] = [
-            "quoteText": quote.quote, // Hier 'quote' verwenden
+            "quoteText": quote.quote,
             "author": quote.author,
             "category": quote.category,
             "createdAt": Timestamp(date: Date())
         ]
         
-        // Speichern des favorisierten Zitats in der Sammlung 'favorites' für den aktuellen Nutzer
+        let favoriteQuoteId = "\(quote.quote)-\(quote.author)" // Eindeutige ID für Favoriten
         try await store.collection("users")
             .document(currentUser.uid)
             .collection("favorites")
-            .document(quote.quote)
+            .document(favoriteQuoteId) // Dokument-ID geändert
             .setData(favoriteQuoteData)
     }
     
-    func fetchFavoriteQuotes() async throws -> [Quote]? {
-        guard let currentUser = auth.currentUser else { return nil }
+    func fetchFavoriteQuotes() async throws -> [Quote] {
+        guard let currentUser = auth.currentUser else { return [] }
         
-        // Abrufen der favorisierten Zitate des aktuellen Nutzers aus Firestore
         let snapshot = try await store.collection("users")
             .document(currentUser.uid)
             .collection("favorites")
             .getDocuments()
         
         return snapshot.documents.compactMap { document in
-            // Umwandeln des Firebase-Dokuments in ein Quote-Objekt
-            var quote = try? document.data(as: Quote.self)
-            quote?.isFavorite = true // Wir markieren es als Favorit
-            return quote
+            try? document.data(as: Quote.self)
         }
     }
     
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
-        // Referenz auf das Dokument in Firestore
         let quoteRef = store.collection("quotes").document(quote.id)
-        
-        // Aktualisieren des Favoritenstatus
         try await quoteRef.updateData([
             "isFavorite": isFavorite
         ])
@@ -128,33 +114,28 @@ class FirebaseManager {
     
     // MARK: - Storage Funktionen
     
-    // Funktion zum Hochladen einer Datei in Firebase Storage
     func uploadFile(data: Data, to path: String) async throws {
         let ref = storage.reference().child(path)
         _ = try await ref.putDataAsync(data)
     }
     
-    // Funktion zum Hochladen eines Zitatbildes und Abrufen der Download-URL
     func uploadQuoteImage(imageData: Data, quoteId: String) async throws -> String {
-        let fileName = "image.png" // Beispiel-Dateiname für das Bild
-        let path = "quoteImages/\(quoteId)/\(fileName)" // Definierter Speicherpfad
+        let fileName = "image.png"
+        let path = "quoteImages/\(quoteId)/\(fileName)"
         try await uploadFile(data: imageData, to: path)
         
-        // Hole den Download-URL des hochgeladenen Bildes
         let ref = storage.reference().child(path)
         let downloadURL = try await ref.downloadURL()
-        return downloadURL.absoluteString // Rückgabe des Download-Links
+        return downloadURL.absoluteString
     }
     
-    // Funktion zum Hochladen einer Zitat-Datei (z.B. Text) und Abrufen der Download-URL
     func uploadQuoteFile(fileData: Data, quoteId: String) async throws -> String {
-        let fileName = "quote.txt" // Beispiel-Dateiname für die Zitat-Datei
-        let path = "quoteFiles/\(quoteId)/\(fileName)" // Speicherpfad für Zitat-Datei
+        let fileName = "quote.txt"
+        let path = "quoteFiles/\(quoteId)/\(fileName)"
         try await uploadFile(data: fileData, to: path)
         
-        // Hole den Download-URL der hochgeladenen Datei
         let ref = storage.reference().child(path)
         let downloadURL = try await ref.downloadURL()
-        return downloadURL.absoluteString // Rückgabe des Download-Links
+        return downloadURL.absoluteString
     }
 }

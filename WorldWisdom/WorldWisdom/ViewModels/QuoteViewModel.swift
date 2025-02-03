@@ -13,17 +13,15 @@ import Firebase
 class QuoteViewModel: ObservableObject {
     @Published var quotes: [Quote] = [] // Alle Zitate, die abgerufen wurden
     @Published var randomQuote: Quote? // Ein zufälliges Zitat
-    @Published var categories: [String] = [] // Kategorien, die abgerufen wurden
     @Published var errorMessage: String? // Fehlernachricht (z. B. bei Netzwerkfehlern)
     
     private var firebaseManager = FirebaseManager.shared // Zugriff auf den FirebaseManager
-    private var database = Firestore.firestore()
 
     // Lädt mehrere Zitate (z. B. zufällige Zitate)
     func loadMultipleQuotes() async {
         do {
             // Abrufen von mehreren zufälligen Zitaten
-            let fetchedQuotes = try await QuoteService.shared.fetchMultipleQuotes()
+            let fetchedQuotes = try await QuoteService.shared.fetchQuotes()
             self.quotes = fetchedQuotes // Zitate zuweisen
         } catch {
             let handledError = QuoteError.handleError(error) // Hier wird der Fehler umgewandelt
@@ -32,73 +30,39 @@ class QuoteViewModel: ObservableObject {
         }
     }
 
-    // Lädt ein zufälliges Zitat
+    // Zitat laden in QuoteViewModel
     func loadRandomQuote() async {
         do {
             // Abrufen eines einzelnen zufälligen Zitats
-            let fetchedQuote = try await QuoteService.shared.fetchRandomQuote()
-            self.randomQuote = fetchedQuote // Ein einzelnes zufälliges Zitat speichern
+            let fetchedQuotes = try await QuoteService.shared.fetchQuotes()
+            print("Fetched Quotes: \(fetchedQuotes)") // Debugging-Ausgabe
+            self.randomQuote = fetchedQuotes.randomElement() // Wählt ein zufälliges Zitat aus der Liste
+            print("Random Quote: \(self.randomQuote?.quote ?? "Kein Zitat gefunden")") // Debugging-Ausgabe
         } catch {
             let handledError = QuoteError.handleError(error)
             self.errorMessage = handledError.errorDescription
+            print("Fehler beim Laden des Zitats: \(self.errorMessage ?? "Kein Fehler")") // Debugging-Ausgabe
         }
     }
 
-    // Lädt Zitate nach Kategorie
-    func loadQuotesByCategory(category: String) async {
+    // Lädt Zitate nach einer Suchanfrage
+    func searchQuotes(query: String) async {
         do {
-            // Abrufen von Zitaten nach einer bestimmten Kategorie
-            let fetchedQuotes = try await QuoteService.shared.fetchQuotesByCategory(category: category)
+            // Momentan verwenden wir einfach fetchQuotes(), da es keine Suchmöglichkeit gibt.
+            let fetchedQuotes = try await QuoteService.shared.fetchQuotes()
             self.quotes = fetchedQuotes // Zitate zuweisen
         } catch {
             let handledError = QuoteError.handleError(error)
             self.errorMessage = handledError.errorDescription
+            print("Fehler: \(self.errorMessage ?? "Kein Fehler")")
         }
     }
 
-    // Lädt Zitate durch eine Suchanfrage
-    func searchQuotes(query: String) async throws {
-        do {
-            // Abrufen von Zitaten, die der Suchanfrage entsprechen
-            let fetchedQuotes = try await QuoteService.shared.searchQuotes(query: query)
-            self.quotes = fetchedQuotes // Zitate zuweisen
-        } catch {
-            let handledError = QuoteError.handleError(error)
-            self.errorMessage = handledError.errorDescription
-            throw error // Fehler weiterwerfen
-        }
-    }
-
-    // Lädt Zitate von einem bestimmten Autor
-    func loadQuotesByAuthor(author: String) async {
-        do {
-            // Abrufen von Zitaten eines bestimmten Autors
-            let fetchedQuotes = try await QuoteService.shared.fetchAuthorQuotes(authorName: author)
-            self.quotes = fetchedQuotes // Zitate zuweisen
-        } catch {
-            let handledError = QuoteError.handleError(error)
-            self.errorMessage = handledError.errorDescription
-        }
-    }
-
-    // Lädt alle Kategorien
-    func loadCategories() async {
-        do {
-            // Hier holen wir die Kategorien von der API
-            let fetchedCategories = try await QuoteService.shared.fetchCategories()
-            self.categories = fetchedCategories // Kategorien speichern
-        } catch {
-            let handledError = QuoteError.handleError(error)
-            self.errorMessage = handledError.errorDescription
-        }
-    }
-    
     // Lädt die Favoriten-Zitate aus Firestore
-    func loadFavoriteQuotes() async throws { // Wirf einen Fehler, falls etwas schiefgeht
+    func loadFavoriteQuotes() async throws {
         do {
-            if let fetchedQuotes = try await firebaseManager.fetchFavoriteQuotes() {
-                self.quotes = fetchedQuotes // Setzt die abgerufenen Zitate
-            }
+            let fetchedQuotes = try await firebaseManager.fetchFavoriteQuotes() // Fetch ohne optionales Binding
+            self.quotes = fetchedQuotes // Setzt die abgerufenen Zitate
         } catch {
             let handledError = QuoteError.handleError(error)
             self.errorMessage = handledError.errorDescription

@@ -19,38 +19,35 @@ struct ExplorerView: View {
             VStack {
                 Text("Explorer View")
                     .font(.largeTitle)
+                    .fontWeight(.bold)
                     .padding()
 
                 // Suchleiste für Autoren
-                TextField("Suche nach Autoren...", text: $searchQuery, onCommit: {
-                    // Wenn die Eingabetaste gedrückt wird, suche nach einem Autor
-                    searchQuotes()
-                })
-                .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-                .padding()
+                HStack {
+                    TextField("Suche nach Autoren...", text: $searchQuery)
+                        .padding()
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
+                    
+                    Button(action: {
+                        // Sucht nach Zitaten direkt, wenn der Button gedrückt wird
+                        searchQuotes()
+                    }) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.blue)
+                            .padding()
+                    }
+                }
+                .padding([.leading, .trailing])
 
                 // Fehlernachricht anzeigen
                 if let errorMessage = errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .padding()
-                }
-
-                // Kategorien anzeigen
-                List(quoteViewModel.categories, id: \.self) { category in
-                    Button(action: {
-                        // Wenn eine Kategorie ausgewählt wird, lade Zitate dieser Kategorie
-                        loadQuotesByCategory(category)
-                    }) {
-                        Text(category)
-                            .font(.headline)
-                            .padding()
-                    }
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(8)
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(8)
                 }
 
                 // Anzeige der Zitate
@@ -62,64 +59,47 @@ struct ExplorerView: View {
                         VStack(alignment: .leading) {
                             Text(quote.quote)
                                 .font(.body)
+                                .padding(.bottom, 2)
+                            
                             Text("- \(quote.author)")
                                 .font(.caption)
                                 .foregroundColor(.gray)
+                            
+                            // NavigationLink zu AutorDetailView
+                            NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
+                                Text("Mehr über \(quote.author)")
+                                    .font(.body)
+                                    .foregroundColor(.blue)
+                                    .padding(.top, 5)
+                            }
                         }
                         .padding(.vertical, 5)
-                        // NavigationLink zu AutorDetailView
-                        NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
-                            Text(quote.author)
-                                .font(.body)
-                                .foregroundColor(.blue)
-                                .padding(.top, 5)
-                        }
                     }
                 }
 
                 Spacer()
-            }
-            .onAppear {
-                Task {
-                    await quoteViewModel.loadCategories()
-                }
             }
             .padding()
         }
     }
     
     private func searchQuotes() {
+        // Überprüfen, ob der Suchbegriff leer ist, falls ja, tue nichts
         guard !searchQuery.isEmpty else {
-            // Wenn der Suchbegriff leer ist, tue nichts
             return
         }
         
         isLoading = true
         errorMessage = nil
-        // Aufruf der bereits vorhandenen `searchQuotes` Funktion im ViewModel
+        // Aufruf der vorhandenen searchQuotes-Funktion im ViewModel
         Task {
-            do {
-                // Suche nach Zitaten mit dem eingegebenen Suchbegriff
-                try await quoteViewModel.searchQuotes(query: searchQuery)
-            } catch {
-                // Fehlerbehandlung (z.B. keine Ergebnisse)
-                errorMessage = "Fehler beim Suchen: \(error.localizedDescription)"
-            }
+            // Suche nach Zitaten mit dem eingegebenen Suchbegriff
+            await quoteViewModel.searchQuotes(query: searchQuery)
             isLoading = false
         }
     }
     
-    private func loadQuotesByCategory(_ category: String) {
-        selectedCategory = category
-        isLoading = true
-        errorMessage = nil
-        
-        // Aufruf der `loadQuotesByCategory` Funktion im ViewModel
-        Task {
-            await quoteViewModel.loadQuotesByCategory(category: category)
-            isLoading = false
-        }
-    }
+
 }
 
 #Preview {

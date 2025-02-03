@@ -43,4 +43,18 @@ enum QuoteError: LocalizedError {
             return .unknownError(error.localizedDescription)
         }
     }
+    
+    // Vorschläge zur Fehlerbehebung
+    var recoverySuggestion: String? {
+        switch self {
+        case .networkError:
+            return "Bitte überprüfe deine Internetverbindung und versuche es erneut."
+        case .parsingError:
+            return "Die Daten konnten nicht korrekt verarbeitet werden. Bitte versuche es später erneut."
+        case .noQuotesFound:
+            return "Es wurden keine Zitate gefunden. Bitte versuche es später erneut."
+        case .unknownError:
+            return "Unbekannter Fehler aufgetreten. Versuche es später erneut."
+        }
+    }
 }
