@@ -112,6 +112,21 @@ class FirebaseManager {
         ])
     }
     
+    // Löscht ein Zitat aus der Firestore-Datenbank
+    func deleteFavoriteQuote(_ quote: Quote) async throws {
+        do {
+            // Zugriff auf Firestore und Löschen des Dokuments
+            let db = Firestore.firestore()
+            
+            // Lösche das Zitat mit der ID aus Firestore
+            try await db.collection("favoriteQuotes").document(quote.id).delete()
+            
+        } catch {
+            // Fehlerbehandlung: Hier fangen wir alle Fehler ab
+            throw NSError(domain: "com.deinProjekt.firebaseError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Löschen des Zitats aus der Datenbank."])
+        }
+    }
+    
     // MARK: - Storage Funktionen
     
     func uploadFile(data: Data, to path: String) async throws {

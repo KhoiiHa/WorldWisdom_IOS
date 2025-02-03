@@ -9,13 +9,20 @@ import SwiftUI
 
 struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
-    @State private var selectedCategory: String? = nil
     @State private var searchQuery: String = "" // Suchbegriff speichern
-    @State private var isLoading: Bool = false // Ladeindikator
     @State private var errorMessage: String? = nil // Fehlernachricht speichern
     
+    // Gefilterte Zitate basierend auf der Suche
+    private var filteredQuotes: [Quote] {
+        if searchQuery.isEmpty {
+            return quoteViewModel.quotes // Alle Zitate anzeigen, wenn kein Filter aktiv ist
+        } else {
+            return quoteViewModel.quotes.filter { $0.author.localizedCaseInsensitiveContains(searchQuery) }
+        }
+    }
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Text("Explorer View")
                     .font(.largeTitle)
@@ -29,10 +36,12 @@ struct ExplorerView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(10)
-                    
+                        .onChange(of: searchQuery) { newValue, _ in
+                            // Automatische Filterung beim Tippen
+                            searchQuotes(newValue)
+                        }
                     Button(action: {
-                        // Sucht nach Zitaten direkt, wenn der Button gedrückt wird
-                        searchQuotes()
+                        searchQuotes(searchQuery) // Manuelle Suche auslösen
                     }) {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.blue)
@@ -51,11 +60,12 @@ struct ExplorerView: View {
                 }
 
                 // Anzeige der Zitate
-                if isLoading {
-                    ProgressView("Lade Zitate...") // Ladeindikator
+                if filteredQuotes.isEmpty {
+                    Text("Keine Zitate gefunden.")
+                        .foregroundColor(.gray)
                         .padding()
                 } else {
-                    List(quoteViewModel.quotes, id: \.id) { quote in
+                    List(filteredQuotes, id: \.id) { quote in
                         VStack(alignment: .leading) {
                             Text(quote.quote)
                                 .font(.body)
@@ -82,24 +92,25 @@ struct ExplorerView: View {
             .padding()
         }
     }
-    
-    private func searchQuotes() {
-        // Überprüfen, ob der Suchbegriff leer ist, falls ja, tue nichts
-        guard !searchQuery.isEmpty else {
+
+    private func searchQuotes(_ query: String) {
+        // Verhindere unnötige Filterung, wenn die Eingabe leer ist
+        if query.isEmpty {
             return
         }
         
-        isLoading = true
         errorMessage = nil
-        // Aufruf der vorhandenen searchQuotes-Funktion im ViewModel
+
+        // Filtere die Zitate basierend auf dem Suchbegriff
+        let filtered = quoteViewModel.quotes.filter { $0.author.localizedCaseInsensitiveContains(query) }
+        
+        // Aktualisiere den ViewModel mit den gefilterten Zitaten
         Task {
-            // Suche nach Zitaten mit dem eingegebenen Suchbegriff
-            await quoteViewModel.searchQuotes(query: searchQuery)
-            isLoading = false
+            await MainActor.run {
+                quoteViewModel.quotes = filtered
+            }
         }
     }
-    
-
 }
 
 #Preview {

@@ -8,32 +8,35 @@
 import SwiftUI
 
 struct AutorDetailView: View {
-    @ObservedObject var quoteViewModel: QuoteViewModel // ViewModel für das Zitat
-    @State private var searchQuery: String = "" // Suchbegriff speichern
-    @State private var searchResults: [Quote] = [] // Ergebnisse der Suche
-    let quote: Quote // Nutzt die Quote-Struktur
-    @State private var isFavorite: Bool // Favoritenstatus innerhalb der View
-
+    @ObservedObject var quoteViewModel: QuoteViewModel
+    @State private var searchQuery: String = ""
+    @State private var searchResults: [Quote] = []
+    let quote: Quote
+    @State private var isFavorite: Bool
+    
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
-        self._isFavorite = State(initialValue: quote.isFavorite ?? false) // Standardwert false, falls isFavorite nil ist
+        self._isFavorite = State(initialValue: quote.isFavorite ?? false)
         self.quoteViewModel = quoteViewModel
     }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Suchleiste
-                TextField("Nach Autor suchen...", text: $searchQuery, onCommit: {
-                    searchAuthors() // Bei Enter drücken nach Autor suchen
-                })
-                .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-                .padding()
-
-                // Zitat Details
+                
+                // Suchleiste für Autoren
+                TextField("Nach Autor suchen...", text: $searchQuery)
+                    .padding()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
+                    .padding()
+                    .onChange(of: searchQuery) { newValue, _ in
+                        // Hier wird die Suchanfrage direkt an das ViewModel weitergegeben
+                        searchResults = quoteViewModel.searchAuthors(query: newValue)
+                    }
+                
+                // Zitat-Details
                 Text(quote.author)
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -59,9 +62,11 @@ struct AutorDetailView: View {
                         .padding(.horizontal)
                 }
                 
+                // Favoriten-Button
                 Button(action: {
                     Task {
-                        await toggleFavoriteStatus() // asynchrone Funktion wird hier aufgerufen
+                        await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: !isFavorite)
+                        isFavorite.toggle()
                     }
                 }) {
                     HStack {
@@ -73,14 +78,13 @@ struct AutorDetailView: View {
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.white)
-                    .cornerRadius(10)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
                     .shadow(radius: 5)
                 }
                 .padding(.top)
-
+                
                 // Quellen-Link
-                if let url = URL(string: quote.source), UIApplication.shared.canOpenURL(url) {
+                if let url = URL(string: quote.source) {
                     Link("Mehr über \(quote.author)", destination: url)
                         .font(.headline)
                         .foregroundColor(.blue)
@@ -92,18 +96,23 @@ struct AutorDetailView: View {
                         .padding(.top)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
-
-                // Suchergebnisse (falls vorhanden)
+                
+                // Suchergebnisse
                 if !searchResults.isEmpty {
                     Text("Ergebnisse für \(searchQuery):")
                         .font(.headline)
                         .padding(.top)
-
+                    
                     ForEach(searchResults, id: \.id) { result in
                         Text(result.quote)
                             .font(.body)
                             .padding(.top, 5)
                     }
+                } else if !searchQuery.isEmpty {
+                    Text("Keine Ergebnisse für \(searchQuery) gefunden.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                        .padding(.top)
                 }
                 
                 Spacer()
@@ -111,23 +120,6 @@ struct AutorDetailView: View {
             .padding()
         }
         .navigationTitle("Autor Details")
-        .onAppear {
-            // Optional: Funktionen bei Anzeige der View aufrufen, z.B. Favoritenstatus überprüfen
-        }
-    }
-
-    // Funktion zum Suchen nach Autoren
-    private func searchAuthors() {
-        guard !searchQuery.isEmpty else { return }
-        
-        // Simuliere eine Autoren-Suche
-        let results = quoteViewModel.quotes.filter { $0.author.lowercased().contains(searchQuery.lowercased()) }
-        searchResults = results
-    }
-    
-    private func toggleFavoriteStatus() async {
-        isFavorite.toggle() // Favoritenstatus toggeln
-        await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
     }
 }
 
@@ -143,6 +135,6 @@ struct AutorDetailView: View {
             description: "Albert Einstein was a theoretical physicist known for developing the theory of relativity.",
             source: "https://en.wikipedia.org/wiki/Albert_Einstein"
         ),
-        quoteViewModel: QuoteViewModel() // ViewModel hier einfügen
+        quoteViewModel: QuoteViewModel()
     )
 }

@@ -52,10 +52,18 @@ struct HomeView: View {
                                 print(isFavorite ? "Zitat als Favorit gespeichert!" : "Zitat aus Favoriten entfernt!")
                             }
                         }) {
-                            Text(quote.isFavorite ?? false ? "Favorit entfernen" : "Favorisieren")
-                                .font(.caption)
-                                .foregroundColor(.blue)
+                            HStack {
+                                Image(systemName: quote.isFavorite ?? false ? "star.fill" : "star")
+                                    .foregroundColor(.yellow)
+                                Text(quote.isFavorite ?? false ? "Favorit entfernen" : "Favorisieren")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                            .padding(8)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
                         }
+                        .buttonStyle(PlainButtonStyle()) // Damit der Button wie gewünscht aussieht
                     }
                     .padding()
                 } else {
@@ -68,7 +76,7 @@ struct HomeView: View {
                 // Button für neues zufälliges Zitat
                 Button(action: {
                     Task {
-                        await quoteViewModel.loadRandomQuote() // Lädt ein zufälliges Zitat
+                        quoteViewModel.getRandomQuote() // Holt ein zufälliges Zitat aus den bereits geladenen Zitaten
                     }
                 }) {
                     Text("Lade ein zufälliges Zitat")
@@ -87,8 +95,11 @@ struct HomeView: View {
         }
         .onAppear {
             Task {
-                // Lade das zufällige Zitat direkt beim Aufrufen der View
-                await quoteViewModel.loadRandomQuote()
+                // Falls die Zitate noch nicht geladen wurden, lade sie einmalig
+                if quoteViewModel.quotes.isEmpty {
+                    await quoteViewModel.loadAllQuotes()
+                }
+                quoteViewModel.getRandomQuote() // Wählt ein zufälliges Zitat aus den geladenen Daten
             }
         }
     }
