@@ -9,10 +9,9 @@ import SwiftUI
 
 struct AutorDetailView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
-    @State private var searchQuery: String = ""
-    @State private var searchResults: [Quote] = []
-    let quote: Quote
     @State private var isFavorite: Bool
+    let quote: Quote
+    @State private var searchQuery: String = ""
     
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
@@ -21,105 +20,86 @@ struct AutorDetailView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                
-                // Suchleiste für Autoren
-                TextField("Nach Autor suchen...", text: $searchQuery)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-                    .padding()
-                    .onChange(of: searchQuery) { newValue, _ in
-                        // Hier wird die Suchanfrage direkt an das ViewModel weitergegeben
-                        searchResults = quoteViewModel.searchAuthors(query: newValue)
-                    }
-                
-                // Zitat-Details
-                Text(quote.author)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                    .padding(.top)
-                
-                Text("Kategorie: \(quote.category)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal)
-                
-                Text("\"\(quote.quote)\"")
-                    .font(.title2)
-                    .italic()
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal)
-                
-                // Tags anzeigen
-                if !quote.tags.isEmpty {
-                    Text("Tags: \(quote.tags.joined(separator: ", "))")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
-                }
-                
-                // Favoriten-Button
-                Button(action: {
-                    Task {
-                        await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: !isFavorite)
-                        isFavorite.toggle()
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(isFavorite ? .red : .gray)
-                        Text(isFavorite ? "Favorit" : "Zu Favoriten hinzufügen")
-                            .font(.headline)
-                            .foregroundColor(isFavorite ? .red : .blue)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
-                    .shadow(radius: 5)
-                }
-                .padding(.top)
-                
-                // Quellen-Link
-                if let url = URL(string: quote.source) {
-                    Link("Mehr über \(quote.author)", destination: url)
-                        .font(.headline)
+        ZStack {
+            // Hintergrund
+            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.6)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                .ignoresSafeArea()
+                .opacity(0.1)
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Kopfbereich
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
                         .foregroundColor(.blue)
-                        .padding(.top)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                } else {
-                    Text("Ungültiger Link zur Quelle.")
-                        .foregroundColor(.red)
-                        .padding(.top)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-                
-                // Suchergebnisse
-                if !searchResults.isEmpty {
-                    Text("Ergebnisse für \(searchQuery):")
-                        .font(.headline)
-                        .padding(.top)
+                        .background(Circle().fill(Color.white))
+                        .shadow(radius: 10)
                     
-                    ForEach(searchResults, id: \.id) { result in
-                        Text(result.quote)
-                            .font(.body)
-                            .padding(.top, 5)
+                    Text(quote.author)
+                        .font(.title.bold())
+                    
+                    Text("„\(quote.quote)“")
+                        .font(.title3)
+                        .italic()
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.white).shadow(radius: 10))
+                    
+                    if !quote.tags.isEmpty {
+                        Text("Themen: \(quote.tags.joined(separator: ", "))")
+                            .font(.footnote)
+                            .foregroundColor(.blue)
                     }
-                } else if !searchQuery.isEmpty {
-                    Text("Keine Ergebnisse für \(searchQuery) gefunden.")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                        .padding(.top)
+                    
+                    // Suchleiste
+                    TextField("Suche nach Zitaten...", text: $searchQuery)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                    
+                    // Autoren-Info-Link
+                    if let url = URL(string: quote.source) {
+                        Link("Mehr über \(quote.author)", destination: url)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
+                            .foregroundColor(.white)
+                    }
                 }
-                
-                Spacer()
+                .padding(.top, 30)
+                .padding(.horizontal)
             }
-            .padding()
+            
+            // Favorite-Button
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(action: toggleFavorite) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .font(.title)
+                            .foregroundColor(isFavorite ? .red : .white)
+                            .padding(20)
+                            .background(Circle().fill(isFavorite ? Color.white : Color.red))
+                            .shadow(radius: 10)
+                            .scaleEffect(isFavorite ? 1.1 : 1.0)
+                    }
+                    .padding(.trailing, 30)
+                    .padding(.bottom, 30)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isFavorite)
+                }
+            }
         }
-        .navigationTitle("Autor Details")
+        .navigationTitle(quote.author)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func toggleFavorite() {
+        Task {
+            await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: !isFavorite)
+            withAnimation {
+                isFavorite.toggle()
+            }
+        }
     }
 }
 
@@ -130,9 +110,9 @@ struct AutorDetailView: View {
             author: "Albert Einstein",
             quote: "Imagination is more important than knowledge.",
             category: "Inspiration",
-            tags: ["Knowledge", "Imagination"],
+            tags: ["Wissen", "Philosophie"],
             isFavorite: false,
-            description: "Albert Einstein was a theoretical physicist known for developing the theory of relativity.",
+            description: "Albert Einstein was a physicist.",
             source: "https://en.wikipedia.org/wiki/Albert_Einstein"
         ),
         quoteViewModel: QuoteViewModel()

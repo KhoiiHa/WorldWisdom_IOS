@@ -9,107 +9,96 @@ import SwiftUI
 
 struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
-    @State private var searchQuery: String = "" // Suchbegriff speichern
-    @State private var errorMessage: String? = nil // Fehlernachricht speichern
-    
-    // Gefilterte Zitate basierend auf der Suche
+    @State private var searchQuery: String = ""
+    @State private var selectedTag: String? = nil // Aktuell ausgewählter Tag
+
+    // Alle einzigartigen Tags für die Filter-Buttons
+    private var allTags: [String] {
+        let tags = quoteViewModel.quotes.flatMap { $0.tags }
+        return Array(Set(tags)).sorted() // Entfernt doppelte Tags & sortiert sie
+    }
+
+    // Gefilterte Zitate basierend auf Suche & Tag-Filter
     private var filteredQuotes: [Quote] {
-        if searchQuery.isEmpty {
-            return quoteViewModel.quotes // Alle Zitate anzeigen, wenn kein Filter aktiv ist
-        } else {
-            return quoteViewModel.quotes.filter { $0.author.localizedCaseInsensitiveContains(searchQuery) }
+        return quoteViewModel.quotes.filter { quote in
+            let matchesSearch = searchQuery.isEmpty || quote.author.localizedCaseInsensitiveContains(searchQuery) || quote.quote.localizedCaseInsensitiveContains(searchQuery)
+            let matchesTag = selectedTag == nil || quote.tags.contains(selectedTag!) // Tag-Filter
+            return matchesSearch && matchesTag
         }
     }
 
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Explorer View")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
-
-                // Suchleiste für Autoren
+                // 🔍 Suchleiste
                 HStack {
-                    TextField("Suche nach Autoren...", text: $searchQuery)
-                        .padding()
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
-                        .onChange(of: searchQuery) { newValue, _ in
-                            // Automatische Filterung beim Tippen
-                            searchQuotes(newValue)
-                        }
-                    Button(action: {
-                        searchQuotes(searchQuery) // Manuelle Suche auslösen
-                    }) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.blue)
-                            .padding()
-                    }
-                }
-                .padding([.leading, .trailing])
-
-                // Fehlernachricht anzeigen
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                        .background(Color.red.opacity(0.1))
-                        .cornerRadius(8)
-                }
-
-                // Anzeige der Zitate
-                if filteredQuotes.isEmpty {
-                    Text("Keine Zitate gefunden.")
+                    Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
-                        .padding()
-                } else {
-                    List(filteredQuotes, id: \.id) { quote in
-                        VStack(alignment: .leading) {
-                            Text(quote.quote)
-                                .font(.body)
-                                .padding(.bottom, 2)
-                            
-                            Text("- \(quote.author)")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            
-                            // NavigationLink zu AutorDetailView
-                            NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
-                                Text("Mehr über \(quote.author)")
-                                    .font(.body)
-                                    .foregroundColor(.blue)
-                                    .padding(.top, 5)
+                    TextField("Suche nach Autoren oder Zitaten...", text: $searchQuery)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .padding(8)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal)
+
+                // 🏷️ Tag-Filter (ScrollView mit Tags)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(allTags, id: \.self) { tag in
+                            Button(action: {
+                                selectedTag = (selectedTag == tag) ? nil : tag // Toggle-Funktion
+                            }) {
+                                Text(tag)
+                                    .padding(10)
+                                    .background(selectedTag == tag ? Color.blue : Color.gray.opacity(0.2))
+                                    .foregroundColor(selectedTag == tag ? .white : .black)
+                                    .cornerRadius(15)
                             }
                         }
-                        .padding(.vertical, 5)
                     }
+                    .padding(.horizontal)
                 }
 
-                Spacer()
+                // 📜 Zitate-Liste als ScrollView
+                ScrollView {
+                    LazyVStack(spacing: 15) {
+                        ForEach(filteredQuotes, id: \.id) { quote in
+                            NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
+                                QuoteCardView(quote: quote)
+                            }
+                        }
+                    }
+                    .padding()
+                }
+                .scrollIndicators(.hidden) // Versteckt Scroll-Indikatoren
             }
-            .padding()
+            .navigationTitle("Entdecke Zitate")
+            .task {
+                await quoteViewModel.loadAllQuotes() // Aufruf direkt beim Start
+            }
         }
     }
+}
 
-    private func searchQuotes(_ query: String) {
-        // Verhindere unnötige Filterung, wenn die Eingabe leer ist
-        if query.isEmpty {
-            return
-        }
-        
-        errorMessage = nil
+// 📌 Verbesserte Quote Card
+struct QuoteCardView: View {
+    let quote: Quote
 
-        // Filtere die Zitate basierend auf dem Suchbegriff
-        let filtered = quoteViewModel.quotes.filter { $0.author.localizedCaseInsensitiveContains(query) }
-        
-        // Aktualisiere den ViewModel mit den gefilterten Zitaten
-        Task {
-            await MainActor.run {
-                quoteViewModel.quotes = filtered
-            }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(quote.quote)
+                .font(.body)
+                .foregroundColor(.primary)
+
+            Text("- \(quote.author)")
+                .font(.caption)
+                .foregroundColor(.gray)
         }
+        .padding()
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 2)
     }
 }
 
