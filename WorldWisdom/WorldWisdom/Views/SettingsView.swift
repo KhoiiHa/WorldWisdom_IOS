@@ -9,15 +9,15 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
-                // Sektion: Benutzereinstellungen
+                // 🔹 Sektion: Benutzereinstellungen
                 Section(header: Text("Benutzereinstellungen")) {
-                    NavigationLink(destination: Text("Profil bearbeiten")) {
+                    NavigationLink(destination: ProfileView()) {
                         HStack {
                             Image(systemName: "person.circle")
                                 .foregroundColor(.blue)
-                            Text("Profil bearbeiten")
+                            Text("Profil")
                         }
                     }
                     
@@ -30,7 +30,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                // Sektion: App-Informationen
+                // 🔹 Sektion: App-Informationen
                 Section(header: Text("App-Informationen")) {
                     NavigationLink(destination: Text("Datenschutzrichtlinien")) {
                         HStack {
@@ -49,7 +49,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                // Sektion: Aktionen
+                // 🔹 Sektion: Aktionen
                 Section {
                     Button(action: {
                         // Logout-Logik hier einfügen
@@ -64,7 +64,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.insetGrouped)
             .navigationTitle("Einstellungen")
         }
     }

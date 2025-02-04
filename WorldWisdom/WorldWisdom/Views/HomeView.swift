@@ -9,47 +9,56 @@ import SwiftUI
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
     @StateObject private var quoteViewModel = QuoteViewModel() // ViewModel für Zitate
-    @State private var selectedCategory: String? // Ausgewählte Kategorie
 
     var body: some View {
         NavigationStack {
-            VStack {
-                // Willkommensnachricht
-                Text("Willkommen zur HomeView!")
-                    .font(.largeTitle)
-                    .padding()
+            VStack(alignment: .leading, spacing: 20) {
+                // **Willkommensnachricht** und **Benutzerinfo**
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Willkommen zur HomeView!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                        .padding(.top)
 
-                // Benutzerinfo
-                if let user = userViewModel.user {
-                    Text(user.email ?? "Anonym angemeldet. UID: \(user.uid)")
-                        .padding()
-                        .foregroundColor(user.email != nil ? .green : .blue)
+                    if let user = userViewModel.user {
+                        Text(user.email ?? "Anonym angemeldet. UID: \(user.uid)")
+                            .font(.subheadline)
+                            .foregroundColor(user.email != nil ? .green : .blue)
+                            .padding(.horizontal)
+                    }
                 }
 
-                // Fehleranzeige, falls ein Fehler aufgetreten ist
+                // **Fehleranzeige**, falls ein Fehler aufgetreten ist
                 if let errorMessage = quoteViewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
-                        .padding()
+                        .padding(.horizontal)
                 }
 
-                // Zeige das zufällige Zitat, falls vorhanden
+                // **Zitat des Tages**
                 if let quote = quoteViewModel.randomQuote {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("Zitat des Tages")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
                         Text(quote.quote)
                             .font(.body)
+                            .foregroundColor(.primary)
                             .padding(.bottom, 5)
+                            .lineLimit(3)
+
                         Text("- \(quote.author)")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundColor(.gray)
 
-                        // Favoriten-Button
+                        // **Favoriten-Button**
                         Button(action: {
                             Task {
-                                // Toggle Favoritenstatus
                                 let isFavorite = !(quote.isFavorite ?? false)
                                 await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
-                                print(isFavorite ? "Zitat als Favorit gespeichert!" : "Zitat aus Favoriten entfernt!")
                             }
                         }) {
                             HStack {
@@ -59,21 +68,53 @@ struct HomeView: View {
                                     .font(.caption)
                                     .foregroundColor(.blue)
                             }
-                            .padding(8)
+                            .padding(10)
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
                         }
-                        .buttonStyle(PlainButtonStyle()) // Damit der Button wie gewünscht aussieht
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
                 } else {
-                    // Anzeige, wenn das Zitat noch geladen wird oder es einen Fehler gibt
-                    Text("Lädt Zitat...")
+                    Text("Lädt Zitat des Tages...")
                         .padding()
                         .foregroundColor(.gray)
                 }
 
-                // Button für neues zufälliges Zitat
+                // **Empfohlene Zitate (Inspirations-Feed)**
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Empfohlene Zitate")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {
+                            ForEach(quoteViewModel.quotes.prefix(5), id: \.id) { quote in
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(quote.quote)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                        .lineLimit(2)
+                                        .padding()
+
+                                    Text("- \(quote.author)")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                .frame(width: 250)
+                                .background(Color.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .shadow(radius: 5)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+
+                // **Button für neues zufälliges Zitat**
                 Button(action: {
                     Task {
                         quoteViewModel.getRandomQuote() // Holt ein zufälliges Zitat aus den bereits geladenen Zitaten
@@ -82,16 +123,18 @@ struct HomeView: View {
                     Text("Lade ein zufälliges Zitat")
                         .font(.body)
                         .padding()
+                        .frame(maxWidth: .infinity)
                         .background(Color.green)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
+                .padding(.horizontal)
 
                 Spacer()
             }
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
-            .padding()
+            .padding(.vertical)
         }
         .onAppear {
             Task {
