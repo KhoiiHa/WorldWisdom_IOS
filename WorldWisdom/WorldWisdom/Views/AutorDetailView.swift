@@ -12,23 +12,28 @@ struct AutorDetailView: View {
     @State private var isFavorite: Bool
     let quote: Quote
     @State private var searchQuery: String = ""
-    
+    @State private var filteredQuotes: [Quote] = [] // Liste der gefilterten Zitate
+
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
         self._isFavorite = State(initialValue: quote.isFavorite ?? false)
         self.quoteViewModel = quoteViewModel
+        self._filteredQuotes = State(initialValue: [quote]) // Initial mit dem ersten Zitat gefüllt
     }
-    
+
     var body: some View {
         ZStack {
-            // Hintergrund
+            // Hintergrund-Farbverlauf
             LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.6)]), startPoint: .topLeading, endPoint: .bottomTrailing)
                 .ignoresSafeArea()
                 .opacity(0.1)
-            
+
             ScrollView {
                 VStack(spacing: 20) {
-                    // Kopfbereich
+                    // 📌 Neue optimierte Suchleiste
+                    searchBar
+
+                    // 📌 Kopfbereich mit Autor-Bild
                     Image(systemName: "person.crop.circle.fill")
                         .resizable()
                         .scaledToFit()
@@ -36,40 +41,21 @@ struct AutorDetailView: View {
                         .foregroundColor(.blue)
                         .background(Circle().fill(Color.white))
                         .shadow(radius: 10)
-                    
+
                     Text(quote.author)
                         .font(.title.bold())
-                    
-                    Text("„\(quote.quote)“")
-                        .font(.title3)
-                        .italic()
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.white).shadow(radius: 10))
-                    
-                    if !quote.tags.isEmpty {
-                        Text("Themen: \(quote.tags.joined(separator: ", "))")
-                            .font(.footnote)
-                            .foregroundColor(.blue)
-                    }
-                    
-                    // Suchleiste
-                    TextField("Suche nach Zitaten...", text: $searchQuery)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                    
-                    // Autoren-Info-Link
-                    if let url = URL(string: quote.source) {
-                        Link("Mehr über \(quote.author)", destination: url)
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                            .foregroundColor(.white)
-                    }
+
+                    // 📌 Zitat-Card
+                    quoteCard
+
+                    // 📌 Autor-Info-Card
+                    authorInfoCard
                 }
-                .padding(.top, 30)
                 .padding(.horizontal)
+                .padding(.top, 30)
             }
-            
-            // Favorite-Button
+
+            // 📌 Favoriten-Button
             VStack {
                 Spacer()
                 HStack {
@@ -91,14 +77,84 @@ struct AutorDetailView: View {
         }
         .navigationTitle(quote.author)
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: searchQuery) {
+            filterQuotes()
+        }
     }
-    
+
+    // MARK: - Neue optimierte Suchleiste
+    private var searchBar: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField("Suche nach Autor...", text: $searchQuery)
+                .foregroundColor(.primary)
+        }
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 2))
+        .padding(.horizontal)
+    }
+
+    // MARK: - Zitat-Card
+    private var quoteCard: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("„\(quote.quote)“")
+                .font(.title3)
+                .italic()
+
+            if !quote.tags.isEmpty {
+                Text("Themen: \(quote.tags.joined(separator: ", "))")
+                    .font(.footnote)
+                    .foregroundColor(.blue)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
+    }
+
+    // MARK: - Autor-Info-Card
+    private var authorInfoCard: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("Über \(quote.author)")
+                .font(.title2)
+                .fontWeight(.bold)
+
+            Text(quote.description)
+                .font(.body)
+                .foregroundColor(.primary)
+
+            if let sourceURL = URL(string: quote.source) {
+                Link("Mehr über \(quote.author)", destination: sourceURL)
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
+                    .shadow(radius: 5)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
+    }
+
+    // MARK: - Favoriten-Button Aktion
     private func toggleFavorite() {
         Task {
             await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: !isFavorite)
             withAnimation {
                 isFavorite.toggle()
             }
+        }
+    }
+
+    // MARK: - Filter-Logik
+    private func filterQuotes() {
+        if searchQuery.isEmpty {
+            filteredQuotes = [quote] // Zeige das Originalzitat an, wenn keine Suche eingegeben wird
+        } else {
+            filteredQuotes = [quote].filter { $0.author.lowercased().contains(searchQuery.lowercased()) }
         }
     }
 }
@@ -112,8 +168,8 @@ struct AutorDetailView: View {
             category: "Inspiration",
             tags: ["Wissen", "Philosophie"],
             isFavorite: false,
-            description: "Albert Einstein was a physicist.",
-            source: "https://en.wikipedia.org/wiki/Albert_Einstein"
+            description: "Albert Einstein war ein theoretischer Physiker, bekannt für die Relativitätstheorie.",
+            source: "https://de.wikipedia.org/wiki/Albert_Einstein"
         ),
         quoteViewModel: QuoteViewModel()
     )

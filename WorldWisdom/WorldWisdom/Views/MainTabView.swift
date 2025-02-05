@@ -28,22 +28,6 @@ struct MainTabView: View {
                 FavoriteView() // Favoriten-Ansicht
             }
 
-            // Author Details Tab
-            Tab("Author Details", systemImage: "person.text.rectangle") {
-                AutorDetailView(
-                    quote: Quote(
-                        id: UUID().uuidString, // Ein zufälliger UUID als Beispiel
-                        author: "John Doe", quote: "Sample quote",
-                        category: "Motivation", // Beispiel Kategorie
-                        tags: ["inspiration", "life"], // Beispiel Tags
-                        isFavorite: false,
-                        description: "Albert Einstein was a theoretical physicist known for developing the theory of relativity.", // Beispiel: Zitat ist nicht favorisiert
-                        source: "Wikipedia" // Beispiel Quelle
-                    ),
-                    quoteViewModel: QuoteViewModel() // Übergabe des QuoteViewModels
-                )
-            }
-
             // Settings Tab
             Tab("Settings", systemImage: "gear") {
                 SettingsView() // Einstellungen-Ansicht

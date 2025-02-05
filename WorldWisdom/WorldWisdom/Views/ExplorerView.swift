@@ -30,17 +30,8 @@ struct ExplorerView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                // 🔍 Suchleiste
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    TextField("Suche nach Autoren oder Zitaten...", text: $searchQuery)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .padding(8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-                }
-                .padding(.horizontal)
+                // 📌 Neue optimierte Suchleiste
+                searchBar
 
                 // 🏷️ Tag-Filter (ScrollView mit Tags)
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -78,6 +69,20 @@ struct ExplorerView: View {
                 await quoteViewModel.loadAllQuotes() // Aufruf direkt beim Start
             }
         }
+    }
+
+    // MARK: - Neue optimierte Suchleiste
+    private var searchBar: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField("Suche nach Autoren oder Zitaten...", text: $searchQuery)
+                .foregroundColor(.primary)
+        }
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 2))
+        .padding(.horizontal)
     }
 }
 

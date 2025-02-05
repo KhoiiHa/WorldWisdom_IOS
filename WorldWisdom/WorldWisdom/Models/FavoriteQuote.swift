@@ -12,4 +12,5 @@ struct FavoriteQuote: Codable, Identifiable {
     let quoteId: String     // Verweis auf das Zitat, das favorisiert wurde
     let userId: String     // Der Benutzer, der es favorisiert hat
     let createdAt: Timestamp // Zeitpunkt, wann es favorisiert wurde
+    var quoteText: String?
 }

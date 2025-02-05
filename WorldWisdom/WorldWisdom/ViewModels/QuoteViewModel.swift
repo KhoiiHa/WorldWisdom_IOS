@@ -85,7 +85,7 @@ class QuoteViewModel: ObservableObject {
     func removeFavoriteQuote(_ quote: Quote) async throws {
         do {
             // Verwende FirebaseManager, um das Zitat aus der Datenbank zu löschen
-            try await firebaseManager.deleteFavoriteQuote(quote)  // Implementiere diese Methode im FirebaseManager
+            try await firebaseManager.deleteFavoriteQuote(quote)
             
             // Erfolgreiches Löschen, optional kann man auch noch die Liste aktualisieren
         } catch {
@@ -93,6 +93,55 @@ class QuoteViewModel: ObservableObject {
             let handledError = QuoteError.handleError(error)
             self.errorMessage = handledError.errorDescription
             throw error
+        }
+    }
+    
+    // Funktion zum Löschen eines Zitats
+    func deleteQuote(_ quote: Quote) async throws {
+        // Zitat aus der lokalen Liste entfernen
+        if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
+            quotes.remove(at: index)
+        }
+        
+        // Zitat aus Firestore löschen (falls verwendet)
+        do {
+            try await firebaseManager.deleteQuote(quote)
+        } catch {
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
+            throw error
+        }
+    }
+    
+    // Funktion zum Speichern eines bearbeiteten Zitats
+    func saveEditedQuote(_ quote: Quote) async throws {
+        // Update der lokalen Liste
+        if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
+            quotes[index] = quote // Überschreibt das Zitat in der Liste
+        }
+        
+        // Update in Firestore
+        do {
+            try await firebaseManager.updateQuote(quote) 
+        } catch {
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
+            throw error
+        }
+    }
+    
+    // Beispiel für das Hinzufügen eines Zitats
+    func addFavoriteQuote(_ quote: Quote) async throws {
+        do {
+            // Zitat in Firebase speichern
+            try await firebaseManager.addFavoriteQuote(quote)
+            
+            // Zitat zur lokalen Liste hinzufügen
+            self.quotes.append(quote) // Hier wird das neue Zitat zur Liste hinzugefügt
+        } catch {
+            // Fehlerbehandlung
+            let handledError = QuoteError.handleError(error)
+            self.errorMessage = handledError.errorDescription
         }
     }
 }

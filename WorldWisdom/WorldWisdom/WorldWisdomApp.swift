@@ -12,6 +12,7 @@ import Firebase
 struct WorldWisdomApp: App {
     
     @StateObject private var userViewModel = UserViewModel()
+    @StateObject private var quoteViewModel = QuoteViewModel()
     
     init() {
         FirebaseApp.configure()
@@ -24,6 +25,7 @@ struct WorldWisdomApp: App {
             if userViewModel.isLoggedIn {
                 MainTabView() // Zeigt MainTabView an, wenn der Nutzer eingeloggt ist
                     .environmentObject(userViewModel) // Übergibt das userViewModel an die MainTabView
+                    .environmentObject(quoteViewModel) // Übergibt das quoteViewModel an die MainTabView
                     .onAppear {
                         // Benutzerstatus beim Start überprüfen
                         Task {

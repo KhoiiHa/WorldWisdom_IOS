@@ -44,7 +44,7 @@ class FirebaseManager {
     }
     
     // MARK: - Firestore Funktionen
-    
+        
     func createUserInFirestore(id: String, email: String) async throws {
         let userData: [String: Any] = [
             "id": id,
@@ -55,7 +55,7 @@ class FirebaseManager {
         try await store.collection("users").document(id).setData(userData)
         print("Benutzer erfolgreich in Firestore gespeichert: \(email)")
     }
-    
+
     func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {
         let quoteData: [String: Any] = [
             "quoteText": quoteText,
@@ -66,14 +66,14 @@ class FirebaseManager {
         
         try await store.collection("quotes").document(quoteId).setData(quoteData)
     }
-    
+
     func fetchQuoteMetadata(quoteId: String) async throws -> [String: Any]? {
         let documentSnapshot = try await store.collection("quotes").document(quoteId).getDocument()
         return documentSnapshot.data()
     }
-    
+
     // Funktionen für favorisierte Zitate
-    
+
     func saveFavoriteQuote(quote: Quote) async throws {
         guard let currentUser = auth.currentUser else { return }
         
@@ -91,7 +91,7 @@ class FirebaseManager {
             .document(favoriteQuoteId) // Dokument-ID geändert
             .setData(favoriteQuoteData)
     }
-    
+
     func fetchFavoriteQuotes() async throws -> [Quote] {
         guard let currentUser = auth.currentUser else { return [] }
         
@@ -104,14 +104,14 @@ class FirebaseManager {
             try? document.data(as: Quote.self)
         }
     }
-    
+
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
         let quoteRef = store.collection("quotes").document(quote.id)
         try await quoteRef.updateData([
             "isFavorite": isFavorite
         ])
     }
-    
+
     // Löscht ein Zitat aus der Firestore-Datenbank
     func deleteFavoriteQuote(_ quote: Quote) async throws {
         do {
@@ -124,6 +124,74 @@ class FirebaseManager {
         } catch {
             // Fehlerbehandlung: Hier fangen wir alle Fehler ab
             throw NSError(domain: "com.deinProjekt.firebaseError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Löschen des Zitats aus der Datenbank."])
+        }
+    }
+
+    func saveUserQuote(quoteText: String, author: String) async throws {
+        guard let currentUser = auth.currentUser else {
+            throw NSError(domain: "FirebaseManager", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kein angemeldeter Nutzer gefunden."])
+        }
+
+        let userQuoteData: [String: Any] = [
+            "quoteText": quoteText,
+            "author": author.isEmpty ? "Unbekannt" : author,
+            "userID": currentUser.uid,
+            "createdAt": Timestamp(date: Date())
+        ]
+
+        try await store.collection("users")
+            .document(currentUser.uid)
+            .collection("userQuotes")
+            .addDocument(data: userQuoteData)
+    }
+
+    func fetchUserQuotes() async throws -> [Quote] {
+        guard let currentUser = auth.currentUser else { return [] }
+
+        let snapshot = try await store.collection("users")
+            .document(currentUser.uid)
+            .collection("userQuotes")
+            .getDocuments()
+
+        return snapshot.documents.compactMap { document in
+            let data = document.data()
+            return Quote(
+                id: document.documentID,
+                author: data["author"] as? String ?? "Unbekannt",
+                quote: data["quoteText"] as? String ?? "",
+                category: data["category"] as? String ?? "Allgemein",
+                tags: data["tags"] as? [String] ?? [],
+                isFavorite: data["isFavorite"] as? Bool ?? false,
+                description: data["description"] as? String ?? "",
+                source: data["source"] as? String ?? ""
+            )
+        }
+    }
+
+    // Methode zum Bearbeiten eines Zitats in Firestore
+    func updateQuote(_ quote: Quote) async throws {
+        let db = Firestore.firestore()
+        let quoteRef = db.collection("quotes").document(quote.id)
+        
+        do {
+            try await quoteRef.setData([
+                "quote": quote.quote,
+                "author": quote.author,
+                "category": quote.category
+            ], merge: true) // merge: true sorgt dafür, dass nur die geänderten Felder aktualisiert werden
+        } catch {
+            throw QuoteError.handleError(error)
+        }
+    }
+    
+    // In FirebaseManager
+    func addFavoriteQuote(_ quote: Quote) async throws {
+        do {
+            // Speichern des Zitats in Firestore
+            let db = Firestore.firestore()
+            let _ = try db.collection("favorites").addDocument(from: quote)
+        } catch {
+            throw error
         }
     }
     
@@ -153,4 +221,18 @@ class FirebaseManager {
         let downloadURL = try await ref.downloadURL()
         return downloadURL.absoluteString
     }
+    
+    // Methode zum Löschen eines Zitats aus Firestore
+    func deleteQuote(_ quote: Quote) async throws {
+        let db = Firestore.firestore()
+        let quoteRef = db.collection("quotes").document(quote.id)
+        
+        do {
+            try await quoteRef.delete()
+        } catch {
+            throw QuoteError.handleError(error)
+        }
+    }
+    
+    
 }
