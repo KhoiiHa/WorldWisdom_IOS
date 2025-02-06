@@ -13,6 +13,8 @@ struct WorldWisdomApp: App {
     
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var quoteViewModel = QuoteViewModel()
+    @StateObject private var firebaseManager = FirebaseManager.shared
+    @StateObject private var favoriteManager = FavoriteManager() 
     
     init() {
         FirebaseApp.configure()
@@ -23,9 +25,11 @@ struct WorldWisdomApp: App {
         WindowGroup {
             // Überprüfe, ob der Benutzer eingeloggt ist und zeige MainTabView an
             if userViewModel.isLoggedIn {
-                MainTabView() // Zeigt MainTabView an, wenn der Nutzer eingeloggt ist
-                    .environmentObject(userViewModel) // Übergibt das userViewModel an die MainTabView
-                    .environmentObject(quoteViewModel) // Übergibt das quoteViewModel an die MainTabView
+                MainTabView()
+                    .environmentObject(userViewModel)
+                    .environmentObject(quoteViewModel)
+                    .environmentObject(firebaseManager)
+                    .environmentObject(favoriteManager)
                     .onAppear {
                         // Benutzerstatus beim Start überprüfen
                         Task {
@@ -33,7 +37,7 @@ struct WorldWisdomApp: App {
                         }
                     }
             } else {
-                AuthenticationView() // Zeigt die AuthenticationView an, wenn der Nutzer nicht eingeloggt ist
+                AuthenticationView()
                     .onAppear {
                         // Benutzerstatus beim Start überprüfen
                         Task {

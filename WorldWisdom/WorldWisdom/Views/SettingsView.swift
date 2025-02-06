@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject var firebaseManager: FirebaseManager
+    @Environment(\.presentationMode) var presentationMode  // Zum Schließen der View nach dem Abmelden
+
     var body: some View {
         NavigationStack {
             List {
@@ -52,8 +55,7 @@ struct SettingsView: View {
                 // 🔹 Sektion: Aktionen
                 Section {
                     Button(action: {
-                        // Logout-Logik hier einfügen
-                        print("Benutzer ausgeloggt")
+                        logout()
                     }) {
                         HStack {
                             Image(systemName: "arrow.right.square")
@@ -66,6 +68,19 @@ struct SettingsView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Einstellungen")
+        }
+    }
+
+    private func logout() {
+        do {
+            try firebaseManager.signOut() // Abmelden durch FirebaseManager
+            print("Erfolgreich abgemeldet")
+
+            // Optional: Zurück zum Login-Screen
+            presentationMode.wrappedValue.dismiss() // Schließt die aktuelle View
+
+        } catch {
+            print("Fehler beim Abmelden: \(error.localizedDescription)")
         }
     }
 }

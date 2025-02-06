@@ -8,29 +8,32 @@
 import SwiftUI
 
 struct FavoriteView: View {
-    @EnvironmentObject private var viewModel: QuoteViewModel
-    @State private var selectedCategory: String? = nil
+    @EnvironmentObject private var favoriteManager: FavoriteManager
+    @EnvironmentObject private var quoteViewModel: QuoteViewModel
     @State private var showCategoryFilter = false
-
+    @State private var selectedCategory: String? = nil
+    @State private var showErrorMessage = false  // Zustand für Fehleranzeige im UI
+    
     var body: some View {
         NavigationStack {
             VStack {
-                // Filter-Bereich
-                if !viewModel.quotes.isEmpty {
-                    filterBar
-                }
-
-                // Inhalt
-                if filteredQuotes.isEmpty {
+                if favoriteManager.favoriteQuotes.isEmpty {
                     emptyStateView
                 } else {
                     quoteListView
+                }
+                
+                // Fehleranzeige im UI (optional)
+                if showErrorMessage {
+                    Text("Fehler beim Laden oder Speichern eines Favoriten!")
+                        .foregroundColor(.red)
+                        .padding()
                 }
             }
             .navigationTitle("Favoriten")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    addQuoteButton // Button zum Hinzufügen eines neuen Zitats
+                    addQuoteButton
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     categoryFilterButton
@@ -38,26 +41,20 @@ struct FavoriteView: View {
             }
             .sheet(isPresented: $showCategoryFilter) {
                 CategoryFilterView(
-                    categories: Set(viewModel.quotes.map { $0.category }),
+                    categories: Set(favoriteManager.favoriteQuotes.map { $0.category }),
                     selectedCategory: $selectedCategory
                 )
             }
             .onAppear {
                 loadFavoriteQuotes()
             }
+            .onChange(of: favoriteManager.favoriteQuotes) {
+                loadFavoriteQuotes()
+            }
         }
     }
-
-    private var filterBar: some View {
-        FilterBar(selectedCategory: $selectedCategory, categories: Array(Set(viewModel.quotes.map { $0.category })))
-    }
-
-    private var filteredQuotes: [Quote] {
-        viewModel.quotes.filter { quote in
-            selectedCategory == nil || quote.category == selectedCategory
-        }
-    }
-
+    
+    // Empty State View
     private var emptyStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "heart.slash.fill")
@@ -69,23 +66,21 @@ struct FavoriteView: View {
         }
         .padding()
     }
-
+    
+    // List of Quotes
     private var quoteListView: some View {
         List {
-            ForEach(filteredQuotes) { quote in
-                NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: viewModel)) {
+            ForEach(filteredFavoriteQuotes()) { quote in
+                NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
                     FavoriteQuoteCardView(quote: quote, unfavoriteAction: {
                         unfavoriteQuote(quote)
                     })
                 }
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    unfavoriteSwipeButton(for: quote)
-                    editQuoteSwipeButton(for: quote)
-                }
             }
         }
     }
-
+    
+    // Buttons
     private var categoryFilterButton: some View {
         Button(action: { showCategoryFilter = true }) {
             Image(systemName: "line.3.horizontal.decrease.circle")
@@ -103,50 +98,51 @@ struct FavoriteView: View {
         }
     }
 
-    private func unfavoriteSwipeButton(for quote: Quote) -> some View {
-        Button(action: {
-            unfavoriteQuote(quote)
-        }) {
-            Label("Entfavorisieren", systemImage: "heart.slash")
-        }
-        .tint(.red)
-    }
-
-    private func editQuoteSwipeButton(for quote: Quote) -> some View {
-        NavigationLink(destination: AddQuoteView(quoteToEdit: quote)) {
-            Button(action: {
-                
-            }) {
-                Label("Bearbeiten", systemImage: "pencil")
+    // Hinzufügen eines Favoriten
+    private func addFavoriteQuote(_ quote: Quote) {
+        Task {
+            do {
+                try await favoriteManager.addFavoriteQuote(quote)
+                showErrorMessage = false  // Fehleranzeige zurücksetzen
+            } catch {
+                print("Fehler beim Speichern des Favoriten: \(error.localizedDescription)")
+                showErrorMessage = true
             }
-            .tint(.blue)
         }
     }
 
+    //Entfernen eines Favoriten
     private func unfavoriteQuote(_ quote: Quote) {
         Task {
             do {
-                // Entfernen des Favoriten aus Firebase
-                try await viewModel.removeFavoriteQuote(quote)
-                // Danach aus der lokalen Liste entfernen
-                if let index = viewModel.quotes.firstIndex(where: { $0.id == quote.id }) {
-                    viewModel.quotes.remove(at: index)
-                }
+                try await favoriteManager.removeFavoriteQuote(quote)
+                showErrorMessage = false
             } catch {
-                viewModel.errorMessage = "Fehler beim Entfernen des Favoriten: \(error.localizedDescription)"
+                print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
+                showErrorMessage = true
             }
         }
     }
 
+    // Laden der Favoriten
     private func loadFavoriteQuotes() {
         Task {
             do {
-                // Favoriten aus Firebase laden
-                try await viewModel.loadFavoriteQuotes()
+                try await favoriteManager.loadFavoriteQuotes()
+                showErrorMessage = false
             } catch {
-                viewModel.errorMessage = "Fehler beim Laden der Favoriten: \(error.localizedDescription)"
+                print("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
+                showErrorMessage = true
             }
         }
+    }
+    
+    // Filtered Quotes
+    private func filteredFavoriteQuotes() -> [Quote] {
+        if let selectedCategory = selectedCategory {
+            return favoriteManager.favoriteQuotes.filter { $0.category == selectedCategory }
+        }
+        return favoriteManager.favoriteQuotes
     }
 }
 

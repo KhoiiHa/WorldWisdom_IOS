@@ -10,7 +10,7 @@ import FirebaseFirestore
 import FirebaseStorage
 import Firebase
 
-class FirebaseManager {
+class FirebaseManager: ObservableObject {
     
     static let shared = FirebaseManager()
     
@@ -19,11 +19,25 @@ class FirebaseManager {
     private let store = Firestore.firestore()
     private let storage = Storage.storage()
     
-    var currentUser: User? {
-        auth.currentUser
+    // Beobachtbare Eigenschaften
+    @Published var currentUser: User? {
+        didSet {
+            // Optional: Aktualisiere andere Werte, wenn sich der Benutzer ändert
+        }
     }
     
-    private init() {}
+    private init() {
+        // Initialisiere currentUser mit dem aktuellen Firebase-Benutzer
+        self.currentUser = auth.currentUser
+        
+        // Überwache Authentifizierungsstatus-Änderungen
+        _ = auth.addStateDidChangeListener { _, user in
+            DispatchQueue.main.async {
+                // Update currentUser, wenn sich der Authentifizierungsstatus ändert
+                self.currentUser = user
+            }
+        }
+    }
     
     // MARK: - Auth Funktionen
     
@@ -77,6 +91,7 @@ class FirebaseManager {
     func saveFavoriteQuote(quote: Quote) async throws {
         guard let currentUser = auth.currentUser else { return }
         
+        // Speichern der Zitat-Daten als FavoriteQuote
         let favoriteQuoteData: [String: Any] = [
             "quoteText": quote.quote,
             "author": quote.author,
@@ -84,24 +99,48 @@ class FirebaseManager {
             "createdAt": Timestamp(date: Date())
         ]
         
-        let favoriteQuoteId = "\(quote.quote)-\(quote.author)" // Eindeutige ID für Favoriten
+        let favoriteQuoteId = "\(quote.quote)-\(quote.author)" // Eindeutige ID für das favorisierte Zitat
         try await store.collection("users")
             .document(currentUser.uid)
             .collection("favorites")
-            .document(favoriteQuoteId) // Dokument-ID geändert
+            .document(favoriteQuoteId)
             .setData(favoriteQuoteData)
+        
+        // Aktualisieren der favoriteQuoteIds im FireUser-Dokument
+        let userRef = store.collection("users").document(currentUser.uid)
+        try await userRef.updateData([
+            "favoriteQuoteIds": FieldValue.arrayUnion([favoriteQuoteId])
+        ])
     }
-
+    
+    
     func fetchFavoriteQuotes() async throws -> [Quote] {
         guard let currentUser = auth.currentUser else { return [] }
-        
-        let snapshot = try await store.collection("users")
-            .document(currentUser.uid)
-            .collection("favorites")
+
+        // Abrufen der favoriteQuoteIds des Benutzers
+        let userDoc = try await store.collection("users").document(currentUser.uid).getDocument()
+        guard let favoriteQuoteIds = userDoc.data()?["favoriteQuoteIds"] as? [String] else {
+            return []
+        }
+
+        // Abrufen der Zitate mit einer einzigen Abfrage
+        let snapshot = try await store.collection("quotes")
+            .whereField("id", in: favoriteQuoteIds)
             .getDocuments()
-        
+
+        // Umwandeln der Dokumente in Quote-Objekte
         return snapshot.documents.compactMap { document in
-            try? document.data(as: Quote.self)
+            let data = document.data()
+            return Quote(
+                id: document.documentID,
+                author: data["author"] as? String ?? "Unbekannt",
+                quote: data["quoteText"] as? String ?? "",
+                category: data["category"] as? String ?? "Allgemein",
+                tags: data["tags"] as? [String] ?? [],
+                isFavorite: data["isFavorite"] as? Bool ?? false,
+                description: data["description"] as? String ?? "",
+                source: data["source"] as? String ?? ""
+            )
         }
     }
 
@@ -184,15 +223,23 @@ class FirebaseManager {
         }
     }
     
-    // In FirebaseManager
+    
     func addFavoriteQuote(_ quote: Quote) async throws {
-        do {
-            // Speichern des Zitats in Firestore
-            let db = Firestore.firestore()
-            let _ = try db.collection("favorites").addDocument(from: quote)
-        } catch {
-            throw error
-        }
+        guard let currentUser = auth.currentUser else { return }
+        
+        let db = Firestore.firestore()
+        // Speichern des Zitats im Benutzer-Favorites
+        try db.collection("users")
+            .document(currentUser.uid)
+            .collection("favorites")
+            .addDocument(from: quote)
+        
+        // die quoteId zum Benutzer-Objekt hinzufügen (favoriteQuoteIds)
+        try await db.collection("users")
+            .document(currentUser.uid)
+            .updateData([
+                "favoriteQuoteIds": FieldValue.arrayUnion([quote.id])
+            ])
     }
     
     // MARK: - Storage Funktionen

@@ -16,7 +16,7 @@ struct AutorDetailView: View {
 
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
-        self._isFavorite = State(initialValue: quote.isFavorite ?? false)
+        self._isFavorite = State(initialValue: quote.isFavorite)
         self.quoteViewModel = quoteViewModel
         self._filteredQuotes = State(initialValue: [quote]) // Initial mit dem ersten Zitat gefüllt
     }

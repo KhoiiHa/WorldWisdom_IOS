@@ -67,7 +67,7 @@ class UserViewModel: ObservableObject {
             self.isLoggedIn = true
             self.saveLoginStatus(isLoggedIn: true)
 
-            let newUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: nil)
+            let newUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: [])
             self.user = newUser
             print("Benutzer erfolgreich registriert. UID: \(newUser.uid)")
 
@@ -95,7 +95,7 @@ class UserViewModel: ObservableObject {
             self.isLoggedIn = true
             self.saveLoginStatus(isLoggedIn: true)
 
-            let loggedInUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: nil)
+            let loggedInUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: [])
             self.user = loggedInUser
             print("Benutzer erfolgreich angemeldet. UID: \(loggedInUser.uid)")
         } catch {
@@ -111,7 +111,7 @@ class UserViewModel: ObservableObject {
             self.isLoggedIn = true
             self.saveLoginStatus(isLoggedIn: true)
 
-            let anonymousUser = FireUser(id: authResult.user.uid, email: nil, name: nil, uid: authResult.user.uid, favoriteQuoteIds: nil)
+            let anonymousUser = FireUser(id: authResult.user.uid, email: nil, name: nil, uid: authResult.user.uid, favoriteQuoteIds: [])
             self.user = anonymousUser
             print("Anonyme Anmeldung erfolgreich. UID: \(anonymousUser.uid)")
         } catch {
@@ -126,7 +126,7 @@ class UserViewModel: ObservableObject {
     func checkCurrentUser() async {
         if let currentUser = FirebaseManager.shared.currentUser {
             self.isLoggedIn = true
-            let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, name: nil, uid: currentUser.uid, favoriteQuoteIds: nil)
+            let existingUser = FireUser(id: currentUser.uid, email: currentUser.email, name: nil, uid: currentUser.uid, favoriteQuoteIds: [])
             self.user = existingUser
             print("Aktueller Benutzer: \(currentUser.email ?? "Unbekannt")")
         } else {

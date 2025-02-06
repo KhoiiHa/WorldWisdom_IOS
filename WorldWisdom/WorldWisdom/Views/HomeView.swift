@@ -61,14 +61,14 @@ struct HomeView: View {
                 
                 Button(action: {
                     Task {
-                        let isFavorite = !(quote.isFavorite ?? false)
+                        let isFavorite = !(quote.isFavorite)
                         await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
                     }
                 }) {
                     HStack {
-                        Image(systemName: quote.isFavorite ?? false ? "star.fill" : "star")
+                        Image(systemName: quote.isFavorite ? "star.fill" : "star")
                             .foregroundColor(.yellow)
-                        Text(quote.isFavorite ?? false ? "Favorit entfernen" : "Favorisieren")
+                        Text(quote.isFavorite ? "Favorit entfernen" : "Favorisieren")
                             .font(.caption)
                     }
                     .padding(10)

@@ -11,5 +11,5 @@ struct FireUser: Codable {
     let email: String?
     let name: String?
     let uid: String
-    var favoriteQuoteIds: [String]? // Liste von favorisierten Zitat-IDs
+    var favoriteQuoteIds: [String] = [] // Liste von favorisierten Zitat-IDs
 }

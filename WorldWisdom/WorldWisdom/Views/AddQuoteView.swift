@@ -13,7 +13,7 @@ struct AddQuoteView: View {
     @State private var author = ""
     @State private var isSaving = false
     @State private var errorMessage: String?
-    
+
     @EnvironmentObject var viewModel: QuoteViewModel // Das ViewModel als EnvironmentObject
     
     var quoteToEdit: Quote? // Optionales Zitat zum Bearbeiten
@@ -63,6 +63,7 @@ struct AddQuoteView: View {
             if let quoteToEdit = quoteToEdit {
                 quoteText = quoteToEdit.quote
                 author = quoteToEdit.author
+                print("Zitat zum Bearbeiten geladen: \(quoteText), \(author)") // Debug-Ausgabe
             }
         }
     }
@@ -75,10 +76,12 @@ struct AddQuoteView: View {
         Task {
             do {
                 if let quoteToEdit = quoteToEdit {
-                    // Aktualisieren des Zitats
+                    // Zitat aktualisieren
+                    print("Aktualisiere Zitat: \(quoteText), \(author)") // Debug-Ausgabe
                     try await FirebaseManager.shared.updateQuote(quoteToEdit)
                 } else {
                     // Neues Zitat speichern
+                    print("Speichere neues Zitat: \(quoteText), \(author)") // Debug-Ausgabe
                     try await FirebaseManager.shared.saveUserQuote(quoteText: quoteText, author: author)
                 }
 
@@ -87,6 +90,7 @@ struct AddQuoteView: View {
                 dismiss()
             } catch {
                 errorMessage = "Fehler: \(error.localizedDescription)"
+                print("Fehler: \(error.localizedDescription)") // Fehlerbehandlung
             }
             isSaving = false
         }
