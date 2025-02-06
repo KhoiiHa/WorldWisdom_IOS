@@ -11,6 +11,7 @@ struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
     @State private var searchQuery: String = ""
     @State private var selectedTag: String? = nil // Aktuell ausgewählter Tag
+    @State private var showErrorMessage: Bool = false // Fehleranzeige
 
     // Alle einzigartigen Tags für die Filter-Buttons
     private var allTags: [String] {
@@ -63,10 +64,20 @@ struct ExplorerView: View {
                     .padding()
                 }
                 .scrollIndicators(.hidden) // Versteckt Scroll-Indikatoren
+                
+                // Fehlermeldung, falls etwas schiefgeht
+                if showErrorMessage {
+                    Text("Fehler beim Laden der Zitate. Bitte versuchen Sie es später erneut.")
+                        .foregroundColor(.red)
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(8)
+                        .padding(.horizontal)
+                }
             }
             .navigationTitle("Entdecke Zitate")
             .task {
-                await quoteViewModel.loadAllQuotes() // Aufruf direkt beim Start
+                await loadQuotes()
             }
         }
     }
@@ -83,6 +94,19 @@ struct ExplorerView: View {
         .padding(12)
         .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 2))
         .padding(.horizontal)
+    }
+    
+    // MARK: - Lädt Zitate mit Fehlerbehandlung
+    private func loadQuotes() async {
+        do {
+            // Versuche, alle Zitate zu laden
+            try await quoteViewModel.loadAllQuotes()
+            showErrorMessage = false  // Fehleranzeige zurücksetzen
+        } catch {
+            // Fehler beim Laden der Zitate
+            print("Fehler beim Laden der Zitate: \(error.localizedDescription)")
+            showErrorMessage = true
+        }
     }
 }
 

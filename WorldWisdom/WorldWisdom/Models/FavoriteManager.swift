@@ -10,102 +10,55 @@ import FirebaseAuth
 
 @MainActor
 class FavoriteManager: ObservableObject {
-    private let auth = Auth.auth()
-    private let store = Firestore.firestore()
+    private let firebaseManager = FirebaseManager.shared
     
     @Published var favoriteQuotes: [Quote] = []
-    @Published var errorMessage: String?
     
-    // ✅ Favoriten aus Firestore laden
+    // Favoriten aus Firestore laden
     func loadFavoriteQuotes() async throws {
-        guard let currentUser = auth.currentUser else {
-            throw FavoriteError.userNotAuthenticated // Fehler werfen, wenn der Benutzer nicht authentifiziert ist
-        }
-        
-        let userRef = store.collection("users").document(currentUser.uid)
-        let userDoc = try await userRef.getDocument()
-        let favoriteQuoteIds = userDoc.data()?["favoriteQuoteIds"] as? [String] ?? []
-        
-        var quotes: [Quote] = []
-        for quoteId in favoriteQuoteIds {
-            let quoteDoc = try await store.collection("quotes").document(quoteId).getDocument()
-            
-            if let data = quoteDoc.data() {
-                let decoder = Firestore.Decoder()
-                if let quote = try? decoder.decode(Quote.self, from: data) {
-                    quotes.append(quote)
-                }
-            }
-        }
-        
-        // Favoriten updaten
-        self.favoriteQuotes = quotes
-    }
-
-    // ✅ Zitat zu Favoriten hinzufügen
-    func addFavoriteQuote(_ quote: Quote) async throws {
-        guard let currentUser = auth.currentUser else {
-            throw FavoriteError.userNotAuthenticated // Fehler werfen, wenn der Benutzer nicht authentifiziert ist
-        }
-        
-        let userRef = store.collection("users").document(currentUser.uid)
-        let userDoc = try await userRef.getDocument()
-        var favoriteQuoteIds = userDoc.data()?["favoriteQuoteIds"] as? [String] ?? []
-        
-        if favoriteQuoteIds.contains(quote.id) {
-            throw FavoriteError.favoriteAlreadyExists // Fehler werfen, wenn das Zitat schon in den Favoriten ist
-        }
-        
-        favoriteQuoteIds.append(quote.id)
-        
-        // Update innerhalb des MainActors und synchron
-        await MainActor.run {
-            userRef.updateData(["favoriteQuoteIds": favoriteQuoteIds]) { error in
-                if let error = error {
-                    print("Fehler beim Aktualisieren der Favoriten: \(error.localizedDescription)")
-                }
-            }
-        }
-        
-        try await loadFavoriteQuotes()
-    }
-
-    // ✅ Favoriten-Zitat entfernen
-    func removeFavoriteQuote(_ quote: Quote) async throws {
-        guard let currentUser = auth.currentUser else {
-            throw FavoriteError.userNotAuthenticated // Fehler werfen, wenn der Benutzer nicht authentifiziert ist
-        }
-        
-        let userRef = store.collection("users").document(currentUser.uid)
-        let userDoc = try await userRef.getDocument()
-        var favoriteQuoteIds = userDoc.data()?["favoriteQuoteIds"] as? [String] ?? []
-        
-        favoriteQuoteIds.removeAll { $0 == quote.id }
-        
-        // Update innerhalb des MainActors und synchron
-        await MainActor.run {
-            userRef.updateData(["favoriteQuoteIds": favoriteQuoteIds]) { error in
-                if let error = error {
-                    print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
-                }
-            }
-        }
-        
-        try await loadFavoriteQuotes()
-    }
-
-    // ✅ Favoritenstatus aktualisieren
-    func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
         do {
-            if isFavorite {
-                try await addFavoriteQuote(quote)
-            } else {
-                try await removeFavoriteQuote(quote)
-            }
-        } catch let error as FavoriteError {
-            self.errorMessage = error.rawValue // Fehlernachricht von FavoriteError setzen
+            // Aufruf der fetchFavoriteQuotes Methode
+            let quotes = try await firebaseManager.fetchFavoriteQuotes()
+            self.favoriteQuotes = quotes
+        } catch FavoriteError.userNotAuthenticated {
+            // Handle spezifischen Fehler, wenn der Benutzer nicht authentifiziert ist
+            throw FavoriteError.userNotAuthenticated
         } catch {
-            self.errorMessage = "Unbekannter Fehler: \(error.localizedDescription)" // Allgemeine Fehlernachricht
+            // Handle andere Fehler und weiterwerfen
+            throw error
+        }
+    }
+
+    // Zitat zu Favoriten hinzufügen
+    func addFavoriteQuote(_ quote: Quote) async throws {
+        do {
+            try await firebaseManager.saveFavoriteQuote(quote: quote)
+            // Direktes Laden der Favoriten nach dem Hinzufügen
+            try await loadFavoriteQuotes()
+        } catch FavoriteError.favoriteAlreadyExists {
+            throw FavoriteError.favoriteAlreadyExists
+        } catch {
+            throw error
+        }
+    }
+
+    // Favoriten-Zitat entfernen
+    func removeFavoriteQuote(_ quote: Quote) async throws {
+        do {
+            try await firebaseManager.deleteFavoriteQuote(quote)
+            // Direktes Laden der Favoriten nach dem Entfernen
+            try await loadFavoriteQuotes()
+        } catch {
+            throw error
+        }
+    }
+
+    // Favoritenstatus aktualisieren
+    func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
+        if isFavorite {
+            try await addFavoriteQuote(quote)
+        } else {
+            try await removeFavoriteQuote(quote)
         }
     }
 }

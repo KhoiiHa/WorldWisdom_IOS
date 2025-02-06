@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct FavoriteView: View {
-    @EnvironmentObject private var favoriteManager: FavoriteManager
     @EnvironmentObject private var quoteViewModel: QuoteViewModel
     @State private var showCategoryFilter = false
     @State private var selectedCategory: String? = nil
@@ -17,7 +16,7 @@ struct FavoriteView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if favoriteManager.favoriteQuotes.isEmpty {
+                if quoteViewModel.favoriteQuotes.isEmpty {
                     emptyStateView
                 } else {
                     quoteListView
@@ -41,14 +40,14 @@ struct FavoriteView: View {
             }
             .sheet(isPresented: $showCategoryFilter) {
                 CategoryFilterView(
-                    categories: Set(favoriteManager.favoriteQuotes.map { $0.category }),
+                    categories: Set(quoteViewModel.favoriteQuotes.map { $0.category }),
                     selectedCategory: $selectedCategory
                 )
             }
             .onAppear {
                 loadFavoriteQuotes()
             }
-            .onChange(of: favoriteManager.favoriteQuotes) {
+            .onChange(of: quoteViewModel.favoriteQuotes) {
                 loadFavoriteQuotes()
             }
         }
@@ -99,23 +98,19 @@ struct FavoriteView: View {
     }
 
     // Hinzufügen eines Favoriten
+    // Hinzufügen eines Favoriten
     private func addFavoriteQuote(_ quote: Quote) {
         Task {
-            do {
-                try await favoriteManager.addFavoriteQuote(quote)
-                showErrorMessage = false  // Fehleranzeige zurücksetzen
-            } catch {
-                print("Fehler beim Speichern des Favoriten: \(error.localizedDescription)")
-                showErrorMessage = true
-            }
+            await quoteViewModel.addFavoriteQuote(quote)
+            showErrorMessage = false  // Fehleranzeige zurücksetzen, falls erfolgreich
         }
     }
 
-    //Entfernen eines Favoriten
+    // Entfernen eines Favoriten
     private func unfavoriteQuote(_ quote: Quote) {
         Task {
             do {
-                try await favoriteManager.removeFavoriteQuote(quote)
+                try await quoteViewModel.removeFavoriteQuote(quote)
                 showErrorMessage = false
             } catch {
                 print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
@@ -128,7 +123,7 @@ struct FavoriteView: View {
     private func loadFavoriteQuotes() {
         Task {
             do {
-                try await favoriteManager.loadFavoriteQuotes()
+                try await quoteViewModel.loadFavoriteQuotes()
                 showErrorMessage = false
             } catch {
                 print("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
@@ -140,9 +135,9 @@ struct FavoriteView: View {
     // Filtered Quotes
     private func filteredFavoriteQuotes() -> [Quote] {
         if let selectedCategory = selectedCategory {
-            return favoriteManager.favoriteQuotes.filter { $0.category == selectedCategory }
+            return quoteViewModel.favoriteQuotes.filter { $0.category == selectedCategory }
         }
-        return favoriteManager.favoriteQuotes
+        return quoteViewModel.favoriteQuotes
     }
 }
 

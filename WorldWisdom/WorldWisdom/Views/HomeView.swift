@@ -6,9 +6,11 @@
 //
 import SwiftUI
 
+
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
     @StateObject private var quoteViewModel = QuoteViewModel()
+    @State private var showErrorMessage = false  // Zustand für Fehleranzeige im UI
 
     var body: some View {
         NavigationStack {
@@ -25,7 +27,7 @@ struct HomeView: View {
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
             .task {
                 if quoteViewModel.quotes.isEmpty {
-                    await quoteViewModel.loadAllQuotes()
+                    await loadQuotes()
                 }
                 quoteViewModel.getRandomQuote()
             }
@@ -78,6 +80,13 @@ struct HomeView: View {
                 .buttonStyle(PlainButtonStyle())
             } else {
                 ProgressView("Lädt Zitat des Tages...").padding()
+            }
+
+            // Fehleranzeige (optional)
+            if showErrorMessage {
+                Text("Fehler beim Laden des Zitats!")
+                    .foregroundColor(.red)
+                    .padding()
             }
         }
     }
@@ -133,6 +142,19 @@ struct HomeView: View {
             .background(Color.blue)
             .cornerRadius(15)
             .shadow(color: .blue.opacity(0.2), radius: 5, x: 0, y: 2)
+        }
+    }
+
+    // Laden der Zitate mit Fehlerbehandlung
+    private func loadQuotes() async {
+        do {
+            // Versuche, alle Zitate zu laden
+            try await quoteViewModel.loadAllQuotes()
+            showErrorMessage = false  // Fehleranzeige zurücksetzen
+        } catch {
+            // Fehler bei der Zitate-Ladung
+            print("Fehler beim Laden der Zitate: \(error.localizedDescription)")
+            showErrorMessage = true
         }
     }
 }
