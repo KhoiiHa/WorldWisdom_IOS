@@ -6,11 +6,9 @@
 //
 import SwiftUI
 
-
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
     @StateObject private var quoteViewModel = QuoteViewModel()
-    @State private var showErrorMessage = false  // Zustand für Fehleranzeige im UI
 
     var body: some View {
         NavigationStack {
@@ -29,7 +27,9 @@ struct HomeView: View {
                 if quoteViewModel.quotes.isEmpty {
                     await loadQuotes()
                 }
-                quoteViewModel.getRandomQuote()
+                if quoteViewModel.randomQuote == nil {
+                    quoteViewModel.getRandomQuote()
+                }
             }
         }
     }
@@ -38,12 +38,16 @@ struct HomeView: View {
     private var welcomeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Willkommen zurück!")
-                .font(.largeTitle).bold()
+                .font(.largeTitle)
+                .bold()
+                .foregroundColor(.primary)
+                .padding(.bottom, 5)
 
             if let user = userViewModel.user {
                 Text(user.email ?? "Anonym angemeldet. UID: \(user.uid)")
                     .font(.subheadline)
                     .foregroundColor(user.email != nil ? .green : .blue)
+                    .opacity(0.8)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -53,25 +57,27 @@ struct HomeView: View {
     private var dailyQuoteSection: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Zitat des Tages")
-                .font(.title2).bold()
+                .font(.title2)
+                .bold()
+                .foregroundColor(.primary)
 
             if let quote = quoteViewModel.randomQuote {
-                // Navigiere zur Detailansicht des Zitats
                 NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
                     quoteCard(quote)
                 }
-                
+
                 Button(action: {
                     Task {
-                        let isFavorite = !(quote.isFavorite)
+                        let isFavorite = !quote.isFavorite
                         await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
                     }
                 }) {
                     HStack {
-                        Image(systemName: quote.isFavorite ? "star.fill" : "star")
-                            .foregroundColor(.yellow)
+                        Image(systemName: quote.isFavorite ? "heart.fill" : "heart")
+                            .foregroundColor(quote.isFavorite ? .red : .gray)
                         Text(quote.isFavorite ? "Favorit entfernen" : "Favorisieren")
                             .font(.caption)
+                            .foregroundColor(.primary)
                     }
                     .padding(10)
                     .background(Color.gray.opacity(0.1))
@@ -79,13 +85,16 @@ struct HomeView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
             } else {
-                ProgressView("Lädt Zitat des Tages...").padding()
+                ProgressView("Lädt Zitat des Tages...")
+                    .padding()
+                    .foregroundColor(.secondary)
             }
 
-            // Fehleranzeige (optional)
-            if showErrorMessage {
-                Text("Fehler beim Laden des Zitats!")
+            // Fehleranzeige
+            if let errorMessage = quoteViewModel.errorMessage {
+                Text(errorMessage)
                     .foregroundColor(.red)
+                    .font(.caption)
                     .padding()
             }
         }
@@ -95,36 +104,61 @@ struct HomeView: View {
     private var recommendedQuotesSection: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Empfohlene Zitate")
-                .font(.title2).bold()
+                .font(.title2)
+                .bold()
+                .foregroundColor(.primary)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
-                    // Navigiere zur Detailansicht des Zitats
                     ForEach(quoteViewModel.quotes.prefix(5), id: \.id) { quote in
                         NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
-                            quoteCard(quote)
+                            recommendedQuoteCard(quote)
                         }
                     }
                 }
+                .padding(.horizontal, 20) // Padding für besseren Abstand zum Rand
+                .padding(.trailing, 20) // Extra Padding, um den nächsten Card-Teil sichtbar zu machen
             }
         }
     }
 
-    // MARK: - Zitat-Karte
+    // MARK: - Zitat-Karte (für Zitat des Tages)
     private func quoteCard(_ quote: Quote) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("„\(quote.quote)“")
                 .font(.body)
                 .italic()
-                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+                .foregroundColor(.primary)
 
             Text("- \(quote.author)")
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
         }
         .padding()
-        .frame(width: 250, alignment: .leading)
-        .background(Color.white)
+        .frame(maxWidth: .infinity)
+        .background(Color(.systemBackground))
+        .cornerRadius(15)
+        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+
+    // MARK: - Breitere Zitat-Karte (für empfohlene Zitate)
+    private func recommendedQuoteCard(_ quote: Quote) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("„\(quote.quote)“")
+                .font(.body)
+                .italic()
+                .multilineTextAlignment(.leading)
+                .foregroundColor(.primary)
+                .lineLimit(4) // Begrenze den Text auf 4 Zeilen
+
+            Text("- \(quote.author)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .frame(width: 250) // Breitere Karte (250 Punkte)
+        .background(Color(.systemBackground))
         .cornerRadius(15)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
@@ -133,28 +167,27 @@ struct HomeView: View {
     private var newQuoteButton: some View {
         Button(action: { Task { quoteViewModel.getRandomQuote() } }) {
             HStack {
-                Image(systemName: "quote.bubble.fill")
-                Text("Neues Zitat laden").font(.headline)
+                Image(systemName: "sparkles")
+                    .foregroundColor(.white)
+                Text("Neues Zitat laden")
+                    .font(.headline)
+                    .foregroundColor(.white)
             }
-            .foregroundColor(.white)
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color.blue)
+            .background(LinearGradient(gradient: Gradient(colors: [Color.orange, Color.pink]), startPoint: .leading, endPoint: .trailing))
             .cornerRadius(15)
-            .shadow(color: .blue.opacity(0.2), radius: 5, x: 0, y: 2)
+            .shadow(color: .orange.opacity(0.3), radius: 5, x: 0, y: 2)
         }
     }
 
     // Laden der Zitate mit Fehlerbehandlung
     private func loadQuotes() async {
         do {
-            // Versuche, alle Zitate zu laden
             try await quoteViewModel.loadAllQuotes()
-            showErrorMessage = false  // Fehleranzeige zurücksetzen
         } catch {
-            // Fehler bei der Zitate-Ladung
             print("Fehler beim Laden der Zitate: \(error.localizedDescription)")
-            showErrorMessage = true
+            quoteViewModel.errorMessage = "Fehler beim Laden der Zitate: \(error.localizedDescription)"
         }
     }
 }

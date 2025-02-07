@@ -30,22 +30,25 @@ struct ExplorerView: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 15) {
                 // 📌 Neue optimierte Suchleiste
                 searchBar
 
                 // 🏷️ Tag-Filter (ScrollView mit Tags)
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
+                    HStack(spacing: 10) {
                         ForEach(allTags, id: \.self) { tag in
                             Button(action: {
                                 selectedTag = (selectedTag == tag) ? nil : tag // Toggle-Funktion
                             }) {
                                 Text(tag)
-                                    .padding(10)
+                                    .font(.caption)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
                                     .background(selectedTag == tag ? Color.blue : Color.gray.opacity(0.2))
-                                    .foregroundColor(selectedTag == tag ? .white : .black)
-                                    .cornerRadius(15)
+                                    .foregroundColor(selectedTag == tag ? .white : .primary)
+                                    .cornerRadius(20)
+                                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
                             }
                         }
                     }
@@ -92,7 +95,9 @@ struct ExplorerView: View {
                 .foregroundColor(.primary)
         }
         .padding(12)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 2))
+        .background(Color(.systemBackground))
+        .cornerRadius(15)
+        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
     }
     
@@ -115,19 +120,22 @@ struct QuoteCardView: View {
     let quote: Quote
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(quote.quote)
+        VStack(alignment: .leading, spacing: 10) {
+            Text("„\(quote.quote)“")
                 .font(.body)
+                .italic()
                 .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
 
             Text("- \(quote.author)")
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: Color.gray.opacity(0.3), radius: 4, x: 0, y: 2)
+        .frame(maxWidth: .infinity)
+        .background(Color(.systemBackground))
+        .cornerRadius(15)
+        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
 }
 

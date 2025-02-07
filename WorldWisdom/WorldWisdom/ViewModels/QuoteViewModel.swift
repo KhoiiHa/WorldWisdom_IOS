@@ -102,6 +102,24 @@ class QuoteViewModel: ObservableObject {
             throw error
         }
     }
+    
+    // Fügt ein neues Zitat hinzu
+    func addQuote(_ quote: Quote) async throws {
+        // Überprüfen, ob das Zitat korrekt zur lokalen Liste hinzugefügt wird
+        print("Zitat wird lokal hinzugefügt: \(quote)")
+        quotes.append(quote) // Hinzufügen des Zitats zur lokalen Liste
+
+        // Überprüfen, ob das Zitat korrekt in Firestore gespeichert wird
+        do {
+            print("Versuche, Zitat in Firestore zu speichern...")
+            try await firebaseManager.saveUserQuote(quoteText: quote.quote, author: quote.author)
+            print("Zitat erfolgreich in Firestore gespeichert!")
+        } catch {
+            print("Fehler beim Speichern des Zitats in Firestore: \(error.localizedDescription)")
+            handleError(error)  // Fehlerbehandlung
+            throw error  // Fehler weiterwerfen
+        }
+    }
 
     // Speichert das bearbeitete Zitat
     func saveEditedQuote(_ quote: Quote) async throws {

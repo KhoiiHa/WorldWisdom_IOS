@@ -47,9 +47,6 @@ struct FavoriteView: View {
             .onAppear {
                 loadFavoriteQuotes()
             }
-            .onChange(of: quoteViewModel.favoriteQuotes) {
-                loadFavoriteQuotes()
-            }
         }
     }
     
@@ -94,15 +91,6 @@ struct FavoriteView: View {
                 .foregroundColor(.blue)
                 .padding(8)
                 .background(Capsule().stroke(Color.blue, lineWidth: 1))
-        }
-    }
-
-    // Hinzufügen eines Favoriten
-    // Hinzufügen eines Favoriten
-    private func addFavoriteQuote(_ quote: Quote) {
-        Task {
-            await quoteViewModel.addFavoriteQuote(quote)
-            showErrorMessage = false  // Fehleranzeige zurücksetzen, falls erfolgreich
         }
     }
 

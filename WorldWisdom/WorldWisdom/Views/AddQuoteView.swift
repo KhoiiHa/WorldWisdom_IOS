@@ -14,9 +14,9 @@ struct AddQuoteView: View {
     @State private var isSaving = false
     @State private var errorMessage: String?
 
-    @EnvironmentObject var viewModel: QuoteViewModel // Das ViewModel als EnvironmentObject
-    
-    var quoteToEdit: Quote? // Optionales Zitat zum Bearbeiten
+    @EnvironmentObject var userQuoteManager: UserQuoteManager // Benutzerspezifische Zitate
+
+    var quoteToEdit: Quote? // Optional: Zitat zum Bearbeiten
 
     var body: some View {
         NavigationStack {
@@ -48,7 +48,7 @@ struct AddQuoteView: View {
                             .cornerRadius(10)
                     }
                 }
-                .disabled(quoteText.isEmpty)
+                .disabled(quoteText.isEmpty || isSaving)
                 .padding()
             }
             .padding()
@@ -63,7 +63,7 @@ struct AddQuoteView: View {
             if let quoteToEdit = quoteToEdit {
                 quoteText = quoteToEdit.quote
                 author = quoteToEdit.author
-                print("Zitat zum Bearbeiten geladen: \(quoteText), \(author)") // Debug-Ausgabe
+                print("Zitat zum Bearbeiten geladen: \(quoteText), \(author)") // Debug
             }
         }
     }
@@ -76,21 +76,19 @@ struct AddQuoteView: View {
         Task {
             do {
                 if let quoteToEdit = quoteToEdit {
-                    // Zitat aktualisieren
-                    print("Aktualisiere Zitat: \(quoteText), \(author)") // Debug-Ausgabe
-                    try await FirebaseManager.shared.updateQuote(quoteToEdit)
+                    // Zitat aktualisieren (update-Methode muss in FirebaseManager existieren!)
+                    print("Aktualisiere Zitat: \(quoteText), \(author)")
+                    try await FirebaseManager.shared.updateUserQuote(id: quoteToEdit.id, newText: quoteText, newAuthor: author)
                 } else {
                     // Neues Zitat speichern
-                    print("Speichere neues Zitat: \(quoteText), \(author)") // Debug-Ausgabe
-                    try await FirebaseManager.shared.saveUserQuote(quoteText: quoteText, author: author)
+                    print("Speichere neues Zitat: \(quoteText), \(author)")
+                    try await userQuoteManager.addUserQuote(quoteText: quoteText, author: author)
                 }
 
-                // Benachrichtige das ViewModel, dass sich die Daten geändert haben
-                try await viewModel.loadFavoriteQuotes() // Erneutes Laden der Favoriten
-                dismiss()
+                dismiss() // Schließt die Ansicht nach erfolgreichem Speichern
             } catch {
                 errorMessage = "Fehler: \(error.localizedDescription)"
-                print("Fehler: \(error.localizedDescription)") // Fehlerbehandlung
+                print("Fehler: \(error.localizedDescription)") // Fehlerlog
             }
             isSaving = false
         }
@@ -98,5 +96,6 @@ struct AddQuoteView: View {
 }
 
 #Preview {
-    AddQuoteView(quoteToEdit: nil) // Zeigt die Ansicht ohne Zitat zum Bearbeiten
+    AddQuoteView(quoteToEdit: nil)
+        .environmentObject(UserQuoteManager()) // Vorschau mit EnvironmentObject
 }

@@ -195,6 +195,7 @@ class FirebaseManager: ObservableObject {
             throw error // Fehler weiterwerfen
         }
     }
+    
 
     // MARK: - Benutzerdefinierte Zitate
     
@@ -210,10 +211,18 @@ class FirebaseManager: ObservableObject {
             "createdAt": Timestamp(date: Date())
         ]
 
-        try await store.collection("users")
-            .document(currentUser.uid)
-            .collection("userQuotes")
-            .addDocument(data: userQuoteData)
+        print("Speichern des Zitats in Firestore: \(userQuoteData)")
+        
+        do {
+            try await store.collection("users")
+                .document(currentUser.uid)
+                .collection("userQuotes")
+                .addDocument(data: userQuoteData)
+            print("Zitat erfolgreich in Firestore gespeichert.")
+        } catch {
+            print("Fehler beim Speichern des Zitats in Firestore: \(error.localizedDescription)")
+            throw error
+        }
     }
 
     func fetchUserQuotes() async throws -> [Quote] {
@@ -238,6 +247,26 @@ class FirebaseManager: ObservableObject {
             )
         }
     }
+    
+    func updateUserQuote(id: String, newText: String, newAuthor: String) async throws {
+        guard let currentUser = auth.currentUser else {
+            throw NSError(domain: "FirebaseManager", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kein angemeldeter Nutzer gefunden."])
+        }
+
+        let updatedData: [String: Any] = [
+            "quoteText": newText,
+            "author": newAuthor.isEmpty ? "Unbekannt" : newAuthor,
+            "updatedAt": Timestamp(date: Date())
+        ]
+
+        try await store.collection("users")
+            .document(currentUser.uid)
+            .collection("userQuotes")
+            .document(id)
+            .updateData(updatedData)
+    }
+    
+    
 
     // MARK: - Storage Funktionen
     

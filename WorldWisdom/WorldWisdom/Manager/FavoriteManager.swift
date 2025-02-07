@@ -17,14 +17,15 @@ class FavoriteManager: ObservableObject {
     // Favoriten aus Firestore laden
     func loadFavoriteQuotes() async throws {
         do {
-            // Aufruf der fetchFavoriteQuotes Methode
             let quotes = try await firebaseManager.fetchFavoriteQuotes()
             self.favoriteQuotes = quotes
         } catch FavoriteError.userNotAuthenticated {
             // Handle spezifischen Fehler, wenn der Benutzer nicht authentifiziert ist
+            print("Benutzer nicht authentifiziert. Fehler beim Laden der Favoriten.")
             throw FavoriteError.userNotAuthenticated
         } catch {
             // Handle andere Fehler und weiterwerfen
+            print("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
             throw error
         }
     }
@@ -32,12 +33,15 @@ class FavoriteManager: ObservableObject {
     // Zitat zu Favoriten hinzufügen
     func addFavoriteQuote(_ quote: Quote) async throws {
         do {
+            // Versuche das Zitat hinzuzufügen
             try await firebaseManager.saveFavoriteQuote(quote: quote)
-            // Direktes Laden der Favoriten nach dem Hinzufügen
-            try await loadFavoriteQuotes()
+            // Direktes Hinzufügen des Zitats zu den Favoriten ohne erneutes Laden der Liste
+            self.favoriteQuotes.append(quote)
         } catch FavoriteError.favoriteAlreadyExists {
+            print("Das Zitat ist bereits in den Favoriten.")
             throw FavoriteError.favoriteAlreadyExists
         } catch {
+            print("Fehler beim Hinzufügen des Zitats zu den Favoriten: \(error.localizedDescription)")
             throw error
         }
     }
@@ -45,10 +49,12 @@ class FavoriteManager: ObservableObject {
     // Favoriten-Zitat entfernen
     func removeFavoriteQuote(_ quote: Quote) async throws {
         do {
+            // Versuche das Zitat zu entfernen
             try await firebaseManager.deleteFavoriteQuote(quote)
-            // Direktes Laden der Favoriten nach dem Entfernen
-            try await loadFavoriteQuotes()
+            // Direktes Entfernen des Zitats aus den Favoriten
+            self.favoriteQuotes.removeAll { $0.id == quote.id }
         } catch {
+            print("Fehler beim Entfernen des Zitats aus den Favoriten: \(error.localizedDescription)")
             throw error
         }
     }
@@ -56,8 +62,10 @@ class FavoriteManager: ObservableObject {
     // Favoritenstatus aktualisieren
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
         if isFavorite {
+            // Favorit hinzufügen
             try await addFavoriteQuote(quote)
         } else {
+            // Favorit entfernen
             try await removeFavoriteQuote(quote)
         }
     }
