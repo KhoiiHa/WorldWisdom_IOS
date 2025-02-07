@@ -41,50 +41,27 @@ class QuoteViewModel: ObservableObject {
         self.randomQuote = quotes.randomElement()
     }
 
-    // Entfernt ein Zitat aus den Favoriten in Firestore und wirft Fehler
-    func removeFavoriteQuote(_ quote: Quote) async throws {
-        do {
-            // Aufruf der removeFavoriteQuote-Methode im FavoriteManager
-            try await favoriteManager.removeFavoriteQuote(quote)
-            try await loadFavoriteQuotes() // Lädt die Favoriten neu
-        } catch {
-            handleError(error)  // Fehlerbehandlung
-            throw error  // Fehler weiterwerfen
-        }
+    // Entfernt ein Zitat aus den Favoriten in Firestore
+    func removeFavoriteQuote(_ quote: Quote) async {
+        await favoriteManager.removeFavoriteQuote(quote)
+        await loadFavoriteQuotes() // Lädt die Favoriten neu
     }
 
-    // Lädt die Favoriten-Zitate aus Firestore und wirft Fehler
-    func loadFavoriteQuotes() async throws {
-        do {
-            // Aufruf der loadFavoriteQuotes-Methode im FavoriteManager
-            try await favoriteManager.loadFavoriteQuotes()
-            self.favoriteQuotes = favoriteManager.favoriteQuotes
-        } catch {
-            handleError(error)  // Fehlerbehandlung
-            throw error  // Fehler weiterwerfen
-        }
+    // Lädt die Favoriten-Zitate aus Firestore
+    func loadFavoriteQuotes() async {
+        await favoriteManager.loadFavoriteQuotes()
+        self.favoriteQuotes = favoriteManager.favoriteQuotes
     }
 
     // Funktion zum Hinzufügen eines Zitats als Favorit
     func addFavoriteQuote(_ quote: Quote) async {
-        do {
-            // Aufruf der addFavoriteQuote-Methode im FavoriteManager
-            try await favoriteManager.addFavoriteQuote(quote)
-            self.favoriteQuotes.append(quote)  // Direktes Hinzufügen zum lokalen Array
-        } catch {
-            handleError(error)  // Fehlerbehandlung
-        }
+        await favoriteManager.addFavoriteQuote(quote)
+        self.favoriteQuotes.append(quote)  // Direktes Hinzufügen zum lokalen Array
     }
 
     // Aktualisiert den Favoritenstatus eines Zitats
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
-        do {
-            // Versucht, den Favoritenstatus im FavoriteManager zu aktualisieren
-            try await favoriteManager.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
-        } catch {
-            // Fehlerbehandlung: Hier kannst du Fehlerlogik hinzufügen, wie z.B. eine Benutzerbenachrichtigung
-            handleError(error)
-        }
+        await favoriteManager.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
     }
 
     // Löscht ein Zitat aus der lokalen Liste und aus Firestore

@@ -76,13 +76,13 @@ struct AddQuoteView: View {
         Task {
             do {
                 if let quoteToEdit = quoteToEdit {
-                    // Zitat aktualisieren (update-Methode muss in FirebaseManager existieren!)
+                    // Zitat aktualisieren
                     print("Aktualisiere Zitat: \(quoteText), \(author)")
                     try await FirebaseManager.shared.updateUserQuote(id: quoteToEdit.id, newText: quoteText, newAuthor: author)
                 } else {
                     // Neues Zitat speichern
                     print("Speichere neues Zitat: \(quoteText), \(author)")
-                    try await userQuoteManager.addUserQuote(quoteText: quoteText, author: author)
+                    await userQuoteManager.addUserQuote(quoteText: quoteText, author: author)
                 }
 
                 dismiss() // Schließt die Ansicht nach erfolgreichem Speichern

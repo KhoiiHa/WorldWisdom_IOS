@@ -12,31 +12,33 @@ struct CategoryFilterView: View {
     @Binding var selectedCategory: String?
 
     var body: some View {
-        NavigationStack {
-            List {
-                Button(action: { selectedCategory = nil }) {
-                    HStack {
-                        Text("Alle Kategorien")
-                        if selectedCategory == nil {
-                            Spacer()
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
+        List {
+            categoryButton(title: "Alle Kategorien", isSelected: selectedCategory == nil) {
+                selectedCategory = nil
+            }
 
-                ForEach(Array(categories), id: \.self) { category in
-                    Button(action: { selectedCategory = category }) {
-                        HStack {
-                            Text(category)
-                            if selectedCategory == category {
-                                Spacer()
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
+            ForEach(Array(categories), id: \.self) { category in
+                categoryButton(title: category, isSelected: selectedCategory == category) {
+                    selectedCategory = category
                 }
             }
-            .navigationTitle("Kategorie auswählen")
+        }
+        .navigationTitle("Kategorie auswählen")
+    }
+
+    private func categoryButton(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(title)
+                Spacer()
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.blue)
+                }
+            }
+            .padding()
+            .background(isSelected ? Color.blue.opacity(0.2) : Color.clear)
+            .cornerRadius(8)
         }
     }
 }

@@ -13,36 +13,33 @@ struct FilterBar: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                Button(action: { selectedCategory = nil }) {
-                    Text("Alle")
-                        .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(selectedCategory == nil ? Color.blue.opacity(0.2) : Color.clear)
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(selectedCategory == nil ? Color.blue : Color.gray, lineWidth: 1)
-                        )
+            HStack(spacing: 8) {
+                categoryButton(title: "Alle", isSelected: selectedCategory == nil) {
+                    selectedCategory = nil
                 }
 
                 ForEach(categories, id: \.self) { category in
-                    Button(action: { selectedCategory = category }) {
-                        Text(category)
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(selectedCategory == category ? Color.blue.opacity(0.2) : Color.clear)
-                            .cornerRadius(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(selectedCategory == category ? Color.blue : Color.gray, lineWidth: 1)
-                            )
+                    categoryButton(title: category, isSelected: selectedCategory == category) {
+                        selectedCategory = category
                     }
                 }
             }
             .padding(.horizontal)
+        }
+    }
+
+    private func categoryButton(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isSelected ? Color.accentColor : Color.gray, lineWidth: 1)
+                )
         }
     }
 }

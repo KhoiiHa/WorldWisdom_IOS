@@ -8,9 +8,10 @@ import SwiftUI
 
 struct FavoriteQuoteCardView: View {
     let quote: Quote
-    let unfavoriteAction: () async -> Void  // Der Action-Handler wird jetzt async
+    let unfavoriteAction: () async throws -> Void  // Die Action kann jetzt Fehler werfen
 
     @State private var showErrorMessage: Bool = false  // Fehleranzeige für diese View
+    @State private var isRemoving: Bool = false  // Um zu erkennen, ob der Entfernen-Prozess läuft
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -46,13 +47,14 @@ struct FavoriteQuoteCardView: View {
                 }
             }) {
                 Image(systemName: "heart.slash")
-                    .foregroundColor(.red)
+                    .foregroundColor(isRemoving ? .gray : .red) // Buttonfarbe ändern während des Entfernens
                     .padding(12)
                     .background(Color.white.opacity(0.7))  // Halbtransparente Hintergrundfarbe für den Button
                     .clipShape(Circle())
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 2, y: 2)  // Kleiner Schatten für den Button
                     .overlay(Circle().stroke(Color.red, lineWidth: 1))  // Rote Umrandung für den Button
                     .padding(10)
+                    .disabled(isRemoving)  // Button während der Entfernung deaktivieren
             }
             .buttonStyle(PlainButtonStyle())  // Deaktiviert die Standard-Button-Stile
         }
@@ -60,8 +62,15 @@ struct FavoriteQuoteCardView: View {
 
     // Fehlerbehandlung für unfavoriteAction
     private func unfavoriteQuote() async {
-        await unfavoriteAction() // Wir rufen einfach die unfavoriteAction auf
-        showErrorMessage = false  // Fehleranzeige zurücksetzen
+        isRemoving = true  // Button während des Entfernens deaktivieren
+        do {
+            try await unfavoriteAction() // Wir rufen einfach die unfavoriteAction auf
+            showErrorMessage = false  // Fehleranzeige zurücksetzen
+        } catch {
+            showErrorMessage = true  // Fehleranzeige aktivieren
+            print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
+        }
+        isRemoving = false  // Entfernen-Prozess abgeschlossen, Button wieder aktiv
     }
 }
 

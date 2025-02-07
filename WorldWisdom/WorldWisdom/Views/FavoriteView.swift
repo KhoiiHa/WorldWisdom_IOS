@@ -8,127 +8,56 @@
 import SwiftUI
 
 struct FavoriteView: View {
-    @EnvironmentObject private var quoteViewModel: QuoteViewModel
-    @State private var showCategoryFilter = false
-    @State private var selectedCategory: String? = nil
-    @State private var showErrorMessage = false  // Zustand für Fehleranzeige im UI
-    
+    @StateObject private var favoriteManager = FavoriteManager()
+
     var body: some View {
-        NavigationStack {
-            VStack {
-                if quoteViewModel.favoriteQuotes.isEmpty {
+        NavigationView {
+            List {
+                // Anzeige der Favoriten oder leere Ansicht
+                if favoriteManager.favoriteQuotes.isEmpty {
                     emptyStateView
                 } else {
-                    quoteListView
-                }
-                
-                // Fehleranzeige im UI (optional)
-                if showErrorMessage {
-                    Text("Fehler beim Laden oder Speichern eines Favoriten!")
-                        .foregroundColor(.red)
-                        .padding()
+                    ForEach(favoriteManager.favoriteQuotes) { quote in
+                        FavoriteQuoteCardView(quote: quote) {
+                            await removeFavorite(quote)
+                        }
+                    }
                 }
             }
             .navigationTitle("Favoriten")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    addQuoteButton
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    categoryFilterButton
+                    Button(action: { Task { await favoriteManager.loadFavoriteQuotes() } }) {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
+                        Image(systemName: "plus")
+                            .foregroundColor(.blue)
+                    }
                 }
             }
-            .sheet(isPresented: $showCategoryFilter) {
-                CategoryFilterView(
-                    categories: Set(quoteViewModel.favoriteQuotes.map { $0.category }),
-                    selectedCategory: $selectedCategory
-                )
-            }
-            .onAppear {
-                loadFavoriteQuotes()
+            .task {
+                await favoriteManager.loadFavoriteQuotes()
             }
         }
     }
     
-    // Empty State View
     private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "heart.slash.fill")
-                .font(.system(size: 48))
+        VStack {
+            Image(systemName: "star.slash")
+                .font(.system(size: 50))
                 .foregroundColor(.gray)
-            Text("Du hast noch keine Favoriten gespeichert.")
-                .foregroundColor(.secondary)
-                .font(.system(size: 18, weight: .semibold))
+            Text("Noch keine Favoriten gespeichert.")
+                .font(.headline)
+                .foregroundColor(.gray)
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .multilineTextAlignment(.center)
     }
     
-    // List of Quotes
-    private var quoteListView: some View {
-        List {
-            ForEach(filteredFavoriteQuotes()) { quote in
-                NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
-                    FavoriteQuoteCardView(quote: quote, unfavoriteAction: {
-                        unfavoriteQuote(quote)
-                    })
-                }
-            }
-        }
+    private func removeFavorite(_ quote: Quote) async {
+        await favoriteManager.removeFavoriteQuote(quote)
     }
-    
-    // Buttons
-    private var categoryFilterButton: some View {
-        Button(action: { showCategoryFilter = true }) {
-            Image(systemName: "line.3.horizontal.decrease.circle")
-                .foregroundColor(.blue)
-        }
-    }
-
-    private var addQuoteButton: some View {
-        NavigationLink(destination: AddQuoteView()) {
-            Text("Neues Zitat erstellen")
-                .fontWeight(.semibold)
-                .foregroundColor(.blue)
-                .padding(8)
-                .background(Capsule().stroke(Color.blue, lineWidth: 1))
-        }
-    }
-
-    // Entfernen eines Favoriten
-    private func unfavoriteQuote(_ quote: Quote) {
-        Task {
-            do {
-                try await quoteViewModel.removeFavoriteQuote(quote)
-                showErrorMessage = false
-            } catch {
-                print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
-                showErrorMessage = true
-            }
-        }
-    }
-
-    // Laden der Favoriten
-    private func loadFavoriteQuotes() {
-        Task {
-            do {
-                try await quoteViewModel.loadFavoriteQuotes()
-                showErrorMessage = false
-            } catch {
-                print("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
-                showErrorMessage = true
-            }
-        }
-    }
-    
-    // Filtered Quotes
-    private func filteredFavoriteQuotes() -> [Quote] {
-        if let selectedCategory = selectedCategory {
-            return quoteViewModel.favoriteQuotes.filter { $0.category == selectedCategory }
-        }
-        return quoteViewModel.favoriteQuotes
-    }
-}
-
-#Preview {
-    FavoriteView()
 }
