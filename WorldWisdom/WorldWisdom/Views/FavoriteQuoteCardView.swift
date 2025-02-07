@@ -15,18 +15,23 @@ struct FavoriteQuoteCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(quote.quote)
+            // Zitat-Text
+            Text("„\(quote.quote)“")
                 .font(.body)
+                .italic()
                 .foregroundColor(.primary)
                 .lineLimit(3)  // Begrenzung der Zeilenanzahl
                 .padding(.bottom, 5)
 
+            // Autor-Text
             Text("- \(quote.author)")
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
 
+            // Fehlermeldung
             if showErrorMessage {
                 Text("Fehler beim Entfernen des Favoriten. Bitte versuchen Sie es später erneut.")
+                    .font(.caption)
                     .foregroundColor(.red)
                     .padding(8)
                     .background(Color.red.opacity(0.1))
@@ -36,23 +41,32 @@ struct FavoriteQuoteCardView: View {
         }
         .padding()
         .background(
-            LinearGradient(gradient: Gradient(colors: [Color.white, Color.gray.opacity(0.05)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(
+                gradient: Gradient(colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)  // Sanfter Schatten
         .overlay(alignment: .topTrailing) {
+            // Entfernen-Button
             Button(action: {
                 Task {
                     await unfavoriteQuote()
                 }
             }) {
-                Image(systemName: "heart.slash")
+                Image(systemName: "heart.slash.fill")
+                    .symbolRenderingMode(.multicolor)  // Mehrfarbiges Symbol
                     .foregroundColor(isRemoving ? .gray : .red) // Buttonfarbe ändern während des Entfernens
                     .padding(12)
-                    .background(Color.white.opacity(0.7))  // Halbtransparente Hintergrundfarbe für den Button
+                    .background(Color.white.opacity(0.9))  // Halbtransparente Hintergrundfarbe für den Button
                     .clipShape(Circle())
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 2, y: 2)  // Kleiner Schatten für den Button
-                    .overlay(Circle().stroke(Color.red, lineWidth: 1))  // Rote Umrandung für den Button
+                    .overlay(
+                        Circle()
+                            .stroke(isRemoving ? .gray : .red, lineWidth: 1)  // Umrandung für den Button
+                    )
                     .padding(10)
                     .disabled(isRemoving)  // Button während der Entfernung deaktivieren
             }

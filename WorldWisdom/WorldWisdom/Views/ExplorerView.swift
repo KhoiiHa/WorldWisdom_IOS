@@ -80,7 +80,7 @@ struct ExplorerView: View {
             }
             .navigationTitle("Entdecke Zitate")
             .task {
-                await loadQuotes()
+                await loadQuotes() // Lädt Zitate beim Start
             }
         }
     }
@@ -93,6 +93,15 @@ struct ExplorerView: View {
             
             TextField("Suche nach Autoren oder Zitaten...", text: $searchQuery)
                 .foregroundColor(.primary)
+                // Neue Form von onChange ohne Parameter
+                .onChange(of: searchQuery) {
+                    // Reset der Tag-Auswahl bei Änderung der Suche
+                    selectedTag = nil
+                    // Async Call innerhalb eines Task Blocks
+                    Task {
+                        await loadQuotes() // Ruft loadQuotes auf, wenn der Suchbegriff geändert wird
+                    }
+                }
         }
         .padding(12)
         .background(Color(.systemBackground))
