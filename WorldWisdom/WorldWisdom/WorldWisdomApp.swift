@@ -19,12 +19,11 @@ struct WorldWisdomApp: App {
     
     init() {
         FirebaseApp.configure()
-        FirebaseConfiguration.shared.setLoggerLevel(.debug) // Optional: Setze das Log-Level
+        FirebaseConfiguration.shared.setLoggerLevel(.debug) // Optional für Logging
     }
     
     var body: some Scene {
         WindowGroup {
-            // Überprüfe, ob der Benutzer eingeloggt ist und zeige MainTabView an
             if userViewModel.isLoggedIn {
                 MainTabView()
                     .environmentObject(userViewModel)
@@ -32,20 +31,11 @@ struct WorldWisdomApp: App {
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
                     .environmentObject(userQuoteManager)
-                    .onAppear {
-                        // Benutzerstatus beim Start überprüfen
-                        Task {
-                            await userViewModel.checkCurrentUser()
-                        }
+                    .onReceive(userViewModel.objectWillChange) { _ in
+                        // Erzwinge UI-Update bei Änderungen
                     }
             } else {
                 AuthenticationView()
-                    .onAppear {
-                        // Benutzerstatus beim Start überprüfen
-                        Task {
-                            await userViewModel.checkCurrentUser()
-                        }
-                    }
             }
         }
     }

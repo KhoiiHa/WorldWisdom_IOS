@@ -28,8 +28,10 @@ class FirebaseManager: ObservableObject {
     private init() {
         self.currentUser = auth.currentUser
         _ = auth.addStateDidChangeListener { _, user in
-            DispatchQueue.main.async {
-                self.currentUser = user
+            Task {
+                await MainActor.run {
+                    self.currentUser = user
+                }
             }
         }
     }

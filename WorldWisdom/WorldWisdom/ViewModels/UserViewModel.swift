@@ -54,20 +54,23 @@ class UserViewModel: ObservableObject {
             self.errorMessage = "Das Passwort muss mindestens 6 Zeichen lang sein."
             return
         }
-
+        
         do {
             let authResult = try await FirebaseManager.shared.registerUser(email: email, password: password)
             let newUser = FireUser(id: authResult.user.uid, email: email, name: nil, uid: authResult.user.uid, favoriteQuoteIds: [])
             
-            self.user = newUser
-            self.isLoggedIn = true
-            saveLoginStatus(isLoggedIn: true)
-            self.errorMessage = nil
+            await MainActor.run {
+                self.user = newUser
+                self.isLoggedIn = true
+                self.saveLoginStatus(isLoggedIn: true)
+            }
             
             try await FirebaseManager.shared.createUserInFirestore(id: newUser.uid, email: email)
             print("Benutzer erfolgreich registriert.")
         } catch {
-            self.errorMessage = "Registrierung fehlgeschlagen: \(error.localizedDescription)"
+            await MainActor.run {
+                self.errorMessage = "Registrierung fehlgeschlagen: \(error.localizedDescription)"
+            }
         }
     }
 
