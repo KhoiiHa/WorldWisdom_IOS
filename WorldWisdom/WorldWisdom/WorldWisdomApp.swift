@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Firebase
+import SwiftData
 
 @main
 struct WorldWisdomApp: App {
@@ -17,9 +18,17 @@ struct WorldWisdomApp: App {
     @StateObject private var favoriteManager = FavoriteManager()
     @StateObject private var userQuoteManager = UserQuoteManager()
     
+    let container: ModelContainer
+
     init() {
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.debug) // Optional für Logging
+
+        do {
+            container = try ModelContainer(for: QuoteEntity.self, FireUserEntity.self, FavoriteQuoteEntity.self, UserCreatedQuoteEntity.self)
+        } catch {
+            fatalError("Fehler beim Erstellen des ModelContainers: \(error)")
+        }
     }
     
     var body: some Scene {
@@ -31,12 +40,27 @@ struct WorldWisdomApp: App {
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
                     .environmentObject(userQuoteManager)
-                    .onReceive(userViewModel.objectWillChange) { _ in
-                        // Erzwinge UI-Update bei Änderungen
+                    .modelContainer(container)
+                    .onAppear {
+                        Task {
+                            await syncData()
+                        }
                     }
             } else {
                 AuthenticationView()
+                    .modelContainer(container)
+                    .onAppear {
+                        Task {
+                            await syncData()
+                        }
+                    }
             }
         }
+    }
+
+    // Startet die Synchronisation mit Firestore
+    private func syncData() async {
+        let syncManager = SwiftDataSyncManager(context: container.mainContext)
+        await syncManager.syncQuotes()
     }
 }

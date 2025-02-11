@@ -85,7 +85,7 @@ struct ExplorerView: View {
         }
     }
 
-    // MARK: - Neue optimierte Suchleiste
+    // MARK: - Neue Suchleiste
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -93,7 +93,6 @@ struct ExplorerView: View {
             
             TextField("Suche nach Autoren oder Zitaten...", text: $searchQuery)
                 .foregroundColor(.primary)
-                // Neue Form von onChange ohne Parameter
                 .onChange(of: searchQuery) {
                     // Reset der Tag-Auswahl bei Änderung der Suche
                     selectedTag = nil

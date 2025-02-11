@@ -28,6 +28,4 @@ enum FavoriteError: String, Error, Identifiable {
             return "Es ist ein unbekannter Fehler aufgetreten. Bitte versuchen Sie es später erneut."
         }
     }
-    
-
 }

@@ -140,7 +140,7 @@ class FirebaseManager: ObservableObject {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
         }
-        
+
         let favoriteQuoteData: [String: Any] = [
             "id": quote.id,
             "quoteText": quote.quote,
@@ -148,8 +148,21 @@ class FirebaseManager: ObservableObject {
             "category": quote.category,
             "createdAt": Timestamp(date: Date())
         ]
+
+        // Prüfen, ob das Zitat bereits als Favorit existiert
+        let favoriteQuoteRef = store.collection("users")
+            .document(currentUser.uid)
+            .collection("favorites")
+            .document(quote.id)
         
+        let documentSnapshot = try await favoriteQuoteRef.getDocument()
+
+        if documentSnapshot.exists {
+            throw FavoriteError.alreadyFavorite // Fehler, wenn das Zitat schon als Favorit gespeichert ist
+        }
+
         do {
+            // Füge das Zitat zu den Favoriten hinzu
             try await store.collection("users")
                 .document(currentUser.uid)
                 .collection("favorites")
@@ -170,16 +183,22 @@ class FirebaseManager: ObservableObject {
     // Methode zum Löschen eines Favoriten
     func deleteFavoriteQuote(_ quote: Quote) async throws {
         guard let currentUser = auth.currentUser else { return }
-        
+
         let userRef = store.collection("users").document(currentUser.uid)
-        
+        let quoteRef = store.collection("quotes").document(quote.id)
+
         do {
             // Lösche das Zitat aus den Favoriten
             try await userRef.collection("favorites").document(quote.id).delete()
-            
+
             // Entferne die ID aus der Liste der Favoriten
             try await userRef.updateData([
                 "favoriteQuoteIds": FieldValue.arrayRemove([quote.id])
+            ])
+
+            // Optional: Entferne den Favoritenstatus aus der Quotes-Sammlung
+            try await quoteRef.updateData([
+                "isFavorite": false
             ])
         } catch {
             throw error // Fehler weiterwerfen
@@ -188,11 +207,19 @@ class FirebaseManager: ObservableObject {
     
     // Methode zum Aktualisieren des Favoritenstatus
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
+        guard let currentUser = auth.currentUser else {
+            throw FavoriteError.userNotAuthenticated
+        }
+
         let quoteRef = store.collection("quotes").document(quote.id)
+        let favoriteQuoteRef = store.collection("users")
+            .document(currentUser.uid)
+            .collection("favorites")
+            .document(quote.id)
+
         do {
-            try await quoteRef.updateData([
-                "isFavorite": isFavorite
-            ])
+            try await quoteRef.updateData(["isFavorite": isFavorite])
+            try await favoriteQuoteRef.updateData(["isFavorite": isFavorite])
         } catch {
             throw error // Fehler weiterwerfen
         }
