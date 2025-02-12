@@ -13,19 +13,23 @@ import SwiftData
 struct WorldWisdomApp: App {
     
     @StateObject private var userViewModel = UserViewModel()
-    @StateObject private var quoteViewModel = QuoteViewModel()
     @StateObject private var firebaseManager = FirebaseManager.shared
     @StateObject private var favoriteManager = FavoriteManager()
     @StateObject private var userQuoteManager = UserQuoteManager()
+    
+    @StateObject private var quoteViewModel: QuoteViewModel
     
     let container: ModelContainer
 
     init() {
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.debug) // Optional für Logging
-
+        
         do {
+            // Initialisiere den ModelContainer für alle Modelle
             container = try ModelContainer(for: QuoteEntity.self, FireUserEntity.self, FavoriteQuoteEntity.self, UserCreatedQuoteEntity.self)
+            // Initialisiere QuoteViewModel mit dem richtigen ModelContext
+            _quoteViewModel = StateObject(wrappedValue: QuoteViewModel())
         } catch {
             fatalError("Fehler beim Erstellen des ModelContainers: \(error)")
         }
@@ -33,6 +37,7 @@ struct WorldWisdomApp: App {
     
     var body: some Scene {
         WindowGroup {
+            // Überprüfe, ob der User eingeloggt ist und zeige das entsprechende View
             if userViewModel.isLoggedIn {
                 MainTabView()
                     .environmentObject(userViewModel)
@@ -42,6 +47,7 @@ struct WorldWisdomApp: App {
                     .environmentObject(userQuoteManager)
                     .modelContainer(container)
                     .onAppear {
+                        // Synchronisiere Daten nach dem Laden der App
                         Task {
                             await syncData()
                         }
@@ -50,6 +56,7 @@ struct WorldWisdomApp: App {
                 AuthenticationView()
                     .modelContainer(container)
                     .onAppear {
+                        // Synchronisiere Daten nach dem Laden der App
                         Task {
                             await syncData()
                         }
@@ -60,7 +67,7 @@ struct WorldWisdomApp: App {
 
     // Startet die Synchronisation mit Firestore
     private func syncData() async {
-        let syncManager = SwiftDataSyncManager(context: container.mainContext)
-        await syncManager.syncQuotes()
+        let syncManager = SwiftDataSyncManager()
+        await syncManager.syncQuotesFromFirestore()  // Hol die Zitate aus Firebase und speichere sie in SwiftData
     }
 }

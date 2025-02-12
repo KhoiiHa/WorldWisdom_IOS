@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
@@ -39,7 +40,8 @@ struct ExplorerView: View {
                     HStack(spacing: 10) {
                         ForEach(allTags, id: \.self) { tag in
                             Button(action: {
-                                selectedTag = (selectedTag == tag) ? nil : tag // Toggle-Funktion
+                                // Toggle-Logik für Tag
+                                selectedTag = (selectedTag == tag) ? nil : tag
                             }) {
                                 Text(tag)
                                     .font(.caption)
@@ -93,7 +95,7 @@ struct ExplorerView: View {
             
             TextField("Suche nach Autoren oder Zitaten...", text: $searchQuery)
                 .foregroundColor(.primary)
-                .onChange(of: searchQuery) {
+                .onChange(of: searchQuery) { _, newValue in
                     // Reset der Tag-Auswahl bei Änderung der Suche
                     selectedTag = nil
                     // Async Call innerhalb eines Task Blocks
@@ -108,7 +110,7 @@ struct ExplorerView: View {
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
     }
-    
+
     // MARK: - Lädt Zitate mit Fehlerbehandlung
     private func loadQuotes() async {
         do {

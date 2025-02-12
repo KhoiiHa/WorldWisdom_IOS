@@ -5,6 +5,7 @@
 //  Created by Vu Minh Khoi Ha on 22.01.25.
 //
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
@@ -162,7 +163,6 @@ struct HomeView: View {
         .cornerRadius(15)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
-
     // MARK: - Neues Zitat-Button
     private var newQuoteButton: some View {
         Button(action: { Task { quoteViewModel.getRandomQuote() } }) {

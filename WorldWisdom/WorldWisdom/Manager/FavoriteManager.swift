@@ -16,6 +16,7 @@ class FavoriteManager: ObservableObject {
     private let logger = Logger(subsystem: "com.deineApp.Zitate", category: "FavoriteManager")
 
     @Published private(set) var favoriteQuotes: [Quote] = []
+    @Published var errorMessage: String? 
 
     // Favoriten aus Firestore laden
     func loadFavoriteQuotes() async {
@@ -24,23 +25,28 @@ class FavoriteManager: ObservableObject {
             favoriteQuotes = quotes
         } catch FavoriteError.userNotAuthenticated {
             logger.error("Benutzer nicht authentifiziert. Fehler beim Laden der Favoriten.")
+            errorMessage = FavoriteError.userNotAuthenticated.errorMessage
         } catch {
             logger.error("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
+            errorMessage = FavoriteError.unknownError.errorMessage
         }
     }
 
     // Zitat zu Favoriten hinzufügen
-    func addFavoriteQuote(_ quote: Quote) async {
+    func addFavoriteQuote(_ quote: Quote) async throws {
         guard !favoriteQuotes.contains(where: { $0.id == quote.id }) else {
             logger.warning("Zitat ist bereits in den Favoriten.")
+            errorMessage = FavoriteError.favoriteAlreadyExists.errorMessage
             return
         }
-        
+
         do {
             try await firebaseManager.saveFavoriteQuote(quote: quote)
             favoriteQuotes.append(quote)
         } catch {
             logger.error("Fehler beim Hinzufügen des Zitats: \(error.localizedDescription)")
+            errorMessage = FavoriteError.unableToUpdateFavorite.errorMessage
+            throw error  
         }
     }
 
@@ -56,15 +62,24 @@ class FavoriteManager: ObservableObject {
             favoriteQuotes.removeAll { $0.id == quote.id }
         } catch {
             logger.error("Fehler beim Entfernen des Zitats: \(error.localizedDescription)")
+            errorMessage = FavoriteError.unableToUpdateFavorite.errorMessage
         }
     }
 
     // Favoritenstatus aktualisieren
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
-        if isFavorite {
-            await addFavoriteQuote(quote)
-        } else {
-            await removeFavoriteQuote(quote)
+        do {
+            if isFavorite {
+                try await addFavoriteQuote(quote) // Fehlerbehandlung hinzugefügt
+            } else {
+                await removeFavoriteQuote(quote) // Fehlerbehandlung hinzugefügt
+            }
+        } catch let error as FavoriteError {
+            // Verwende die Fehlerbeschreibung des Enums, um eine benutzerfreundliche Nachricht anzuzeigen
+            print("Fehler: \(error.errorMessage)")
+        } catch {
+            // Allgemeine Fehlerbehandlung, falls es ein anderer Fehler ist
+            print("Unbekannter Fehler: \(error.localizedDescription)")
         }
     }
 }
