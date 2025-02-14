@@ -9,6 +9,7 @@ import Foundation
 import FirebaseFirestore
 import Firebase
 import SwiftData
+import Reachability
 
 @MainActor
 class QuoteViewModel: ObservableObject {
@@ -24,20 +25,30 @@ class QuoteViewModel: ObservableObject {
 
     // SwiftData Manager für lokale Speicherung
     private var swiftDataSyncManager: SwiftDataSyncManager
-    
+    private var reachability: Reachability? // Reachability-Instanz zum Überprüfen der Netzwerkkonnektivität
+
     init() {
-        // Initialisiere den SwiftDataSyncManager ohne Übergabe von ModelContext
         self.swiftDataSyncManager = SwiftDataSyncManager()
+        self.reachability = try? Reachability() // Initialisiere Reachability
     }
 
+    // Prüft, ob eine Internetverbindung vorhanden ist
+    func isConnectedToInternet() -> Bool {
+        return reachability?.connection != .unavailable
+    }
 
     // Lädt einmal ALLE Zitate und speichert sie in quotes
     func loadAllQuotes() async throws {
         do {
-            let fetchedQuotes = try await QuoteService.shared.fetchQuotes()
-            self.quotes = fetchedQuotes // Speichert ALLE Zitate in der Liste
-            // Speichere die Zitate auch lokal in SwiftData
-            await syncQuotesWithSwiftData()
+            if isConnectedToInternet() {
+                // Zitate von der API abrufen
+                let fetchedQuotes = try await QuoteService.shared.fetchQuotes()
+                self.quotes = fetchedQuotes // Speichert ALLE Zitate in der Liste
+                await syncQuotesWithSwiftData()
+            } else {
+                // Zitate aus SwiftData abrufen, wenn keine Internetverbindung besteht
+                await fetchQuotesFromSwiftData()
+            }
         } catch {
             self.handleError(error) // Fehler direkt behandeln
             throw error // Fehler weiterwerfen
@@ -55,6 +66,24 @@ class QuoteViewModel: ObservableObject {
         }
     }
 
+    // Lädt Zitate aus SwiftData (Offline-Modus)
+    private func fetchQuotesFromSwiftData() async {
+        do {
+            let fetchRequest = FetchDescriptor<QuoteEntity>()
+            let quoteEntities = try await Task {
+                return try swiftDataSyncManager.context.fetch(fetchRequest)
+            }.value
+
+            let localQuotes = quoteEntities.map { quoteEntity in
+                Quote(id: quoteEntity.id, author: quoteEntity.author, quote: quoteEntity.quote, category: quoteEntity.category, tags: quoteEntity.tags.split(separator: ", ").map { String($0) }, isFavorite: quoteEntity.isFavorite, description: quoteEntity.quoteDescription, source: quoteEntity.source)
+            }
+
+            self.quotes = localQuotes
+        } catch {
+            self.handleError(error)
+        }
+    }
+
     // Gibt ein zufälliges Zitat aus
     func getRandomQuote() {
         guard let randomQuote = quotes.randomElement() else {
@@ -67,11 +96,8 @@ class QuoteViewModel: ObservableObject {
     // Entfernt ein Zitat aus den Favoriten in Firestore und SwiftData
     func removeFavoriteQuote(_ quote: Quote) async {
         do {
-            // Entferne Favorit aus Firestore
             await favoriteManager.removeFavoriteQuote(quote)
-            // Entferne Favorit aus SwiftData
             try await swiftDataSyncManager.removeFavoriteQuote(quote)
-            // Lade die Favoriten neu
             await loadFavoriteQuotes()
         } catch {
             self.handleError(error)
@@ -81,16 +107,10 @@ class QuoteViewModel: ObservableObject {
     // Lädt die Favoriten-Zitate aus Firestore und SwiftData
     func loadFavoriteQuotes() async {
         do {
-            // Lade Favoriten aus Firestore
             await favoriteManager.loadFavoriteQuotes()
-
-            // Lade Favoriten aus SwiftData
             let swiftDataFavorites = try await swiftDataSyncManager.fetchFavoriteQuotes()
-
-            // Entferne Duplikate und kombiniere die Favoriten
             var combinedFavorites = favoriteManager.favoriteQuotes + swiftDataFavorites
             combinedFavorites = removeDuplicateQuotes(from: combinedFavorites)
-
             self.favoriteQuotes = combinedFavorites
         } catch {
             self.handleError(error)
@@ -111,13 +131,13 @@ class QuoteViewModel: ObservableObject {
     // Funktion zum Hinzufügen eines Zitats als Favorit (sowohl in Firestore als auch in SwiftData)
     func addFavoriteQuote(_ quote: Quote) async {
         do {
-            // Favorit in Firestore speichern
-            try await favoriteManager.addFavoriteQuote(quote)
+            // Zuerst in Firestore aktualisieren
+            await favoriteManager.updateFavoriteStatus(for: quote, isFavorite: true)
             
-            // Favorit in SwiftData speichern
-            try await swiftDataSyncManager.addFavoriteQuote(quote)
+            // Dann in SwiftData den Favoritenstatus aktualisieren
+            try await swiftDataSyncManager.updateFavoriteStatus(for: quote, to: true)
             
-            // Favorit zum lokalen Array hinzufügen
+            // Favoritenliste im ViewModel aktualisieren
             self.favoriteQuotes.append(quote)
         } catch {
             self.handleError(error)
@@ -137,13 +157,8 @@ class QuoteViewModel: ObservableObject {
     // Löscht ein Zitat aus der lokalen Liste, aus Firestore und aus SwiftData
     func deleteQuote(_ quote: Quote) async throws {
         do {
-            // Zitat aus Firestore löschen
             try await firebaseManager.deleteQuote(quote)
-            
-            // Zitat aus SwiftData löschen
             try await swiftDataSyncManager.deleteQuote(quote)
-            
-            // Zitat aus der lokalen Liste entfernen
             if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
                 quotes.remove(at: index)
             }
@@ -155,37 +170,25 @@ class QuoteViewModel: ObservableObject {
 
     // Fügt ein neues Zitat hinzu und speichert es sowohl in Firestore als auch in SwiftData
     func addQuote(_ quote: Quote) async throws {
-        // Überprüfen, ob das Zitat korrekt zur lokalen Liste hinzugefügt wird
-        print("Zitat wird lokal hinzugefügt: \(quote)")
-        quotes.append(quote) // Hinzufügen des Zitats zur lokalen Liste
-
+        quotes.append(quote)
         do {
-            // Speichern des Zitats in Firestore
-            print("Versuche, Zitat in Firestore zu speichern...")
             try await firebaseManager.saveUserQuote(quoteText: quote.quote, author: quote.author)
-            print("Zitat erfolgreich in Firestore gespeichert!")
-
-            // Speichern des Zitats in SwiftData
             try await swiftDataSyncManager.addQuote(quote)
         } catch {
             print("Fehler beim Speichern des Zitats in Firestore: \(error.localizedDescription)")
-            self.handleError(error)  // Fehlerbehandlung
-            throw error  // Fehler weiterwerfen
+            self.handleError(error)
+            throw error
         }
     }
 
     // Speichert das bearbeitete Zitat sowohl in Firestore als auch in SwiftData
     func saveEditedQuote(_ quote: Quote) async throws {
-        // Update der lokalen Liste
         if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
-            quotes[index] = quote // Überschreibt das Zitat in der Liste
+            quotes[index] = quote
         }
-
         do {
-            // Update in Firestore
             try await firebaseManager.updateQuote(quote)
-            // Update in SwiftData
-            try await swiftDataSyncManager.updateQuote(quote)  
+            try await swiftDataSyncManager.updateQuote(quote)
         } catch {
             self.handleError(error)
             throw error
@@ -194,9 +197,27 @@ class QuoteViewModel: ObservableObject {
 
     // Gemeinsame Fehlerbehandlung
     private func handleError(_ error: Error) {
-        let handledError = QuoteError.handleError(error)
-        self.errorMessage = handledError.errorDescription
-        self.recoverySuggestion = handledError.recoverySuggestion
+        // Fehlerbehandlung für QuoteError
+        if let quoteError = error as? QuoteError {
+            self.errorMessage = quoteError.errorDescription
+            self.recoverySuggestion = quoteError.recoverySuggestion
+        }
+        // Fehlerbehandlung für SwiftDataError
+        else if let swiftDataError = error as? SwiftDataError {
+            self.errorMessage = swiftDataError.errorDescription
+            self.recoverySuggestion = swiftDataError.recoverySuggestion
+        }
+        // Fehlerbehandlung für FavoriteError
+        else if let favoriteError = error as? FavoriteError {
+            self.errorMessage = favoriteError.errorMessage
+            self.recoverySuggestion = favoriteError.errorMessage // Gleich wie die Fehlermeldung
+        }
+        // Unbekannter Fehler
+        else {
+            self.errorMessage = "Unbekannter Fehler: \(error.localizedDescription)"
+            self.recoverySuggestion = "Versuche es später erneut."
+        }
+        
         self.hasError = true
         print("Fehler: \(self.errorMessage ?? "Kein Fehler")")
         print("Vorschlag zur Fehlerbehebung: \(self.recoverySuggestion ?? "Kein Vorschlag")")

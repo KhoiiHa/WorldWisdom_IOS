@@ -14,6 +14,7 @@
 		A69D12232D380DDE00EC70D9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12222D380DDE00EC70D9 /* FirebaseDatabase */; settings = {ATTRIBUTES = (Required, ); }; };
 		A69D12252D380DDE00EC70D9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12242D380DDE00EC70D9 /* FirebaseFirestore */; };
 		A69D12272D380DDE00EC70D9 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12262D380DDE00EC70D9 /* FirebaseStorage */; };
+		A6B725482D5F4B9200E0FBFF /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = A6B725472D5F4B9200E0FBFF /* Reachability */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 				A69D12212D380DDE00EC70D9 /* FirebaseCrashlytics in Frameworks */,
 				A69D121F2D380DDE00EC70D9 /* FirebaseCore in Frameworks */,
 				A69D12272D380DDE00EC70D9 /* FirebaseStorage in Frameworks */,
+				A6B725482D5F4B9200E0FBFF /* Reachability in Frameworks */,
 				A69D121D2D380DDE00EC70D9 /* FirebaseAuth in Frameworks */,
 				A69D12252D380DDE00EC70D9 /* FirebaseFirestore in Frameworks */,
 			);
@@ -89,6 +91,7 @@
 				A69D12222D380DDE00EC70D9 /* FirebaseDatabase */,
 				A69D12242D380DDE00EC70D9 /* FirebaseFirestore */,
 				A69D12262D380DDE00EC70D9 /* FirebaseStorage */,
+				A6B725472D5F4B9200E0FBFF /* Reachability */,
 			);
 			productName = WorldWisdom;
 			productReference = A61EA9872D35538000878C44 /* WorldWisdom.app */;
@@ -120,6 +123,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A69D12192D380DDE00EC70D9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				A6B725462D5F4B9200E0FBFF /* XCRemoteSwiftPackageReference "Reachability" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A61EA9882D35538000878C44 /* Products */;
@@ -367,6 +371,14 @@
 				minimumVersion = 11.7.0;
 			};
 		};
+		A6B725462D5F4B9200E0FBFF /* XCRemoteSwiftPackageReference "Reachability" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -404,6 +416,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A69D12192D380DDE00EC70D9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		A6B725472D5F4B9200E0FBFF /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A6B725462D5F4B9200E0FBFF /* XCRemoteSwiftPackageReference "Reachability" */;
+			productName = Reachability;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

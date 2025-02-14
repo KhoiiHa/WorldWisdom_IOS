@@ -44,6 +44,17 @@ class QuoteService {
             throw QuoteError.networkError("Ungültige URL")
         }
 
-        return try await fetchData(from: url)
+        // Abrufen der Zitate von der API
+        let quotes: [Quote] = try await fetchData(from: url)
+
+        // Setze "isFavorite" auf false für jedes Zitat
+        let updatedQuotes = quotes.map { quote -> Quote in
+            var modifiedQuote = quote
+            modifiedQuote.isFavorite = false
+            return modifiedQuote
+        }
+
+        // Gib die bearbeiteten Zitate zurück
+        return updatedQuotes
     }
 }

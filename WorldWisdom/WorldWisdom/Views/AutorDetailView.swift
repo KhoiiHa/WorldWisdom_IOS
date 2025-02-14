@@ -11,14 +11,11 @@ struct AutorDetailView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
     @State private var isFavorite: Bool
     let quote: Quote
-    @State private var searchQuery: String = ""
-    @State private var filteredQuotes: [Quote] = [] // Liste der gefilterten Zitate
 
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
         self._isFavorite = State(initialValue: quote.isFavorite)
         self.quoteViewModel = quoteViewModel
-        self._filteredQuotes = State(initialValue: [quote]) // Initial mit dem ersten Zitat gefüllt
     }
 
     var body: some View {
@@ -30,9 +27,6 @@ struct AutorDetailView: View {
 
             ScrollView {
                 VStack(spacing: 20) {
-                    // 📌 Neue optimierte Suchleiste
-                    searchBar
-
                     // 📌 Kopfbereich mit Autor-Bild
                     Image(systemName: "person.crop.circle.fill")
                         .resizable()
@@ -77,23 +71,6 @@ struct AutorDetailView: View {
         }
         .navigationTitle(quote.author)
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: searchQuery) {
-            filterQuotes()
-        }
-    }
-
-    // MARK: - Neue optimierte Suchleiste
-    private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
-            
-            TextField("Suche nach Autor...", text: $searchQuery)
-                .foregroundColor(.primary)
-        }
-        .padding(12)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 2))
-        .padding(.horizontal)
     }
 
     // MARK: - Zitat-Card
@@ -146,15 +123,6 @@ struct AutorDetailView: View {
             withAnimation {
                 isFavorite.toggle()
             }
-        }
-    }
-
-    // MARK: - Filter-Logik
-    private func filterQuotes() {
-        if searchQuery.isEmpty {
-            filteredQuotes = [quote] // Zeige das Originalzitat an, wenn keine Suche eingegeben wird
-        } else {
-            filteredQuotes = [quote].filter { $0.author.lowercased().contains(searchQuery.lowercased()) }
         }
     }
 }

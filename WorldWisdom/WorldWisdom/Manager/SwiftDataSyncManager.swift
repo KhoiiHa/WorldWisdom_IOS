@@ -13,110 +13,29 @@ import FirebaseFirestore
 class SwiftDataSyncManager {
 
     private var container: ModelContainer
-    private var context: ModelContext {
+
+    internal var context: ModelContext {
         return container.mainContext
     }
 
     init() {
-        // Initialisierung des ModelContainers mit der QuoteEntity
         self.container = try! ModelContainer(for: QuoteEntity.self, configurations: ModelConfiguration())
     }
 
-    func addQuote(_ quote: Quote) async throws {
-        let fetchRequest = FetchDescriptor<QuoteEntity>()
-        let quoteEntities = try context.fetch(fetchRequest)
-
-        if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
-            // Zitat existiert bereits, aktualisieren
-            existingQuote.author = quote.author
-            existingQuote.quote = quote.quote
-            existingQuote.category = quote.category
-            existingQuote.isFavorite = quote.isFavorite
-            existingQuote.tags = quote.tags.joined(separator: ", ")
-            existingQuote.quoteDescription = quote.description
-            existingQuote.source = quote.source
-        } else {
-            // Zitat existiert nicht, neu hinzufügen
-            let newQuote = QuoteEntity(
-                id: quote.id,
-                author: quote.author,
-                quote: quote.quote,
-                category: quote.category,
-                tags: quote.tags.joined(separator: ", "),
-                isFavorite: quote.isFavorite,
-                quoteDescription: quote.description,
-                source: quote.source
-            )
-            context.insert(newQuote)
-        }
-
-        try context.save() // Änderungen speichern
-    }
-
-    // Markiert ein Zitat als Favorit
-    func addFavoriteQuote(_ quote: Quote) async throws {
-        let fetchRequest = FetchDescriptor<QuoteEntity>()
-        let quoteEntities = try context.fetch(fetchRequest)
-
-        if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
-            // Zitat existiert bereits, aktualisieren
-            existingQuote.isFavorite = true
-        } else {
-            // Zitat existiert nicht, neu hinzufügen
-            // Tags als String speichern (durch Komma getrennt)
-            let tagsString = quote.tags.joined(separator: ", ")
-
-            let newQuote = QuoteEntity(
-                id: quote.id,
-                author: quote.author,
-                quote: quote.quote,
-                category: quote.category,
-                tags: tagsString,  // Tags als String speichern
-                isFavorite: true,
-                quoteDescription: quote.description,
-                source: quote.source
-            )
-            context.insert(newQuote)
-        }
-
-        try context.save() // Änderungen speichern
-    }
-    
-    
-    // Entfernt ein Zitat aus den Favoriten
-    func removeFavoriteQuote(_ quote: Quote) async throws {
-        try await updateFavoriteStatus(for: quote, to: false)
-    }
-
-    // Löscht ein Zitat aus SwiftData
-    func deleteQuote(_ quote: Quote) async throws {
-        let fetchRequest = FetchDescriptor<QuoteEntity>()
-        let quoteEntities = try context.fetch(fetchRequest)
-
-        if let quoteEntity = quoteEntities.first(where: { $0.id == quote.id }) {
-            context.delete(quoteEntity)
-            try context.save()
-        }
-    }
-
-    // Fügt ein Zitat hinzu oder aktualisiert es (gemeinsam für Add und Update)
+    // Fügt ein Zitat hinzu oder aktualisiert es
     func addOrUpdateQuote(_ quote: Quote) async throws {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
         let quoteEntities = try context.fetch(fetchRequest)
 
         if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
-            // Zitat existiert bereits, aktualisieren
             existingQuote.author = quote.author
             existingQuote.quote = quote.quote
             existingQuote.category = quote.category
             existingQuote.isFavorite = quote.isFavorite
-            // Tags als String speichern (durch Komma getrennt)
             existingQuote.tags = quote.tags.joined(separator: ", ")
             existingQuote.quoteDescription = quote.description
             existingQuote.source = quote.source
         } else {
-            // Zitat existiert nicht, neu hinzufügen
-            // Tags als String speichern (durch Komma getrennt)
             let tagsString = quote.tags.joined(separator: ", ")
 
             let newQuote = QuoteEntity(
@@ -124,7 +43,7 @@ class SwiftDataSyncManager {
                 author: quote.author,
                 quote: quote.quote,
                 category: quote.category,
-                tags: tagsString,  // Tags als String speichern
+                tags: tagsString,
                 isFavorite: quote.isFavorite,
                 quoteDescription: quote.description,
                 source: quote.source
@@ -135,29 +54,67 @@ class SwiftDataSyncManager {
         try context.save() // Änderungen speichern
     }
 
-    // Holt alle Favoriten aus SwiftData
+    // Fügt nur ein neues Zitat hinzu, ohne nach vorhandenen zu suchen
+    func addQuote(_ quote: Quote) async throws {
+        let tagsString = quote.tags.joined(separator: ", ")
+
+        let newQuote = QuoteEntity(
+            id: quote.id,
+            author: quote.author,
+            quote: quote.quote,
+            category: quote.category,
+            tags: tagsString,
+            isFavorite: quote.isFavorite,
+            quoteDescription: quote.description,
+            source: quote.source
+        )
+        context.insert(newQuote)
+
+        try context.save() // Änderungen speichern
+    }
+
+    // Entfernt ein Zitat aus den Favoriten
+    func removeFavoriteQuote(_ quote: Quote) async throws {
+        let fetchRequest = FetchDescriptor<QuoteEntity>()
+        let quoteEntities = try context.fetch(fetchRequest)
+
+        if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
+            existingQuote.isFavorite = false
+            try context.save()
+        }
+    }
+
+    // Lädt die Favoriten aus SwiftData
     func fetchFavoriteQuotes() async throws -> [Quote] {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
-        let favoriteQuoteEntities = try context.fetch(fetchRequest)
+        let quoteEntities = try context.fetch(fetchRequest)
 
-        return favoriteQuoteEntities.map { quoteEntity in
-            // Konvertiere tags von String zurück in Array
-            let tagsArray = quoteEntity.tags.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespaces) }
-            
-            return Quote(
-                id: quoteEntity.id,
-                author: quoteEntity.author,
-                quote: quoteEntity.quote,
-                category: quoteEntity.category,
-                tags: tagsArray,  // Tags als Array
-                isFavorite: quoteEntity.isFavorite,
-                description: quoteEntity.quoteDescription,
-                source: quoteEntity.source
+        return quoteEntities.filter { $0.isFavorite }.map { entity in
+            Quote(
+                id: entity.id,
+                author: entity.author,
+                quote: entity.quote,
+                category: entity.category,
+                tags: entity.tags.split(separator: ", ").map { String($0) },
+                isFavorite: entity.isFavorite,
+                description: entity.quoteDescription,
+                source: entity.source
             )
         }
     }
 
-    // Synchronisiert Zitate von Firestore zu SwiftData
+    // Löscht ein Zitat
+    func deleteQuote(_ quote: Quote) async throws {
+        let fetchRequest = FetchDescriptor<QuoteEntity>()
+        let quoteEntities = try context.fetch(fetchRequest)
+
+        if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
+            context.delete(existingQuote)
+            try context.save()
+        }
+    }
+
+    // Synchronisiert die Zitate aus Firestore mit SwiftData
     func syncQuotesFromFirestore() async {
         do {
             let firestoreQuotes = try await fetchQuotesFromFirestore()
@@ -172,7 +129,6 @@ class SwiftDataSyncManager {
         }
     }
 
-    // Holt Zitate aus Firestore
     private func fetchQuotesFromFirestore() async throws -> [Quote] {
         let firestore = Firestore.firestore()
         let quotesCollection = firestore.collection("quotes")
@@ -188,7 +144,7 @@ class SwiftDataSyncManager {
                 let quote = data["quote"] as? String,
                 let category = data["category"] as? String,
                 let isFavorite = data["isFavorite"] as? Bool,
-                let tags = data["tags"] as? [String], // Erwartet ein Array von Strings
+                let tags = data["tags"] as? [String],
                 let description = data["description"] as? String,
                 let source = data["source"] as? String
             else {
@@ -201,7 +157,7 @@ class SwiftDataSyncManager {
                 author: author,
                 quote: quote,
                 category: category,
-                tags: tags,  // Tags direkt als Array
+                tags: tags,
                 isFavorite: isFavorite,
                 description: description,
                 source: source
@@ -219,25 +175,24 @@ class SwiftDataSyncManager {
             try context.save()
         }
     }
-    
-    
+
+    // Aktualisiert ein Zitat
     func updateQuote(_ quote: Quote) async throws {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
         let quoteEntities = try context.fetch(fetchRequest)
 
         if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
-            // Aktualisiere das Zitat mit den neuen Werten
             existingQuote.author = quote.author
             existingQuote.quote = quote.quote
             existingQuote.category = quote.category
             existingQuote.isFavorite = quote.isFavorite
-            // Tags von Array in String umwandeln (durch Komma getrennt)
             existingQuote.tags = quote.tags.joined(separator: ", ")
             existingQuote.quoteDescription = quote.description
             existingQuote.source = quote.source
 
-            // Speichere die Änderungen in SwiftData
             try context.save()
         }
     }
+    
+    
 }

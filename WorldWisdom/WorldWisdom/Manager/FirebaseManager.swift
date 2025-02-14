@@ -14,7 +14,6 @@ class FirebaseManager: ObservableObject {
     
     static let shared = FirebaseManager()
     
-    
     // Zentralisierte Instanzen
     private let auth = Auth.auth()
     private let store = Firestore.firestore()
@@ -37,7 +36,6 @@ class FirebaseManager: ObservableObject {
     }
     
     // MARK: - Auth Funktionen
-    
     func registerUser(email: String, password: String) async throws -> AuthDataResult {
         return try await auth.createUser(withEmail: email, password: password)
     }
@@ -55,17 +53,15 @@ class FirebaseManager: ObservableObject {
     }
     
     // MARK: - Firestore Funktionen
-        
     func createUserInFirestore(id: String, email: String) async throws {
         let userData: [String: Any] = [
             "id": id,
             "email": email,
             "createdAt": Timestamp(date: Date())
         ]
-        
         try await store.collection("users").document(id).setData(userData)
     }
-
+    
     func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {
         let quoteData: [String: Any] = [
             "id": quoteId,
@@ -74,16 +70,24 @@ class FirebaseManager: ObservableObject {
             "category": category,
             "createdAt": Timestamp(date: Date())
         ]
-        
         try await store.collection("quotes").document(quoteId).setData(quoteData)
     }
 
     func fetchQuoteMetadata(quoteId: String) async throws -> [String: Any]? {
-        let documentSnapshot = try await store.collection("quotes").document(quoteId).getDocument()
-        return documentSnapshot.data()
+        do {
+            let documentSnapshot = try await store.collection("quotes").document(quoteId).getDocument()
+            return documentSnapshot.data()
+        } catch let error as NSError {
+            if error.domain == NSURLErrorDomain {
+                // Netzwerkfehler - Lokale API-URL überprüfen
+                throw FirebaseError.unknownError("Netzwerkfehler: Überprüfe deine Internetverbindung oder Mockoon-Server")
+            } else {
+                // Andere Firebase-bezogene Fehler
+                throw FirebaseError.unknownError(error.localizedDescription)
+            }
+        }
     }
     
-    // Update eines Zitats in Firestore
     func updateQuote(_ quote: Quote) async throws {
         let quoteRef = store.collection("quotes").document(quote.id)
         try await quoteRef.updateData([
@@ -95,17 +99,13 @@ class FirebaseManager: ObservableObject {
             "source": quote.source
         ])
     }
-
-    // Löscht ein Zitat aus Firestore
+    
     func deleteQuote(_ quote: Quote) async throws {
         let quoteRef = store.collection("quotes").document(quote.id)
         try await quoteRef.delete()
     }
-
-    // MARK: - Favorisierte Zitate
     
-        
-    // Methode zum Abrufen der Favoriten
+    // MARK: - Favorisierte Zitate
     func fetchFavoriteQuotes() async throws -> [Quote] {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -134,9 +134,7 @@ class FirebaseManager: ObservableObject {
             throw FirebaseError.unknownError(error.localizedDescription)
         }
     }
-
     
-    // Methode zum Hinzufügen eines Favoriten
     func saveFavoriteQuote(quote: Quote) async throws {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -161,22 +159,23 @@ class FirebaseManager: ObservableObject {
 
             try await favoriteQuoteRef.setData(favoriteQuoteData)
             try await updateFavoriteQuoteIds(for: currentUser.uid, quoteId: quote.id, add: true)
-
         } catch {
             throw FirebaseError.unknownError(error.localizedDescription)
         }
     }
     
-    // Methode zur Aktualisierung der Favoriten-IDs (reduziert Duplikation)
     private func updateFavoriteQuoteIds(for userId: String, quoteId: String, add: Bool) async throws {
         let userRef = store.collection("users").document(userId)
-        try await userRef.updateData([
-            "favoriteQuoteIds": add ? FieldValue.arrayUnion([quoteId]) : FieldValue.arrayRemove([quoteId])
-        ])
+        
+        do {
+            try await userRef.updateData([
+                "favoriteQuoteIds": add ? FieldValue.arrayUnion([quoteId]) : FieldValue.arrayRemove([quoteId])
+            ])
+        } catch let error as NSError {
+            throw FirebaseError.unknownError(error.localizedDescription)
+        }
     }
-
     
-    // Methode zum Löschen eines Favoriten
     func deleteFavoriteQuote(_ quote: Quote) async throws {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -190,15 +189,16 @@ class FirebaseManager: ObservableObject {
             try await updateFavoriteQuoteIds(for: currentUser.uid, quoteId: quote.id, add: false)
 
             let quoteRef = store.collection("quotes").document(quote.id)
-            try await quoteRef.updateData(["isFavorite": false])
+            let quoteDoc = try await quoteRef.getDocument()
 
-        } catch {
+            if quoteDoc.exists {
+                try await quoteRef.updateData(["isFavorite": false])
+            }
+        } catch let error as NSError {
             throw FirebaseError.unknownError(error.localizedDescription)
         }
     }
-
     
-    // Methode zum Aktualisieren des Favoritenstatus
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
         guard auth.currentUser != nil else {
             throw FavoriteError.userNotAuthenticated
@@ -213,86 +213,75 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-
     // MARK: - Benutzerdefinierte Zitate
-        func saveUserQuote(quoteText: String, author: String) async throws {
-            guard let currentUser = auth.currentUser else {
-                throw FirebaseError.noAuthenticatedUser
-            }
-
-            let userQuoteData: [String: Any] = [
-                "quoteText": quoteText,
-                "author": author.isEmpty ? "Unbekannt" : author,
-                "userID": currentUser.uid,
-                "createdAt": Timestamp(date: Date())
-            ]
-
-            do {
-                try await store.collection("users")
-                    .document(currentUser.uid)
-                    .collection("userQuotes")
-                    .addDocument(data: userQuoteData)
-                print("✅ Zitat erfolgreich in Firestore gespeichert.")
-            } catch {
-                print("❌ Fehler beim Speichern des Zitats: \(error.localizedDescription)")
-                throw FirebaseError.unknownError(error.localizedDescription)
-            }
+    func saveUserQuote(quoteText: String, author: String) async throws {
+        guard let currentUser = auth.currentUser else {
+            throw FirebaseError.noAuthenticatedUser
         }
-    
-    
-    // Benutzerdefinierte Zitate abrufen
-        func fetchUserQuotes() async throws -> [Quote] {
-            guard let currentUser = auth.currentUser else { return [] }
 
-            let snapshot = try await store.collection("users")
+        let userQuoteData: [String: Any] = [
+            "quoteText": quoteText,
+            "author": author.isEmpty ? "Unbekannt" : author,
+            "userID": currentUser.uid,
+            "createdAt": Timestamp(date: Date())
+        ]
+
+        do {
+            try await store.collection("users")
                 .document(currentUser.uid)
                 .collection("userQuotes")
-                .getDocuments()
-
-            return snapshot.documents.compactMap { document in
-                let data = document.data()
-                return Quote(
-                    id: document.documentID,
-                    author: data["author"] as? String ?? "Unbekannt",
-                    quote: data["quoteText"] as? String ?? "",
-                    category: data["category"] as? String ?? "Allgemein",
-                    tags: data["tags"] as? [String] ?? [],
-                    isFavorite: false,
-                    description: data["description"] as? String ?? "",
-                    source: data["source"] as? String ?? ""
-                )
-            }
+                .addDocument(data: userQuoteData)
+        } catch {
+            throw FirebaseError.unknownError(error.localizedDescription)
         }
+    }
     
-    // Benutzerdefinierte Zitate aktualisieren
-        func updateUserQuote(id: String, newText: String, newAuthor: String) async throws {
-            guard let currentUser = auth.currentUser else {
-                throw FirebaseError.noAuthenticatedUser
-            }
+    func fetchUserQuotes() async throws -> [Quote] {
+        guard let currentUser = auth.currentUser else { return [] }
 
-            let updatedData: [String: Any] = [
-                "quoteText": newText,
-                "author": newAuthor.isEmpty ? "Unbekannt" : newAuthor,
-                "updatedAt": Timestamp(date: Date())
-            ]
+        let snapshot = try await store.collection("users")
+            .document(currentUser.uid)
+            .collection("userQuotes")
+            .getDocuments()
 
-            do {
-                try await store.collection("users")
-                    .document(currentUser.uid)
-                    .collection("userQuotes")
-                    .document(id)
-                    .updateData(updatedData)
-                print("✅ Zitat erfolgreich aktualisiert.")
-            } catch {
-                print("❌ Fehler beim Aktualisieren des Zitats: \(error.localizedDescription)")
-                throw FirebaseError.unknownError(error.localizedDescription)
-            }
+        return snapshot.documents.compactMap { document in
+            let data = document.data()
+            return Quote(
+                id: document.documentID,
+                author: data["author"] as? String ?? "Unbekannt",
+                quote: data["quoteText"] as? String ?? "",
+                category: data["category"] as? String ?? "Allgemein",
+                tags: data["tags"] as? [String] ?? [],
+                isFavorite: false,
+                description: data["description"] as? String ?? "",
+                source: data["source"] as? String ?? ""
+            )
         }
-    
-    
+    }
+
+    func updateUserQuote(id: String, newText: String, newAuthor: String) async throws {
+        guard let currentUser = auth.currentUser else {
+            throw FirebaseError.noAuthenticatedUser
+        }
+
+        let updatedData: [String: Any] = [
+            "quoteText": newText,
+            "author": newAuthor.isEmpty ? "Unbekannt" : newAuthor,
+            "updatedAt": Timestamp(date: Date())
+        ]
+
+        do {
+            try await store.collection("users")
+                .document(currentUser.uid)
+                .collection("userQuotes")
+                .document(id)
+                .updateData(updatedData)
+        } catch {
+            throw FirebaseError.unknownError(error.localizedDescription)
+        }
+    }
 
     // MARK: - Storage Funktionen
-    
     func uploadFile(data: Data, to path: String) async throws {
         let ref = storage.reference().child(path)
         _ = try await ref.putDataAsync(data)
@@ -301,15 +290,12 @@ class FirebaseManager: ObservableObject {
     func uploadQuoteImage(imageData: Data, quoteId: String) async throws -> String {
         let fileName = "quoteImages/\(quoteId).jpg"
         let ref = storage.reference().child(fileName)
-        _ = try await ref.putDataAsync(imageData)
-        return try await ref.downloadURL().absoluteString
-    }
-    
-    
-    // MARK: - Benutzerdefinierte Fehler
-        enum FirebaseError: Error {
-            case noAuthenticatedUser
-            case documentNotFound
-            case unknownError(String)
+        
+        do {
+            _ = try await ref.putDataAsync(imageData)
+            return ref.fullPath
+        } catch {
+            throw FirebaseError.uploadFailed
         }
+    }
 }

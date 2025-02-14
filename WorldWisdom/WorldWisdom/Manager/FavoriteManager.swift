@@ -8,31 +8,36 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import SwiftData
 import OSLog
 
 @MainActor
 class FavoriteManager: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
+    private let syncManager = SwiftDataSyncManager()
     private let logger = Logger(subsystem: "com.deineApp.Zitate", category: "FavoriteManager")
 
     @Published private(set) var favoriteQuotes: [Quote] = []
-    @Published var errorMessage: String? 
+    @Published var errorMessage: String?
 
-    // Favoriten aus Firestore laden
+    // Favoriten aus Firestore & SwiftData laden
     func loadFavoriteQuotes() async {
         do {
-            let quotes = try await firebaseManager.fetchFavoriteQuotes()
-            favoriteQuotes = quotes
+            let firebaseQuotes = try await firebaseManager.fetchFavoriteQuotes()
+            let localQuotes = try await syncManager.fetchFavoriteQuotes() // Lokale Favoriten über syncManager laden
+
+            let mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
+            favoriteQuotes = mergedQuotes
         } catch FavoriteError.userNotAuthenticated {
             logger.error("Benutzer nicht authentifiziert. Fehler beim Laden der Favoriten.")
             errorMessage = FavoriteError.userNotAuthenticated.errorMessage
         } catch {
             logger.error("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
-            errorMessage = FavoriteError.unknownError.errorMessage
+            errorMessage = "Ein unbekannter Fehler ist aufgetreten: \(error.localizedDescription)"
         }
     }
 
-    // Zitat zu Favoriten hinzufügen
+    // Zitat zu Favoriten hinzufügen (Firebase + SwiftData)
     func addFavoriteQuote(_ quote: Quote) async throws {
         guard !favoriteQuotes.contains(where: { $0.id == quote.id }) else {
             logger.warning("Zitat ist bereits in den Favoriten.")
@@ -41,16 +46,22 @@ class FavoriteManager: ObservableObject {
         }
 
         do {
+            // Zuerst in Firebase speichern
             try await firebaseManager.saveFavoriteQuote(quote: quote)
+            
+            // Dann den Favoritenstatus in SwiftData aktualisieren
+            try await syncManager.updateFavoriteStatus(for: quote, to: true)
+            
+            // Favoritenliste im ViewModel aktualisieren
             favoriteQuotes.append(quote)
         } catch {
             logger.error("Fehler beim Hinzufügen des Zitats: \(error.localizedDescription)")
-            errorMessage = FavoriteError.unableToUpdateFavorite.errorMessage
-            throw error  
+            errorMessage = "Fehler beim Speichern des Zitats: \(error.localizedDescription)"
+            throw error
         }
     }
 
-    // Favoriten-Zitat entfernen
+    // Favoriten-Zitat entfernen (Firebase + SwiftData)
     func removeFavoriteQuote(_ quote: Quote) async {
         guard favoriteQuotes.contains(where: { $0.id == quote.id }) else {
             logger.warning("Zitat nicht in Favoriten gefunden.")
@@ -59,10 +70,15 @@ class FavoriteManager: ObservableObject {
 
         do {
             try await firebaseManager.deleteFavoriteQuote(quote)
+            try await syncManager.removeFavoriteQuote(quote) // Favoriten aus SwiftData entfernen über syncManager
+
             favoriteQuotes.removeAll { $0.id == quote.id }
+            
+            // Favoriten nach Entfernen erneut laden, um sicherzustellen, dass die neuesten Daten angezeigt werden
+            await loadFavoriteQuotes()
         } catch {
             logger.error("Fehler beim Entfernen des Zitats: \(error.localizedDescription)")
-            errorMessage = FavoriteError.unableToUpdateFavorite.errorMessage
+            errorMessage = "Fehler beim Entfernen des Zitats: \(error.localizedDescription)"
         }
     }
 
@@ -70,16 +86,27 @@ class FavoriteManager: ObservableObject {
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
         do {
             if isFavorite {
-                try await addFavoriteQuote(quote) // Fehlerbehandlung hinzugefügt
+                try await addFavoriteQuote(quote)
             } else {
-                await removeFavoriteQuote(quote) // Fehlerbehandlung hinzugefügt
+                await removeFavoriteQuote(quote)
             }
         } catch let error as FavoriteError {
-            // Verwende die Fehlerbeschreibung des Enums, um eine benutzerfreundliche Nachricht anzuzeigen
-            print("Fehler: \(error.errorMessage)")
+            logger.error("Fehler: \(error.errorMessage)")
         } catch {
-            // Allgemeine Fehlerbehandlung, falls es ein anderer Fehler ist
-            print("Unbekannter Fehler: \(error.localizedDescription)")
+            logger.error("Unbekannter Fehler: \(error.localizedDescription)")
         }
+    }
+
+    // Hilfsfunktion: Firebase- und SwiftData-Favoriten zusammenführen
+    private func mergeFavorites(_ firebaseQuotes: [Quote], with localQuotes: [Quote]) -> [Quote] {
+        var merged = firebaseQuotes
+
+        for localQuote in localQuotes {
+            if !merged.contains(where: { $0.id == localQuote.id }) {
+                merged.append(localQuote)
+            }
+        }
+
+        return merged
     }
 }
