@@ -62,12 +62,13 @@ class FirebaseManager: ObservableObject {
         try await store.collection("users").document(id).setData(userData)
     }
     
-    func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String) async throws {
+    func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String, authorImageURL: String) async throws {
         let quoteData: [String: Any] = [
             "id": quoteId,
             "quoteText": quoteText,
             "author": author,
             "category": category,
+            "authorImageURL": authorImageURL, // Bild-URL hinzufügen
             "createdAt": Timestamp(date: Date())
         ]
         try await store.collection("quotes").document(quoteId).setData(quoteData)
@@ -79,10 +80,8 @@ class FirebaseManager: ObservableObject {
             return documentSnapshot.data()
         } catch let error as NSError {
             if error.domain == NSURLErrorDomain {
-                // Netzwerkfehler - Lokale API-URL überprüfen
                 throw FirebaseError.unknownError("Netzwerkfehler: Überprüfe deine Internetverbindung oder Mockoon-Server")
             } else {
-                // Andere Firebase-bezogene Fehler
                 throw FirebaseError.unknownError(error.localizedDescription)
             }
         }
@@ -119,6 +118,7 @@ class FirebaseManager: ObservableObject {
             
             return snapshot.documents.compactMap { document in
                 let data = document.data()
+                let authorImageURL = data["authorImageURL"] as? String ?? ""
                 return Quote(
                     id: document.documentID,
                     author: data["author"] as? String ?? "Unbekannt",
@@ -127,14 +127,15 @@ class FirebaseManager: ObservableObject {
                     tags: data["tags"] as? [String] ?? [],
                     isFavorite: true,
                     description: data["description"] as? String ?? "",
-                    source: data["source"] as? String ?? ""
+                    source: data["source"] as? String ?? "",
+                    authorImageURL: authorImageURL
                 )
             }
         } catch {
             throw FirebaseError.unknownError(error.localizedDescription)
         }
     }
-    
+
     func saveFavoriteQuote(quote: Quote) async throws {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -214,7 +215,7 @@ class FirebaseManager: ObservableObject {
     }
     
     // MARK: - Benutzerdefinierte Zitate
-    func saveUserQuote(quoteText: String, author: String) async throws {
+    func saveUserQuote(quoteText: String, author: String, authorImageURL: String) async throws {
         guard let currentUser = auth.currentUser else {
             throw FirebaseError.noAuthenticatedUser
         }
@@ -222,6 +223,7 @@ class FirebaseManager: ObservableObject {
         let userQuoteData: [String: Any] = [
             "quoteText": quoteText,
             "author": author.isEmpty ? "Unbekannt" : author,
+            "authorImageURL": authorImageURL, // authorImageURL speichern
             "userID": currentUser.uid,
             "createdAt": Timestamp(date: Date())
         ]
@@ -254,48 +256,105 @@ class FirebaseManager: ObservableObject {
                 tags: data["tags"] as? [String] ?? [],
                 isFavorite: false,
                 description: data["description"] as? String ?? "",
-                source: data["source"] as? String ?? ""
+                source: data["source"] as? String ?? "",
+                authorImageURL: data["authorImageURL"] as? String ?? "" // fetchen der URL
             )
         }
     }
-
-    func updateUserQuote(id: String, newText: String, newAuthor: String) async throws {
+    
+    func updateUserQuote(id: String, quoteText: String, author: String, authorImageURL: String) async throws {
         guard let currentUser = auth.currentUser else {
             throw FirebaseError.noAuthenticatedUser
         }
 
-        let updatedData: [String: Any] = [
-            "quoteText": newText,
-            "author": newAuthor.isEmpty ? "Unbekannt" : newAuthor,
-            "updatedAt": Timestamp(date: Date())
+        let userQuoteData: [String: Any] = [
+            "quoteText": quoteText,
+            "author": author.isEmpty ? "Unbekannt" : author,
+            "authorImageURL": authorImageURL, // authorImageURL speichern
+            "updatedAt": Timestamp(date: Date()) // Aktualisierungszeit
         ]
 
         do {
             try await store.collection("users")
                 .document(currentUser.uid)
                 .collection("userQuotes")
-                .document(id)
-                .updateData(updatedData)
+                .document(id) // Das Zitat anhand der ID finden und aktualisieren
+                .updateData(userQuoteData)
         } catch {
             throw FirebaseError.unknownError(error.localizedDescription)
         }
     }
-
-    // MARK: - Storage Funktionen
-    func uploadFile(data: Data, to path: String) async throws {
-        let ref = storage.reference().child(path)
-        _ = try await ref.putDataAsync(data)
+    
+    // MARK: - Firebase Storage - Autorenbilder hochladen
+    
+    // 📌 Bilder aus Firebase Storage abrufen
+    func fetchImages(for authorId: String, completion: @escaping (Result<[String], FirebaseError>) -> Void) {
+        let storageRef = Storage.storage().reference().child("author_images/\(authorId)")
+        
+        storageRef.listAll { result in
+            switch result {
+            case .success(let storageListResult):
+                var urls: [String] = []
+                let group = DispatchGroup()
+                
+                for item in storageListResult.items {
+                    group.enter()
+                    item.downloadURL { url, error in
+                        if let error = error {
+                            print("Fehler beim Abrufen der URL für \(item.name): \(error.localizedDescription)")
+                            group.leave()
+                            return
+                        }
+                        if let url = url {
+                            urls.append(url.absoluteString)
+                        }
+                        group.leave()
+                    }
+                }
+                
+                group.notify(queue: .main) {
+                    if urls.isEmpty {
+                        completion(.failure(.imageDownloadFailed))
+                    } else {
+                        completion(.success(urls))
+                    }
+                }
+            case .failure(let error):
+                print("Fehler beim Abrufen der Bilder: \(error.localizedDescription)")
+                completion(.failure(.fetchFailed))
+            }
+        }
     }
     
-    func uploadQuoteImage(imageData: Data, quoteId: String) async throws -> String {
-        let fileName = "quoteImages/\(quoteId).jpg"
-        let ref = storage.reference().child(fileName)
-        
-        do {
-            _ = try await ref.putDataAsync(imageData)
-            return ref.fullPath
-        } catch {
-            throw FirebaseError.uploadFailed
+    // 📌 Bild in Firebase hochladen (mit async/await)
+    func uploadAuthorImage(image: UIImage, authorId: String) async throws -> String {
+        // Stelle sicher, dass das Bild in Daten umgewandelt wird
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw FirebaseError.authorImageUploadFailed
+        }
+
+        // Erstelle den Referenzpfad für das Bild in Firebase Storage
+        let storage = Storage.storage()
+        let storageRef = storage.reference().child("authors/\(authorId).jpg")
+
+        // Lade das Bild hoch und erhalte die URL
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+            storageRef.putData(imageData, metadata: nil) { _, error in
+                if error != nil {  // Prüfen, ob ein Fehler aufgetreten ist
+                    continuation.resume(throwing: FirebaseError.uploadFailed)
+                    return
+                }
+
+                // Erfolgreicher Upload -> Lade die URL
+                storageRef.downloadURL { url, _ in
+                    if let url = url {
+                        print("✅ Bild erfolgreich hochgeladen: \(url.absoluteString)")
+                        continuation.resume(returning: url.absoluteString) // Rückgabe der URL hier
+                    } else {
+                        continuation.resume(throwing: FirebaseError.imageDownloadFailed)
+                    }
+                }
+            }
         }
     }
 }

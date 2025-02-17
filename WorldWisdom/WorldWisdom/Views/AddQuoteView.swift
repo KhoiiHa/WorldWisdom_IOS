@@ -11,6 +11,7 @@ struct AddQuoteView: View {
     @Environment(\.dismiss) var dismiss
     @State private var quoteText = ""
     @State private var author = ""
+    @State private var authorImageURL: String = ""
     @State private var isSaving = false
     @State private var errorMessage: String?
 
@@ -26,6 +27,11 @@ struct AddQuoteView: View {
                     .padding()
 
                 TextField("Autor (optional)", text: $author)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                // Optionales Eingabefeld für das Bild-URL
+                TextField("Autor Bild URL (optional)", text: $authorImageURL)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
 
@@ -63,7 +69,8 @@ struct AddQuoteView: View {
             if let quoteToEdit = quoteToEdit {
                 quoteText = quoteToEdit.quote
                 author = quoteToEdit.author
-                print("Zitat zum Bearbeiten geladen: \(quoteText), \(author)") // Debug
+                authorImageURL = quoteToEdit.authorImageURL ?? ""
+                print("Zitat zum Bearbeiten geladen: \(quoteText), \(author), URL: \(authorImageURL)") // Debug
             }
         }
     }
@@ -78,11 +85,18 @@ struct AddQuoteView: View {
                 if let quoteToEdit = quoteToEdit {
                     // Zitat aktualisieren
                     print("Aktualisiere Zitat: \(quoteText), \(author)")
-                    try await FirebaseManager.shared.updateUserQuote(id: quoteToEdit.id, newText: quoteText, newAuthor: author)
+                    try await FirebaseManager.shared.updateUserQuote(
+                        id: quoteToEdit.id,
+                        quoteText: quoteText,
+                        author: author,
+                        authorImageURL: quoteToEdit.authorImageURL ?? ""
+                    )
                 } else {
                     // Neues Zitat speichern
                     print("Speichere neues Zitat: \(quoteText), \(author)")
-                    await userQuoteManager.addUserQuote(quoteText: quoteText, author: author)
+                    // Übergabe von nil oder leerer URL, falls kein Bild angegeben ist
+                    let imageURL = authorImageURL.isEmpty ? nil : authorImageURL
+                    await userQuoteManager.addUserQuote(quoteText: quoteText, author: author, authorImageURL: imageURL)
                 }
 
                 dismiss() // Schließt die Ansicht nach erfolgreichem Speichern
@@ -97,5 +111,5 @@ struct AddQuoteView: View {
 
 #Preview {
     AddQuoteView(quoteToEdit: nil)
-        .environmentObject(UserQuoteManager()) // Vorschau mit EnvironmentObject
+        .environmentObject(UserQuoteManager())
 }

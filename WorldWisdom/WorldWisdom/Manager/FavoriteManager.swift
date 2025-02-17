@@ -26,14 +26,24 @@ class FavoriteManager: ObservableObject {
             let firebaseQuotes = try await firebaseManager.fetchFavoriteQuotes()
             let localQuotes = try await syncManager.fetchFavoriteQuotes() // Lokale Favoriten über syncManager laden
 
-            let mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
+            // Merge: Priorisiere Firebase-Daten, wenn sie verfügbar sind, ansonsten nehme lokale Daten
+            let mergedQuotes: [Quote]
+            if firebaseQuotes.isEmpty {
+                mergedQuotes = localQuotes
+            } else {
+                mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
+            }
+
             favoriteQuotes = mergedQuotes
-        } catch FavoriteError.userNotAuthenticated {
-            logger.error("Benutzer nicht authentifiziert. Fehler beim Laden der Favoriten.")
-            errorMessage = FavoriteError.userNotAuthenticated.errorMessage
+        } catch let error as URLError {
+            logger.error("Netzwerkfehler beim Laden der Favoriten: \(error.localizedDescription)")
+            errorMessage = "Es gab ein Problem mit der Internetverbindung."
+        } catch let error as FirebaseError {
+            logger.error("Fehler bei Firebase-Abfrage: \(error.localizedDescription)")
+            errorMessage = "Fehler beim Laden der Favoriten von Firebase."
         } catch {
             logger.error("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
-            errorMessage = "Ein unbekannter Fehler ist aufgetreten: \(error.localizedDescription)"
+            errorMessage = FavoriteError.unknownError.errorMessage
         }
     }
 
@@ -54,9 +64,15 @@ class FavoriteManager: ObservableObject {
             
             // Favoritenliste im ViewModel aktualisieren
             favoriteQuotes.append(quote)
+        } catch let error as URLError {
+            logger.error("Netzwerkfehler beim Hinzufügen des Zitats: \(error.localizedDescription)")
+            errorMessage = "Es gab ein Problem mit der Internetverbindung."
+        } catch let error as FirebaseError {
+            logger.error("Fehler beim Speichern auf Firebase: \(error.localizedDescription)")
+            errorMessage = "Fehler beim Speichern des Zitats auf Firebase."
         } catch {
             logger.error("Fehler beim Hinzufügen des Zitats: \(error.localizedDescription)")
-            errorMessage = "Fehler beim Speichern des Zitats: \(error.localizedDescription)"
+            errorMessage = FavoriteError.unableToUpdateFavorite.errorMessage
             throw error
         }
     }
@@ -76,9 +92,15 @@ class FavoriteManager: ObservableObject {
             
             // Favoriten nach Entfernen erneut laden, um sicherzustellen, dass die neuesten Daten angezeigt werden
             await loadFavoriteQuotes()
+        } catch let error as URLError {
+            logger.error("Netzwerkfehler beim Entfernen des Zitats: \(error.localizedDescription)")
+            errorMessage = "Es gab ein Problem mit der Internetverbindung."
+        } catch let error as FirebaseError {
+            logger.error("Fehler beim Entfernen des Zitats von Firebase: \(error.localizedDescription)")
+            errorMessage = "Fehler beim Entfernen des Zitats von Firebase."
         } catch {
             logger.error("Fehler beim Entfernen des Zitats: \(error.localizedDescription)")
-            errorMessage = "Fehler beim Entfernen des Zitats: \(error.localizedDescription)"
+            errorMessage = FavoriteError.unknownError.errorMessage
         }
     }
 

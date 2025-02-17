@@ -8,27 +8,27 @@ import SwiftUI
 
 struct FavoriteQuoteCardView: View {
     let quote: Quote
-    let unfavoriteAction: () async throws -> Void  // Die Action kann jetzt Fehler werfen
+    let unfavoriteAction: () async throws -> Void  // Action, die Fehler werfen kann
 
-    @State private var showErrorMessage: Bool = false  // Fehleranzeige für diese View
-    @State private var isRemoving: Bool = false  // Um zu erkennen, ob der Entfernen-Prozess läuft
+    @State private var showErrorMessage: Bool = false  // Anzeige der Fehlermeldung
+    @State private var isRemoving: Bool = false  // Wird gesetzt, wenn das Entfernen läuft
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Zitat-Text
+            // Zitat anzeigen
             Text("„\(quote.quote)“")
                 .font(.body)
                 .italic()
                 .foregroundColor(.primary)
-                .lineLimit(3)  // Begrenzung der Zeilenanzahl
+                .lineLimit(3)  // Maximale Zeilenanzahl für das Zitat
                 .padding(.bottom, 5)
 
-            // Autor-Text
+            // Autor des Zitats
             Text("- \(quote.author)")
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            // Fehlermeldung
+            // Fehleranzeige (falls nötig)
             if showErrorMessage {
                 Text("Fehler beim Entfernen des Favoriten. Bitte versuchen Sie es später erneut.")
                     .font(.caption)
@@ -47,45 +47,20 @@ struct FavoriteQuoteCardView: View {
                 endPoint: .bottomTrailing
             )
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)  // Sanfter Schatten
-        .overlay(alignment: .topTrailing) {
-            // Entfernen-Button
-            Button(action: {
-                Task {
-                    await unfavoriteQuote()
-                }
-            }) {
-                Image(systemName: "heart.slash.fill")
-                    .symbolRenderingMode(.multicolor)  // Mehrfarbiges Symbol
-                    .foregroundColor(isRemoving ? .gray : .red) // Buttonfarbe ändern während des Entfernens
-                    .padding(12)
-                    .background(Color.white.opacity(0.9))  // Halbtransparente Hintergrundfarbe für den Button
-                    .clipShape(Circle())
-                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 2, y: 2)  // Kleiner Schatten für den Button
-                    .overlay(
-                        Circle()
-                            .stroke(isRemoving ? .gray : .red, lineWidth: 1)  // Umrandung für den Button
-                    )
-                    .padding(10)
-                    .disabled(isRemoving)  // Button während der Entfernung deaktivieren
-            }
-            .buttonStyle(PlainButtonStyle())  // Deaktiviert die Standard-Button-Stile
-        }
+        .clipShape(RoundedRectangle(cornerRadius: 16))  // Abrundung des Cards
+        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)  // Schattierung für den Card
     }
 
-    // Fehlerbehandlung für unfavoriteAction
+    // Swipe-to-Delete-Logik
     private func unfavoriteQuote() async {
-        isRemoving = true  // Button während des Entfernens deaktivieren
+        isRemoving = true  // Deaktiviert den Button während des Entfernens
         do {
-            try await unfavoriteAction() // Wir rufen einfach die unfavoriteAction auf
-            showErrorMessage = false  // Fehleranzeige zurücksetzen
+            try await unfavoriteAction()  // Führe die unfavoriteAction aus
+            showErrorMessage = false  // Fehleranzeige zurücksetzen, falls erfolgreich
         } catch {
-            showErrorMessage = true  // Fehleranzeige aktivieren
+            showErrorMessage = true  // Fehleranzeige aktivieren, falls ein Fehler auftritt
             print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
         }
-        isRemoving = false  // Entfernen-Prozess abgeschlossen, Button wieder aktiv
+        isRemoving = false  // Entfernen abgeschlossen, Button wieder aktiv
     }
 }
-
-

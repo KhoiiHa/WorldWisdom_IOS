@@ -27,7 +27,7 @@ class UserQuoteManager: ObservableObject {
     }
 
     // Neues Zitat speichern
-    func addUserQuote(quoteText: String, author: String) async {
+    func addUserQuote(quoteText: String, author: String, authorImageURL: String? = nil) async {
         // Überprüfen, ob das Zitat und der Autor nicht leer sind
         guard !quoteText.isEmpty else {
             self.errorMessage = "Das Zitat darf nicht leer sein."
@@ -39,7 +39,7 @@ class UserQuoteManager: ObservableObject {
         }
 
         do {
-            try await firebaseManager.saveUserQuote(quoteText: quoteText, author: author)
+            try await firebaseManager.saveUserQuote(quoteText: quoteText, author: author, authorImageURL: authorImageURL!)
             await loadUserQuotes() // 🔹 Liste sofort aktualisieren
             self.errorMessage = nil // Fehler zurücksetzen, wenn der Vorgang erfolgreich war
         } catch {

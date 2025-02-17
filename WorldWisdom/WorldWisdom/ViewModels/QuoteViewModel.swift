@@ -73,17 +73,34 @@ class QuoteViewModel: ObservableObject {
             let quoteEntities = try await Task {
                 return try swiftDataSyncManager.context.fetch(fetchRequest)
             }.value
-
+            
             let localQuotes = quoteEntities.map { quoteEntity in
-                Quote(id: quoteEntity.id, author: quoteEntity.author, quote: quoteEntity.quote, category: quoteEntity.category, tags: quoteEntity.tags.split(separator: ", ").map { String($0) }, isFavorite: quoteEntity.isFavorite, description: quoteEntity.quoteDescription, source: quoteEntity.source)
+                // Extrahiere die Bild-URL (falls vorhanden) für den Autor
+                let authorImageURL = quoteEntity.authorImageURL ?? ""
+                
+                // Optional entpacken, falls tags nil ist, dann leeres Array verwenden
+                let tags = quoteEntity.tags ?? []  // Standardwert leeres Array
+                
+                return Quote(
+                    id: quoteEntity.id,
+                    author: quoteEntity.author,
+                    quote: quoteEntity.quote,
+                    category: quoteEntity.category,
+                    tags: tags,
+                    isFavorite: quoteEntity.isFavorite,
+                    description: quoteEntity.quoteDescription,
+                    source: quoteEntity.source,
+                    authorImageURL: authorImageURL
+                )
             }
-
+            
             self.quotes = localQuotes
         } catch {
             self.handleError(error)
         }
     }
-
+    
+    
     // Gibt ein zufälliges Zitat aus
     func getRandomQuote() {
         guard let randomQuote = quotes.randomElement() else {
@@ -172,7 +189,22 @@ class QuoteViewModel: ObservableObject {
     func addQuote(_ quote: Quote) async throws {
         quotes.append(quote)
         do {
-            try await firebaseManager.saveUserQuote(quoteText: quote.quote, author: quote.author)
+            // Überprüfe, ob authorImageURL nicht nil ist
+            if let authorImageURL = quote.authorImageURL {
+                // Übergebe den entpackten Wert
+                try await firebaseManager.saveUserQuote(
+                    quoteText: quote.quote,
+                    author: quote.author,
+                    authorImageURL: authorImageURL
+                )
+            } else {
+                try await firebaseManager.saveUserQuote(
+                    quoteText: quote.quote,
+                    author: quote.author,
+                    authorImageURL: "" // Leerer String oder Standardwert
+                )
+            }
+            
             try await swiftDataSyncManager.addQuote(quote)
         } catch {
             print("Fehler beim Speichern des Zitats in Firestore: \(error.localizedDescription)")

@@ -14,12 +14,18 @@ class QuoteEntity {
     var author: String
     var quote: String
     var category: String
-    var tags: String  // Tags als String speichern (durch Komma getrennt)
+    
+    // Verwenden des @Attribute-Attributs für tags als Array von Strings
+    @Attribute var tags: [String]?
+    
     var isFavorite: Bool
     var quoteDescription: String
     var source: String
-    
-    init(id: String, author: String, quote: String, category: String, tags: String, isFavorite: Bool, quoteDescription: String, source: String) {
+    var authorImageURL: String?  // URL des Remote-Bildes
+    var authorImageData: Data?  // Offline-Bild (lokal gespeichert)
+
+    // Initialisierer mit optionalem tags-Array
+    init(id: String, author: String, quote: String, category: String, tags: [String]?, isFavorite: Bool, quoteDescription: String, source: String, authorImageURL: String?, authorImageData: Data?) {
         self.id = id
         self.author = author
         self.quote = quote
@@ -28,39 +34,38 @@ class QuoteEntity {
         self.isFavorite = isFavorite
         self.quoteDescription = quoteDescription
         self.source = source
+        self.authorImageURL = authorImageURL
+        self.authorImageData = authorImageData
     }
-    
+
     // Konvertierung von Firebase Quote zu SwiftData QuoteEntity
     static func fromFirebaseModel(quote: Quote) -> QuoteEntity {
-        // Tags als String speichern
-        let tagsString = quote.tags.joined(separator: ", ")
-        
         return QuoteEntity(
             id: quote.id,
             author: quote.author,
             quote: quote.quote,
             category: quote.category,
-            tags: tagsString,
+            tags: quote.tags, // Direktes Zuweisen des Array
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
-            source: quote.source
+            source: quote.source,
+            authorImageURL: quote.authorImageURL,
+            authorImageData: nil  // Bild wird später geladen (wird später gesetzt)
         )
     }
-    
+
     // Konvertierung von SwiftData QuoteEntity zu Firebase Quote
     func toFirebaseModel() -> Quote {
-        // Tags wieder als Array zurückwandeln
-        let tagsArray = self.tags.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespaces) }
-        
         return Quote(
             id: self.id,
             author: self.author,
             quote: self.quote,
             category: self.category,
-            tags: tagsArray,
+            tags: self.tags ?? [], // Wenn tags nil ist, ein leeres Array zurückgeben
             isFavorite: self.isFavorite,
             description: self.quoteDescription,
-            source: self.source
+            source: self.source,
+            authorImageURL: self.authorImageURL ?? "" // Das authorImageURL hier berücksichtigen
         )
     }
 }

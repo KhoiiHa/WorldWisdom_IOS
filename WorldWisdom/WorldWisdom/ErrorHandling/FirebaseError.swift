@@ -15,6 +15,8 @@ enum FirebaseError: Error, LocalizedError {
     case favoriteNotFound
     case userNotAuthenticated
     case fetchFailed
+    case authorImageUploadFailed
+    case imageDownloadFailed
     
     var errorDescription: String? {
         switch self {
@@ -32,6 +34,10 @@ enum FirebaseError: Error, LocalizedError {
             return "Benutzer ist nicht authentifiziert."
         case .fetchFailed:
             return "Abruf der Daten ist fehlgeschlagen."
+        case .authorImageUploadFailed:
+            return "Fehler beim Hochladen des Autorenbildes."
+        case .imageDownloadFailed:
+            return "Fehler beim Abrufen des Bildes."
         }
     }
 }

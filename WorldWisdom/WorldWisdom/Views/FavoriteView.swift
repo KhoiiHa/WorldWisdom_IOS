@@ -18,8 +18,17 @@ struct FavoriteView: View {
                     emptyStateView
                 } else {
                     ForEach(favoriteManager.favoriteQuotes) { quote in
-                        FavoriteQuoteCardView(quote: quote) {
+                        FavoriteQuoteCardView(quote: quote, unfavoriteAction: {
                             await removeFavorite(quote)
+                        })
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                Task {
+                                    await removeFavorite(quote)
+                                }
+                            } label: {
+                                Label("Entfernen", systemImage: "trash.fill")
+                            }
                         }
                     }
                 }
@@ -56,7 +65,7 @@ struct FavoriteView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .multilineTextAlignment(.center)
     }
-    
+
     private func removeFavorite(_ quote: Quote) async {
         await favoriteManager.removeFavoriteQuote(quote)
     }

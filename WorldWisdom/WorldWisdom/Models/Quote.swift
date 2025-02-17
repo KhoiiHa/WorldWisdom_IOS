@@ -5,9 +5,6 @@
 //  Created by Vu Minh Khoi Ha on 22.01.25.
 //
 
-import Foundation
-
-// Modelklasse für Zitat
 struct Quote: Identifiable, Codable, Equatable {
     var id: String
     var author: String
@@ -16,5 +13,7 @@ struct Quote: Identifiable, Codable, Equatable {
     var tags: [String]
     var isFavorite: Bool
     var description: String
-    var source: String // URL zur Quelle des Zitats(WIKI-Link)
+    var source: String // URL zur Quelle des Zitats (z.B. Wikipedia-Link)
+    var authorImageURL: String? // URL des Autorenbildes (Remote)
+    var localImagePath: String? // Optionaler lokaler Pfad des heruntergeladenen Bildes (Offline)
 }
