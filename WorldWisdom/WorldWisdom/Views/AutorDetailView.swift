@@ -10,11 +10,14 @@ import SwiftUI
 struct AutorDetailView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
     @State private var isFavorite: Bool
+    @State private var authorImageURL: String?
+    @State private var errorMessage: ErrorMessage? // Fehler-Message als Identifiable
     let quote: Quote
 
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
         self._isFavorite = State(initialValue: quote.isFavorite)
+        self._authorImageURL = State(initialValue: quote.authorImageURL) // Initialisierung mit Bild-URL
         self.quoteViewModel = quoteViewModel
     }
 
@@ -61,12 +64,18 @@ struct AutorDetailView: View {
         }
         .navigationTitle(quote.author)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            loadAuthorImage() // Bild laden wenn die View erscheint
+        }
+        .alert(item: $errorMessage) { errorMessage in
+            Alert(title: Text("Fehler"), message: Text(errorMessage.message), dismissButton: .default(Text("OK")))
+        }
     }
 
     // MARK: - Autor Bild
     private var authorImage: some View {
         Group {
-            if let imageURLString = quote.authorImageURL,
+            if let imageURLString = authorImageURL,
                let imageURL = URL(string: imageURLString), !imageURLString.isEmpty {
                 AsyncImage(url: imageURL) { phase in
                     switch phase {
@@ -175,4 +184,43 @@ struct AutorDetailView: View {
             }
         }
     }
+
+    // MARK: - Autor-Bild anzeigen (mit CloudinaryManager)
+    private func loadAuthorImage() {
+        Task {
+            do {
+                // Bild-URLs mit async/await laden (diesmal als Array von URLs)
+                let imageURLs = try await CloudinaryManager.shared.fetchImagesForAuthor(authorId: quote.id)
+                
+                // Debug: Gib die Bild-URLs aus
+                print("Bild-URLs für den Autor:", imageURLs)
+                
+                // Falls ein Bild vorhanden ist, nehmen wir das erste Bild aus dem Array
+                if let firstImageURL = imageURLs.first, !firstImageURL.isEmpty {
+                    authorImageURL = firstImageURL // Bild-URL aktualisieren
+                } else {
+                    // Keine gültige Bild-URL gefunden
+                    showAlert(for: "Kein Bild gefunden für diesen Autor." as! Error)
+                }
+            } catch {
+                // Fehler im UI anzeigen
+                showAlert(for: "Fehler beim Laden des Bildes: \(error.localizedDescription)" as! Error)
+            }
+        }
+    }
+
+    private func showAlert(for error: Error) {
+        let errorMessage: ErrorMessage
+        if let cloudinaryError = error as? CloudinaryError {
+            errorMessage = ErrorMessage(message: cloudinaryError.errorDescription ?? "Unbekannter Fehler")
+        } else {
+            errorMessage = ErrorMessage(message: error.localizedDescription)
+        }
+        self.errorMessage = errorMessage
+    }
+}
+
+struct ErrorMessage: Identifiable {
+    let id = UUID() // UUID stellt sicher, dass jedes Fehlerobjekt eindeutig ist
+    let message: String
 }

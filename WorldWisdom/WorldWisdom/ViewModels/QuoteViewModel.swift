@@ -42,7 +42,17 @@ class QuoteViewModel: ObservableObject {
         do {
             if isConnectedToInternet() {
                 // Zitate von der API abrufen
-                let fetchedQuotes = try await QuoteService.shared.fetchQuotes()
+                var fetchedQuotes = try await QuoteService.shared.fetchQuotes()
+                
+                // Hier sicherstellen, dass jedes Zitat die authorImageURL enthält
+                for index in fetchedQuotes.indices {
+                    let quote = fetchedQuotes[index]
+                    if quote.authorImageURL == nil || quote.authorImageURL?.isEmpty == true {
+                        // Setze die Platzhalter-URL von Cloudinary
+                        fetchedQuotes[index].authorImageURL = "https://res.cloudinary.com/dpaehynl2/image/upload/v1739866635/cld-sample-4.jpg"
+                    }
+                }
+
                 self.quotes = fetchedQuotes // Speichert ALLE Zitate in der Liste
                 await syncQuotesWithSwiftData()
             } else {

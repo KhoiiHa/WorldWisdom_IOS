@@ -168,28 +168,31 @@ class SwiftDataSyncManager {
 
                 // Wenn authorImageURL vorhanden ist, lade das Bild hoch
                 if let authorImageURLString = updatedQuote.authorImageURL,
-                   let authorImageURL = URL(string: authorImageURLString),
-                   let imageData = try? Data(contentsOf: authorImageURL),
-                   let image = UIImage(data: imageData) {
+                   let authorImageURL = URL(string: authorImageURLString) {
+                    do {
+                        // Versuche, das Bild herunterzuladen und hochzuladen
+                        let imageData = try await downloadImageData(from: authorImageURL)
+                        let uploadedImageURL = try await CloudinaryManager.shared.uploadImage(imageData: imageData, authorId: updatedQuote.id)
 
-                    // Lade das Bild in Firebase Storage hoch
-                    let storage = Storage.storage()
-                    let storageRef = storage.reference().child("authors/\(updatedQuote.id).jpg")
-                    let metadata = StorageMetadata()
-                    metadata.contentType = "image/jpeg"
+                        // Aktualisiere URL in den Zitatdaten
+                        updatedQuote.authorImageURL = uploadedImageURL
 
-                    // Hochladen des Bildes
-                    let uploadedImageURL = try await uploadImageToFirebaseStorage(storageRef: storageRef, imageData: imageData, metadata: metadata)
+                        // Erstelle das QuoteEntity-Objekt und speichere das Bild in SwiftData
+                        let quoteEntity = QuoteEntity.fromFirebaseModel(quote: updatedQuote)
+                        quoteEntity.authorImageData = imageData
 
-                    // Aktualisiere URL in den Zitatdaten
-                    updatedQuote.authorImageURL = uploadedImageURL
-
-                    // Erstelle das QuoteEntity-Objekt und speichere das Bild in SwiftData
-                    let quoteEntity = QuoteEntity.fromFirebaseModel(quote: updatedQuote)
-                    quoteEntity.authorImageData = imageData
-
-                    // Speichern in SwiftData
-                    try await addOrUpdateQuote(quoteEntity: quoteEntity, image: image)
+                        // Speichern in SwiftData
+                        if let image = UIImage(data: imageData) {
+                            try await addOrUpdateQuote(quoteEntity: quoteEntity, image: image)
+                        } else {
+                            try await addOrUpdateQuote(quoteEntity: quoteEntity, image: nil)
+                        }
+                    } catch {
+                        // Fehler beim Bild-Download oder Upload: Speichere das Zitat ohne Bild
+                        print("❌ Fehler beim Hochladen des Bildes für Zitat \(updatedQuote.id): \(error.localizedDescription)")
+                        let quoteEntity = QuoteEntity.fromFirebaseModel(quote: updatedQuote)
+                        try await addOrUpdateQuote(quoteEntity: quoteEntity, image: nil)
+                    }
                 } else {
                     // Kein Bild, speichere nur das Zitat
                     let quoteEntity = QuoteEntity.fromFirebaseModel(quote: updatedQuote)
@@ -202,7 +205,13 @@ class SwiftDataSyncManager {
             print("❌ Fehler beim Synchronisieren von Firestore: \(error.localizedDescription)")
         }
     }
-    
+
+    // Hilfsfunktion zum asynchronen Download von Bilddaten
+    private func downloadImageData(from url: URL) async throws -> Data {
+        // Lade das Bild asynchron herunter
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return data
+    }
     private func fetchQuotesFromFirestore() async throws -> [Quote] {
         let firestore = Firestore.firestore()
         let quotesCollection = firestore.collection("quotes")

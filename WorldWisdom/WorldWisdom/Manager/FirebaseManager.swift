@@ -285,75 +285,42 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    // MARK: - Firebase Storage - Autorenbilder hochladen
     
-    // 📌 Bilder aus Firebase Storage abrufen
-    func fetchImages(for authorId: String, completion: @escaping (Result<[String], FirebaseError>) -> Void) {
-        let storageRef = Storage.storage().reference().child("author_images/\(authorId)")
+    func uploadAuthorImage(imageData: Data, authorId: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let storageRef = storage.reference().child("author_images/\(authorId).jpg")
         
-        storageRef.listAll { result in
-            switch result {
-            case .success(let storageListResult):
-                var urls: [String] = []
-                let group = DispatchGroup()
-                
-                for item in storageListResult.items {
-                    group.enter()
-                    item.downloadURL { url, error in
-                        if let error = error {
-                            print("Fehler beim Abrufen der URL für \(item.name): \(error.localizedDescription)")
-                            group.leave()
-                            return
-                        }
-                        if let url = url {
-                            urls.append(url.absoluteString)
-                        }
-                        group.leave()
-                    }
+        storageRef.putData(imageData, metadata: nil) { metadata, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            storageRef.downloadURL { url, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
                 }
                 
-                group.notify(queue: .main) {
-                    if urls.isEmpty {
-                        completion(.failure(.imageDownloadFailed))
-                    } else {
-                        completion(.success(urls))
-                    }
+                guard let downloadURL = url else {
+                    completion(.failure(FirebaseError.imageDownloadFailed))
+                    return
                 }
-            case .failure(let error):
-                print("Fehler beim Abrufen der Bilder: \(error.localizedDescription)")
-                completion(.failure(.fetchFailed))
+                
+                completion(.success(downloadURL.absoluteString))
             }
         }
     }
     
-    // 📌 Bild in Firebase hochladen (mit async/await)
-    func uploadAuthorImage(image: UIImage, authorId: String) async throws -> String {
-        // Stelle sicher, dass das Bild in Daten umgewandelt wird
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw FirebaseError.authorImageUploadFailed
-        }
-
-        // Erstelle den Referenzpfad für das Bild in Firebase Storage
-        let storage = Storage.storage()
-        let storageRef = storage.reference().child("authors/\(authorId).jpg")
-
-        // Lade das Bild hoch und erhalte die URL
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            storageRef.putData(imageData, metadata: nil) { _, error in
-                if error != nil {  // Prüfen, ob ein Fehler aufgetreten ist
-                    continuation.resume(throwing: FirebaseError.uploadFailed)
-                    return
-                }
-
-                // Erfolgreicher Upload -> Lade die URL
-                storageRef.downloadURL { url, _ in
-                    if let url = url {
-                        print("✅ Bild erfolgreich hochgeladen: \(url.absoluteString)")
-                        continuation.resume(returning: url.absoluteString) // Rückgabe der URL hier
-                    } else {
-                        continuation.resume(throwing: FirebaseError.imageDownloadFailed)
-                    }
-                }
+    func uploadAuthorImageIfNeeded(authorId: String, imageData: Data) {
+        // Aufruf der Upload-Funktion mit Completion-Handler
+        uploadAuthorImage(imageData: imageData, authorId: authorId) { result in
+            switch result {
+            case .success(let downloadURL):
+                print("Erfolgreich hochgeladen! Bild-URL: \(downloadURL)")
+                // Optional: Speichern der URL in Firestore oder Weiterverarbeitung hier.
+            case .failure(let error):
+                print("Fehler beim Hochladen des Bildes: \(error.localizedDescription)")
+                // Fehlerbehandlung hier, falls nötig
             }
         }
     }

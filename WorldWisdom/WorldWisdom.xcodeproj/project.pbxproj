@@ -16,6 +16,7 @@
 		A69D12232D380DDE00EC70D9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12222D380DDE00EC70D9 /* FirebaseDatabase */; settings = {ATTRIBUTES = (Required, ); }; };
 		A69D12252D380DDE00EC70D9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12242D380DDE00EC70D9 /* FirebaseFirestore */; };
 		A69D12272D380DDE00EC70D9 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A69D12262D380DDE00EC70D9 /* FirebaseStorage */; };
+		A6B4C3642D647A190063D9B3 /* Cloudinary in Frameworks */ = {isa = PBXBuildFile; productRef = A6B4C3632D647A190063D9B3 /* Cloudinary */; };
 		A6B725482D5F4B9200E0FBFF /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = A6B725472D5F4B9200E0FBFF /* Reachability */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,7 @@
 				A69D12212D380DDE00EC70D9 /* FirebaseCrashlytics in Frameworks */,
 				A663C4302D5F7A5F0059DD12 /* Kingfisher in Frameworks */,
 				A69D121F2D380DDE00EC70D9 /* FirebaseCore in Frameworks */,
+				A6B4C3642D647A190063D9B3 /* Cloudinary in Frameworks */,
 				A69D12272D380DDE00EC70D9 /* FirebaseStorage in Frameworks */,
 				A6B725482D5F4B9200E0FBFF /* Reachability in Frameworks */,
 				A69D121D2D380DDE00EC70D9 /* FirebaseAuth in Frameworks */,
@@ -98,6 +100,7 @@
 				A6B725472D5F4B9200E0FBFF /* Reachability */,
 				A663C42F2D5F7A5F0059DD12 /* Kingfisher */,
 				A654F5AB2D5FA239004BFB2A /* SDWebImageSwiftUI */,
+				A6B4C3632D647A190063D9B3 /* Cloudinary */,
 			);
 			productName = WorldWisdom;
 			productReference = A61EA9872D35538000878C44 /* WorldWisdom.app */;
@@ -132,6 +135,7 @@
 				A6B725462D5F4B9200E0FBFF /* XCRemoteSwiftPackageReference "Reachability" */,
 				A663C42E2D5F7A5F0059DD12 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				A654F5AA2D5FA239004BFB2A /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				A6B4C3622D647A190063D9B3 /* XCRemoteSwiftPackageReference "cloudinary_ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A61EA9882D35538000878C44 /* Products */;
@@ -395,6 +399,14 @@
 				minimumVersion = 11.7.0;
 			};
 		};
+		A6B4C3622D647A190063D9B3 /* XCRemoteSwiftPackageReference "cloudinary_ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cloudinary/cloudinary_ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
 		A6B725462D5F4B9200E0FBFF /* XCRemoteSwiftPackageReference "Reachability" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
@@ -450,6 +462,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A69D12192D380DDE00EC70D9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		A6B4C3632D647A190063D9B3 /* Cloudinary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A6B4C3622D647A190063D9B3 /* XCRemoteSwiftPackageReference "cloudinary_ios" */;
+			productName = Cloudinary;
 		};
 		A6B725472D5F4B9200E0FBFF /* Reachability */ = {
 			isa = XCSwiftPackageProductDependency;
