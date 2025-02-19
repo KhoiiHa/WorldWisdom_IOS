@@ -23,17 +23,14 @@ class FavoriteManager: ObservableObject {
     // Favoriten aus Firestore & SwiftData laden
     func loadFavoriteQuotes() async {
         do {
+            // Firebase-Daten abrufen
             let firebaseQuotes = try await firebaseManager.fetchFavoriteQuotes()
-            let localQuotes = try await syncManager.fetchFavoriteQuotes() // Lokale Favoriten über syncManager laden
+            
+            // Lokale Daten von SwiftData abrufen
+            let localQuotes = try await syncManager.fetchFavoriteQuotes()
 
-            // Merge: Priorisiere Firebase-Daten, wenn sie verfügbar sind, ansonsten nehme lokale Daten
-            let mergedQuotes: [Quote]
-            if firebaseQuotes.isEmpty {
-                mergedQuotes = localQuotes
-            } else {
-                mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
-            }
-
+            // Favoriten zusammenführen: Firebase-Daten haben Vorrang
+            let mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
             favoriteQuotes = mergedQuotes
         } catch let error as URLError {
             logger.error("Netzwerkfehler beim Laden der Favoriten: \(error.localizedDescription)")
@@ -56,10 +53,10 @@ class FavoriteManager: ObservableObject {
         }
 
         do {
-            // Zuerst in Firebase speichern
+            // Favoriten zuerst zu Firebase hinzufügen
             try await firebaseManager.saveFavoriteQuote(quote: quote)
             
-            // Dann den Favoritenstatus in SwiftData aktualisieren
+            // Favoriten dann zu SwiftData hinzufügen
             try await syncManager.updateFavoriteStatus(for: quote, to: true)
             
             // Favoritenliste im ViewModel aktualisieren
@@ -78,39 +75,43 @@ class FavoriteManager: ObservableObject {
     }
 
     // Favoriten-Zitat entfernen (Firebase + SwiftData)
-    func removeFavoriteQuote(_ quote: Quote) async {
+    func removeFavoriteQuote(_ quote: Quote) async throws {
         guard favoriteQuotes.contains(where: { $0.id == quote.id }) else {
             logger.warning("Zitat nicht in Favoriten gefunden.")
-            return
+            throw FirebaseError.favoriteNotFound // Fehler werfen
         }
 
         do {
+            // Zitat aus Firebase entfernen
             try await firebaseManager.deleteFavoriteQuote(quote)
-            try await syncManager.removeFavoriteQuote(quote) // Favoriten aus SwiftData entfernen über syncManager
-
-            favoriteQuotes.removeAll { $0.id == quote.id }
             
-            // Favoriten nach Entfernen erneut laden, um sicherzustellen, dass die neuesten Daten angezeigt werden
+            // Zitat aus SwiftData entfernen
+            try await syncManager.removeFavoriteQuote(quote)
+            
+            // Favoritenliste im ViewModel aktualisieren
+            favoriteQuotes.removeAll { $0.id == quote.id }
+
+            // Favoriten erneut laden, um die neuesten Daten anzuzeigen
             await loadFavoriteQuotes()
         } catch let error as URLError {
             logger.error("Netzwerkfehler beim Entfernen des Zitats: \(error.localizedDescription)")
-            errorMessage = "Es gab ein Problem mit der Internetverbindung."
+            throw FirebaseError.fetchFailed // Netzwerkfehler weiterwerfen
         } catch let error as FirebaseError {
             logger.error("Fehler beim Entfernen des Zitats von Firebase: \(error.localizedDescription)")
-            errorMessage = "Fehler beim Entfernen des Zitats von Firebase."
+            throw error // Fehler weiterwerfen
         } catch {
             logger.error("Fehler beim Entfernen des Zitats: \(error.localizedDescription)")
-            errorMessage = FavoriteError.unknownError.errorMessage
+            throw FirebaseError.unknownError("Unbekannter Fehler beim Entfernen des Zitats.") // Allg. Fehler weiterwerfen
         }
     }
-
+    
     // Favoritenstatus aktualisieren
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
         do {
             if isFavorite {
                 try await addFavoriteQuote(quote)
             } else {
-                await removeFavoriteQuote(quote)
+                try await removeFavoriteQuote(quote)
             }
         } catch let error as FavoriteError {
             logger.error("Fehler: \(error.errorMessage)")

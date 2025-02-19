@@ -14,18 +14,14 @@ class QuoteEntity {
     var author: String
     var quote: String
     var category: String
-    
-    // Verwenden des @Attribute-Attributs für tags als Array von Strings
     @Attribute var tags: [String]?
-    
     var isFavorite: Bool
     var quoteDescription: String
     var source: String
-    var authorImageURL: String?  // URL des Remote-Bildes
+    @Attribute var authorImageURLs: [String]?
     var authorImageData: Data?  // Offline-Bild (lokal gespeichert)
 
-    // Initialisierer mit optionalem tags-Array
-    init(id: String, author: String, quote: String, category: String, tags: [String]?, isFavorite: Bool, quoteDescription: String, source: String, authorImageURL: String?, authorImageData: Data?) {
+    init(id: String, author: String, quote: String, category: String, tags: [String]?, isFavorite: Bool, quoteDescription: String, source: String, authorImageURLs: [String]?, authorImageData: Data?) {
         self.id = id
         self.author = author
         self.quote = quote
@@ -34,7 +30,7 @@ class QuoteEntity {
         self.isFavorite = isFavorite
         self.quoteDescription = quoteDescription
         self.source = source
-        self.authorImageURL = authorImageURL
+        self.authorImageURLs = authorImageURLs
         self.authorImageData = authorImageData
     }
 
@@ -45,12 +41,12 @@ class QuoteEntity {
             author: quote.author,
             quote: quote.quote,
             category: quote.category,
-            tags: quote.tags, // Direktes Zuweisen des Array
+            tags: quote.tags,
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
             source: quote.source,
-            authorImageURL: quote.authorImageURL,
-            authorImageData: nil  // Bild wird später geladen (wird später gesetzt)
+            authorImageURLs: quote.authorImageURLs, 
+            authorImageData: nil
         )
     }
 
@@ -61,11 +57,11 @@ class QuoteEntity {
             author: self.author,
             quote: self.quote,
             category: self.category,
-            tags: self.tags ?? [], // Wenn tags nil ist, ein leeres Array zurückgeben
+            tags: self.tags ?? [],
             isFavorite: self.isFavorite,
             description: self.quoteDescription,
             source: self.source,
-            authorImageURL: self.authorImageURL ?? "" // Das authorImageURL hier berücksichtigen
+            authorImageURLs: self.authorImageURLs ?? []
         )
     }
 }

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct FavoriteView: View {
     @StateObject private var favoriteManager = FavoriteManager()
+    @State private var showErrorMessage: Bool = false
+    @State private var errorMessage: String?  // Hier errorMessage als State hinzufügen
 
     var body: some View {
         NavigationView {
@@ -18,16 +20,20 @@ struct FavoriteView: View {
                     emptyStateView
                 } else {
                     ForEach(favoriteManager.favoriteQuotes) { quote in
-                        FavoriteQuoteCardView(quote: quote, unfavoriteAction: {
-                            await removeFavorite(quote)
-                        })
-                        .swipeActions {
-                            Button(role: .destructive) {
+                        NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: QuoteViewModel())) {
+                            FavoriteQuoteCardView(quote: quote, unfavoriteAction: {
                                 Task {
                                     await removeFavorite(quote)
                                 }
-                            } label: {
-                                Label("Entfernen", systemImage: "trash.fill")
+                            })
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    Task {
+                                        await removeFavorite(quote)
+                                    }
+                                } label: {
+                                    Label("Entfernen", systemImage: "trash.fill")
+                                }
                             }
                         }
                     }
@@ -48,11 +54,16 @@ struct FavoriteView: View {
                 }
             }
             .task {
-                await favoriteManager.loadFavoriteQuotes()
+                await favoriteManager.loadFavoriteQuotes() // Lade die Favoriten bei Initialisierung
+            }
+            // Fehleranzeige anzeigen, wenn showErrorMessage true ist
+            .alert(isPresented: $showErrorMessage) {
+                Alert(title: Text("Fehler"), message: Text(errorMessage ?? "Unbekannter Fehler"), dismissButton: .default(Text("OK")))
             }
         }
     }
-    
+
+    // MARK: - Empty State View
     private var emptyStateView: some View {
         VStack {
             Image(systemName: "star.slash")
@@ -66,7 +77,22 @@ struct FavoriteView: View {
         .multilineTextAlignment(.center)
     }
 
+    // MARK: - Remove Favorite
     private func removeFavorite(_ quote: Quote) async {
-        await favoriteManager.removeFavoriteQuote(quote)
+        do {
+            // Fehlerbehandlung und Favoriten entfernen
+            try await favoriteManager.removeFavoriteQuote(quote)
+            showErrorMessage = false  // Fehleranzeige zurücksetzen
+        } catch let error as FirebaseError {
+            // Fehlerbehandlung je nach Fehlerart
+            showErrorMessage = true
+            errorMessage = error.localizedDescription
+            print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
+        } catch {
+            // Allgemeine Fehlerbehandlung
+            showErrorMessage = true
+            errorMessage = "Ein unerwarteter Fehler ist aufgetreten."
+            print("Unbekannter Fehler: \(error.localizedDescription)")
+        }
     }
 }

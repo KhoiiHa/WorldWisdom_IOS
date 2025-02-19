@@ -118,7 +118,8 @@ class FirebaseManager: ObservableObject {
             
             return snapshot.documents.compactMap { document in
                 let data = document.data()
-                let authorImageURL = data["authorImageURL"] as? String ?? ""
+                let authorImageURLs = data["authorImageURLs"] as? [String] ?? []
+                
                 return Quote(
                     id: document.documentID,
                     author: data["author"] as? String ?? "Unbekannt",
@@ -128,7 +129,7 @@ class FirebaseManager: ObservableObject {
                     isFavorite: true,
                     description: data["description"] as? String ?? "",
                     source: data["source"] as? String ?? "",
-                    authorImageURL: authorImageURL
+                    authorImageURLs: authorImageURLs
                 )
             }
         } catch {
@@ -248,6 +249,8 @@ class FirebaseManager: ObservableObject {
 
         return snapshot.documents.compactMap { document in
             let data = document.data()
+            let authorImageURLs = data["authorImageURLs"] as? [String] ?? []
+            
             return Quote(
                 id: document.documentID,
                 author: data["author"] as? String ?? "Unbekannt",
@@ -257,7 +260,7 @@ class FirebaseManager: ObservableObject {
                 isFavorite: false,
                 description: data["description"] as? String ?? "",
                 source: data["source"] as? String ?? "",
-                authorImageURL: data["authorImageURL"] as? String ?? "" // fetchen der URL
+                authorImageURLs: authorImageURLs
             )
         }
     }
@@ -285,43 +288,4 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    
-    func uploadAuthorImage(imageData: Data, authorId: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let storageRef = storage.reference().child("author_images/\(authorId).jpg")
-        
-        storageRef.putData(imageData, metadata: nil) { metadata, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            storageRef.downloadURL { url, error in
-                if let error = error {
-                    completion(.failure(error))
-                    return
-                }
-                
-                guard let downloadURL = url else {
-                    completion(.failure(FirebaseError.imageDownloadFailed))
-                    return
-                }
-                
-                completion(.success(downloadURL.absoluteString))
-            }
-        }
-    }
-    
-    func uploadAuthorImageIfNeeded(authorId: String, imageData: Data) {
-        // Aufruf der Upload-Funktion mit Completion-Handler
-        uploadAuthorImage(imageData: imageData, authorId: authorId) { result in
-            switch result {
-            case .success(let downloadURL):
-                print("Erfolgreich hochgeladen! Bild-URL: \(downloadURL)")
-                // Optional: Speichern der URL in Firestore oder Weiterverarbeitung hier.
-            case .failure(let error):
-                print("Fehler beim Hochladen des Bildes: \(error.localizedDescription)")
-                // Fehlerbehandlung hier, falls nötig
-            }
-        }
-    }
 }

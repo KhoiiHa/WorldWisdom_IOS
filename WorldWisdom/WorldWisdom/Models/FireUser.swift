@@ -5,11 +5,11 @@
 //  Created by Vu Minh Khoi Ha on 21.01.25.
 //
 
-// User Model für die Benutzerdaten
-struct FireUser: Codable {
-    let id: String
-    let email: String?
-    let name: String?
-    let uid: String
-    var favoriteQuoteIds: [String] = [] // Liste von favorisierten Zitat-IDs
+struct FireUser {
+    var id: String
+    var email: String?
+    var name: String?
+    var uid: String
+    var favoriteQuoteIds: [String]
+    var authorId: String? // Neuer Parameter für die authorId
 }

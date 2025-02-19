@@ -69,7 +69,7 @@ struct AddQuoteView: View {
             if let quoteToEdit = quoteToEdit {
                 quoteText = quoteToEdit.quote
                 author = quoteToEdit.author
-                authorImageURL = quoteToEdit.authorImageURL ?? ""
+                authorImageURL = quoteToEdit.authorImageURLs?.first ?? "" // Falls mehrere Bilder möglich sind, verwenden wir das erste
                 print("Zitat zum Bearbeiten geladen: \(quoteText), \(author), URL: \(authorImageURL)") // Debug
             }
         }
@@ -89,7 +89,7 @@ struct AddQuoteView: View {
                         id: quoteToEdit.id,
                         quoteText: quoteText,
                         author: author,
-                        authorImageURL: quoteToEdit.authorImageURL ?? ""
+                        authorImageURL: quoteToEdit.authorImageURLs?.first ?? ""
                     )
                 } else {
                     // Neues Zitat speichern
@@ -99,7 +99,7 @@ struct AddQuoteView: View {
                     await userQuoteManager.addUserQuote(quoteText: quoteText, author: author, authorImageURL: imageURL)
                 }
 
-                dismiss() // Schließt die Ansicht nach erfolgreichem Speichern
+                dismiss() 
             } catch {
                 errorMessage = "Fehler: \(error.localizedDescription)"
                 print("Fehler: \(error.localizedDescription)") // Fehlerlog

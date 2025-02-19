@@ -12,6 +12,7 @@ enum SwiftDataError: LocalizedError {
     case saveError           // Fehler beim Speichern von Daten
     case fetchError          // Fehler beim Abrufen von Daten
     case deleteError         // Fehler beim Löschen von Daten
+    case quoteNotFound       // Zitat nicht gefunden
     case unknownError        // Unbekannter Fehler
 
     // Fehlermeldungen basierend auf dem Fehler-Typ
@@ -23,6 +24,8 @@ enum SwiftDataError: LocalizedError {
             return "Fehler beim Abrufen der Daten."
         case .deleteError:
             return "Fehler beim Löschen der Daten."
+        case .quoteNotFound:
+            return "Das angeforderte Zitat wurde nicht gefunden."
         case .unknownError:
             return "Unbekannter Fehler."
         }
@@ -37,6 +40,8 @@ enum SwiftDataError: LocalizedError {
             return "Überprüfe, ob die Daten vorhanden sind und versuche es erneut."
         case .deleteError:
             return "Überprüfe die Verbindung und versuche es erneut."
+        case .quoteNotFound:
+            return "Stelle sicher, dass das Zitat existiert und versuche es erneut."
         case .unknownError:
             return "Unbekannter Fehler aufgetreten. Versuche es später erneut."
         }

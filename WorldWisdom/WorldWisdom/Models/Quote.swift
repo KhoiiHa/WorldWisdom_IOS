@@ -14,6 +14,6 @@ struct Quote: Identifiable, Codable, Equatable {
     var isFavorite: Bool
     var description: String
     var source: String // URL zur Quelle des Zitats (z.B. Wikipedia-Link)
-    var authorImageURL: String? // URL des Autorenbildes (Remote)
+    var authorImageURLs: [String]? 
     var localImagePath: String? // Optionaler lokaler Pfad des heruntergeladenen Bildes (Offline)
 }

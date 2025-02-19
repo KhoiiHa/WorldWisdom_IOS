@@ -41,7 +41,7 @@ struct WorldWisdomApp: App {
             if userViewModel.isLoggedIn {
                 MainTabView()
                     .environmentObject(userViewModel)
-                    .environmentObject(quoteViewModel)
+                    .environmentObject(quoteViewModel) // Weitergabe des quoteViewModel für die Galerie und andere Views
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
                     .environmentObject(userQuoteManager)

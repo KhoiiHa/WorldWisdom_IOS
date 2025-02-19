@@ -47,9 +47,9 @@ class QuoteViewModel: ObservableObject {
                 // Hier sicherstellen, dass jedes Zitat die authorImageURL enthält
                 for index in fetchedQuotes.indices {
                     let quote = fetchedQuotes[index]
-                    if quote.authorImageURL == nil || quote.authorImageURL?.isEmpty == true {
+                    if quote.authorImageURLs?.first == nil || quote.authorImageURLs?.first?.isEmpty == true {
                         // Setze die Platzhalter-URL von Cloudinary
-                        fetchedQuotes[index].authorImageURL = "https://res.cloudinary.com/dpaehynl2/image/upload/v1739866635/cld-sample-4.jpg"
+                        fetchedQuotes[index].authorImageURLs = ["https://res.cloudinary.com/dpaehynl2/image/upload/v1739866635/cld-sample-4.jpg"]
                     }
                 }
 
@@ -86,10 +86,10 @@ class QuoteViewModel: ObservableObject {
             
             let localQuotes = quoteEntities.map { quoteEntity in
                 // Extrahiere die Bild-URL (falls vorhanden) für den Autor
-                let authorImageURL = quoteEntity.authorImageURL ?? ""
+                let authorImageURL = quoteEntity.authorImageURLs?.first ?? ""
                 
                 // Optional entpacken, falls tags nil ist, dann leeres Array verwenden
-                let tags = quoteEntity.tags ?? []  // Standardwert leeres Array
+                let tags = quoteEntity.tags ?? []
                 
                 return Quote(
                     id: quoteEntity.id,
@@ -100,7 +100,7 @@ class QuoteViewModel: ObservableObject {
                     isFavorite: quoteEntity.isFavorite,
                     description: quoteEntity.quoteDescription,
                     source: quoteEntity.source,
-                    authorImageURL: authorImageURL
+                    authorImageURLs: [authorImageURL]
                 )
             }
             
@@ -123,7 +123,7 @@ class QuoteViewModel: ObservableObject {
     // Entfernt ein Zitat aus den Favoriten in Firestore und SwiftData
     func removeFavoriteQuote(_ quote: Quote) async {
         do {
-            await favoriteManager.removeFavoriteQuote(quote)
+            try await favoriteManager.removeFavoriteQuote(quote)
             try await swiftDataSyncManager.removeFavoriteQuote(quote)
             await loadFavoriteQuotes()
         } catch {
@@ -199,9 +199,9 @@ class QuoteViewModel: ObservableObject {
     func addQuote(_ quote: Quote) async throws {
         quotes.append(quote)
         do {
-            // Überprüfe, ob authorImageURL nicht nil ist
-            if let authorImageURL = quote.authorImageURL {
-                // Übergebe den entpackten Wert
+            // Überprüfe, ob authorImageURLs nicht leer ist
+            if let authorImageURL = quote.authorImageURLs?.first, !authorImageURL.isEmpty {
+                // Übergebe den ersten Wert aus dem Array authorImageURLs
                 try await firebaseManager.saveUserQuote(
                     quoteText: quote.quote,
                     author: quote.author,
@@ -214,7 +214,7 @@ class QuoteViewModel: ObservableObject {
                     authorImageURL: "" // Leerer String oder Standardwert
                 )
             }
-            
+
             try await swiftDataSyncManager.addQuote(quote)
         } catch {
             print("Fehler beim Speichern des Zitats in Firestore: \(error.localizedDescription)")
@@ -225,12 +225,25 @@ class QuoteViewModel: ObservableObject {
 
     // Speichert das bearbeitete Zitat sowohl in Firestore als auch in SwiftData
     func saveEditedQuote(_ quote: Quote) async throws {
-        if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
-            quotes[index] = quote
-        }
+        let quoteEntity = QuoteEntity(
+            id: quote.id,
+            author: quote.author,
+            quote: quote.quote,
+            category: quote.category,
+            tags: quote.tags,
+            isFavorite: quote.isFavorite,
+            quoteDescription: quote.description,
+            source: quote.source,
+            authorImageURLs: quote.authorImageURLs,
+            authorImageData: nil // falls du es später hinzufügst
+        )
+
         do {
+            // Versuche, das Zitat in Firestore zu aktualisieren (falls benötigt)
             try await firebaseManager.updateQuote(quote)
-            try await swiftDataSyncManager.updateQuote(quote)
+
+            // Speichere oder aktualisiere das Zitat in SwiftData
+            swiftDataSyncManager.addOrUpdateQuote(quoteEntity)
         } catch {
             self.handleError(error)
             throw error

@@ -109,8 +109,20 @@ class UserViewModel: ObservableObject {
 
     func checkCurrentUser() async {
         if let currentUser = FirebaseManager.shared.currentUser {
-            self.isLoggedIn = true
-            self.user = FireUser(id: currentUser.uid, email: currentUser.email, name: nil, uid: currentUser.uid, favoriteQuoteIds: [])
+            // Abrufen der Benutzerdaten aus Firestore (einschließlich authorId)
+            let db = Firestore.firestore()
+            do {
+                let userDocument = try await db.collection("users").document(currentUser.uid).getDocument()
+                if let data = userDocument.data() {
+                    let authorId = data["authorId"] as? String ?? nil  // Holen der authorId
+                    self.user = FireUser(id: currentUser.uid, email: currentUser.email, name: data["name"] as? String, uid: currentUser.uid, favoriteQuoteIds: data["favoriteQuoteIds"] as? [String] ?? [], authorId: authorId)
+                    self.isLoggedIn = true
+                }
+            } catch {
+                print("Fehler beim Abrufen der Benutzerdaten: \(error.localizedDescription)")
+                self.isLoggedIn = false
+                self.user = nil
+            }
         } else {
             self.isLoggedIn = false
             self.user = nil

@@ -15,6 +15,20 @@ struct FavoriteQuoteCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            // Autorenbild anzeigen, falls vorhanden (das erste Bild aus authorImageURLs)
+            if let imageUrlString = quote.authorImageURLs?.first, let url = URL(string: imageUrlString) {
+                AsyncImage(url: url) { image in
+                    image.resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)  // Größe des Bildes
+                        .clipShape(Circle())  // Bild rund machen
+                } placeholder: {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .frame(width: 40, height: 40)
+                }
+            }
+
             // Zitat anzeigen
             Text("„\(quote.quote)“")
                 .font(.body)
