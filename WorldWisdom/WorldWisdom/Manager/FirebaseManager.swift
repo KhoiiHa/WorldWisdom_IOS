@@ -147,6 +147,10 @@ class FirebaseManager: ObservableObject {
             "quoteText": quote.quote,
             "author": quote.author,
             "category": quote.category,
+            "tags": quote.tags,
+            "description": quote.description,
+            "source": quote.source,
+            "authorImageURLs": quote.authorImageURLs ?? [],
             "createdAt": Timestamp(date: Date())
         ]
 

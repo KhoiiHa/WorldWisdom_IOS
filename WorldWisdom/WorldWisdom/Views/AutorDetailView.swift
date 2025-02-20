@@ -36,12 +36,16 @@ struct AutorDetailView: View {
                     // Nur Autor-Name
                     Text(quote.author)
                         .font(.title.bold())
+                        .foregroundColor(.white)
+                        .transition(.opacity) // Animation für den Autor-Namen
                     
                     // Zitat-Card
                     quoteCard
+                        .transition(.move(edge: .bottom).combined(with: .opacity)) // Animation für die Zitat-Karte
                     
                     // Autor-Info-Card
                     authorInfoCard
+                        .transition(.move(edge: .trailing).combined(with: .opacity)) // Animation für die Autor-Info-Karte
                 }
                 .padding(.horizontal)
                 .padding(.top, 30)
@@ -52,6 +56,7 @@ struct AutorDetailView: View {
         }
         .navigationTitle(quote.author)
         .navigationBarTitleDisplayMode(.inline)
+        .animation(.easeInOut(duration: 0.5), value: currentImageIndex) // Animation für Bildwechsel
     }
     
     private var authorImage: some View {
@@ -69,6 +74,7 @@ struct AutorDetailView: View {
                             .frame(width: 180, height: 180)
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .shadow(radius: 5)
+                            .transition(.opacity) // Animation für Bildwechsel
                     case .failure:
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
@@ -85,6 +91,8 @@ struct AutorDetailView: View {
                         Image(systemName: "chevron.left.circle.fill")
                             .font(.largeTitle)
                             .foregroundColor(.white)
+                            .scaleEffect(currentImageIndex == 0 ? 1.0 : 1.2) // Animation für Pfeil-Button
+                            .animation(.spring(response: 0.3, dampingFraction: 0.5), value: currentImageIndex)
                     }
                     .disabled(currentImageIndex == 0)
                     
@@ -94,6 +102,8 @@ struct AutorDetailView: View {
                         Image(systemName: "chevron.right.circle.fill")
                             .font(.largeTitle)
                             .foregroundColor(.white)
+                            .scaleEffect(currentImageIndex == imageUrls.count - 1 ? 1.0 : 1.2) // Animation für Pfeil-Button
+                            .animation(.spring(response: 0.3, dampingFraction: 0.5), value: currentImageIndex)
                     }
                     .disabled(currentImageIndex == imageUrls.count - 1)
                 }

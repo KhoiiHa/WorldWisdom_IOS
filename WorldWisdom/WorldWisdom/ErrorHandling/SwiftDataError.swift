@@ -9,11 +9,12 @@ import Foundation
 
 // Enum für Fehler im Zusammenhang mit SwiftData
 enum SwiftDataError: LocalizedError {
-    case saveError           // Fehler beim Speichern von Daten
-    case fetchError          // Fehler beim Abrufen von Daten
-    case deleteError         // Fehler beim Löschen von Daten
-    case quoteNotFound       // Zitat nicht gefunden
-    case unknownError        // Unbekannter Fehler
+    case saveError
+    case fetchError
+    case deleteError
+    case quoteNotFound
+    case syncError
+    case unknownError        
 
     // Fehlermeldungen basierend auf dem Fehler-Typ
     var errorDescription: String? {
@@ -26,6 +27,8 @@ enum SwiftDataError: LocalizedError {
             return "Fehler beim Löschen der Daten."
         case .quoteNotFound:
             return "Das angeforderte Zitat wurde nicht gefunden."
+        case .syncError:
+            return "Fehler bei der Synchronisation der Daten."
         case .unknownError:
             return "Unbekannter Fehler."
         }
@@ -42,6 +45,8 @@ enum SwiftDataError: LocalizedError {
             return "Überprüfe die Verbindung und versuche es erneut."
         case .quoteNotFound:
             return "Stelle sicher, dass das Zitat existiert und versuche es erneut."
+        case .syncError:
+            return "Überprüfe deine Netzwerkverbindung und versuche es später erneut."
         case .unknownError:
             return "Unbekannter Fehler aufgetreten. Versuche es später erneut."
         }

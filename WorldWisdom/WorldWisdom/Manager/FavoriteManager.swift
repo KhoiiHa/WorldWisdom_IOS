@@ -32,6 +32,9 @@ class FavoriteManager: ObservableObject {
             // Favoriten zusammenführen: Firebase-Daten haben Vorrang
             let mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
             favoriteQuotes = mergedQuotes
+
+            // Fehler-Reset, falls erfolgreich
+            errorMessage = nil
         } catch let error as URLError {
             logger.error("Netzwerkfehler beim Laden der Favoriten: \(error.localizedDescription)")
             errorMessage = FavoriteError.networkError.errorMessage
@@ -154,5 +157,9 @@ class FavoriteManager: ObservableObject {
             // Wenn das Decodieren fehlschlägt, werfen wir einen Fehler
             throw QuoteError.parsingError("Fehler beim Decodieren des Zitats.")
         }
+    }
+    
+    func getFavoriteQuotesByAuthor(author: String) -> [Quote] {
+        return favoriteQuotes.filter { $0.author == author }
     }
 }

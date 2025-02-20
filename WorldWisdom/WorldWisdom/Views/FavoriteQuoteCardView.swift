@@ -6,88 +6,78 @@
 //
 import SwiftUI
 
+
 struct FavoriteQuoteCardView: View {
     @ObservedObject var favoriteManager: FavoriteManager
     let quote: Quote
-    @State private var showErrorMessage: Bool = false
-    @State private var isRemoving: Bool = false
-    @State private var showAuthorDetails: Bool = false
+    @State private var showAuthorDetails = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Autorenbild anzeigen, falls vorhanden (das erste Bild aus authorImageURLs)
-            if let imageUrlString = quote.authorImageURLs?.first, let url = URL(string: imageUrlString) {
-                AsyncImage(url: url) { image in
-                    image.resizable()
-                        .scaledToFill()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                } placeholder: {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .frame(width: 40, height: 40)
-                }
-            }
-
-            // Zitat anzeigen
+            // Zitat Text
             Text("„\(quote.quote)“")
-                .font(.body)
+                .font(.system(.body, design: .serif))
                 .italic()
                 .foregroundColor(.primary)
-                .lineLimit(3)  // Maximale Zeilenanzahl für das Zitat
-                .padding(.bottom, 5)
-
-            // Autor des Zitats
-            Text("- \(quote.author)")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            // Button zum Anzeigen von weiteren Autoreninfos
-            Button(action: {
-                showAuthorDetails.toggle()
-            }) {
-                Text(showAuthorDetails ? "Weniger erfahren" : "Mehr erfahren")
-                    .font(.footnote)
-                    .foregroundColor(.blue)
-            }
-
-            // Detaillierte Informationen über den Autor
-            if showAuthorDetails {
-                VStack(alignment: .leading, spacing: 8) {
-                    // Hier könnten mehr Details zu diesem Autor angezeigt werden
-                    Text("Biografie:")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    Text("Dies ist eine kurze Biografie des Autors. Hier könnte ein Abschnitt aus Wikipedia oder ein inspirierendes Zitat des Autors stehen.")
-                        .font(.body)
-                        .foregroundColor(.primary)
-                        .lineLimit(5)
-                        .truncationMode(.tail)
-                }
-                .padding(.top, 8)
-                .transition(.move(edge: .bottom))
-            }
-
-            // Fehleranzeige (falls nötig)
-            if showErrorMessage {
-                Text("Fehler beim Entfernen des Favoriten. Bitte versuchen Sie es später erneut.")
+            
+            HStack {
+                // Autor Name
+                Text("- \(quote.author)")
                     .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(8)
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(8)
-                    .padding(.top, 8)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+            }
+            
+            // Button für Dropdown
+            Button(action: {
+                withAnimation {
+                    showAuthorDetails.toggle()
+                }
+            }) {
+                HStack {
+                    Text(showAuthorDetails ? "Details ausblenden" : "Mehr über den Autor")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    Image(systemName: showAuthorDetails ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.blue)
+                }
+                .padding(.top, 5)
+            }
+
+            // Autor-Infos (Dropdown)
+            if showAuthorDetails {
+                authorInfoCard
+                    .transition(.slide)  // Sanfte Animation beim Einblenden
             }
         }
         .padding()
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)]),
+                gradient: Gradient(colors: [Color.purple.opacity(0.2), Color.blue.opacity(0.2)]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16))  // Abrundung des Cards
-        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)  
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)
+    }
+
+    // MARK: - Autor Info Card (Dropdown)
+    private var authorInfoCard: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            Text("Über \(quote.author)")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text(quote.description)
+                .font(.body)
+                .foregroundColor(.primary)
+            
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
     }
 }

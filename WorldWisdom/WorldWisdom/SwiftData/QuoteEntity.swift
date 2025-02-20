@@ -45,7 +45,7 @@ class QuoteEntity {
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
             source: quote.source,
-            authorImageURLs: quote.authorImageURLs, 
+            authorImageURLs: quote.authorImageURLs,
             authorImageData: nil
         )
     }
@@ -59,7 +59,7 @@ class QuoteEntity {
             category: self.category,
             tags: self.tags ?? [],
             isFavorite: self.isFavorite,
-            description: self.quoteDescription,
+            description: self.quoteDescription, // Mapping
             source: self.source,
             authorImageURLs: self.authorImageURLs ?? []
         )
