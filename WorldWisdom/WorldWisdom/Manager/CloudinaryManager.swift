@@ -22,7 +22,7 @@ class CloudinaryManager: ObservableObject {
         self.cloudinary = CLDCloudinary(configuration: config)
     }
 
-    // 📌 Bild in Cloudinary hochladen und URL in Firestore speichern
+    // Bild in Cloudinary hochladen und URL in Firestore speichern
     func uploadImage(imageData: Data, authorId: String) async throws -> String {
         let uploader = cloudinary.createUploader()
         
@@ -53,14 +53,14 @@ class CloudinaryManager: ObservableObject {
     private func saveImageUrlToFirestore(authorId: String, imageUrl: String) async throws {
         let authorRef = db.collection("authors").document(authorId)
 
-        // Hole das Dokument im Hintergrund, um sicherzustellen, dass wir es nicht auf dem Haupt-Thread tun
+        
         let document = try await authorRef.getDocument()
 
         guard document.exists else {
             throw CloudinaryError.authorNotFound
         }
 
-        // Mache den Firestore Update-Aufruf im Hintergrund (verhindert Datenrennen)
+        // Mache den Firestore Update-Aufruf im Hintergrund
         try await Task.detached(priority: .background) {
             try await authorRef.updateData([
                 "authorImageUrls": FieldValue.arrayUnion([imageUrl])
@@ -71,7 +71,7 @@ class CloudinaryManager: ObservableObject {
     }
     
     
-    // 📌 Bild für einen Autor abrufen (gibt eine Liste der URLs zurück)
+    // Bild für einen Autor abrufen (gibt eine Liste der URLs zurück)
     func fetchImagesForAuthor(authorId: String) async throws -> [String] {
         let authorRef = db.collection("authors").document(authorId)
         let document = try await authorRef.getDocument()
@@ -89,14 +89,14 @@ class CloudinaryManager: ObservableObject {
         }
     }
 
-    // 📌 Abrufen von allen Autorenbildern (falls benötigt)
+    // Abrufen von allen Autorenbildern (falls benötigt)
     func fetchAllAuthorImages() async {
         do {
-            let authorIds = try await getAllAuthorIds() // Hol dir alle Autoren-IDs
+            let authorIds = try await getAllAuthorIds()
             for authorId in authorIds {
                 do {
                     let images = try await fetchImagesForAuthor(authorId: authorId)
-                    imageUrls.append(contentsOf: images) // Direkt in die @Published Liste einfügen
+                    imageUrls.append(contentsOf: images)
                 } catch {
                     print("Fehler beim Abrufen der Bilder für Autor \(authorId): \(error)")
                 }

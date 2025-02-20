@@ -9,8 +9,8 @@ import FirebaseFirestore
 
 struct FavoriteQuote: Codable, Identifiable {
     @DocumentID var id: String?
-    let quoteId: String     // Verweis auf das Zitat, das favorisiert wurde
-    let userId: String     // Der Benutzer, der es favorisiert hat
-    let createdAt: Timestamp // Zeitpunkt, wann es favorisiert wurde
+    let quoteId: String
+    let userId: String
+    let createdAt: Timestamp 
     var quoteText: String
 }

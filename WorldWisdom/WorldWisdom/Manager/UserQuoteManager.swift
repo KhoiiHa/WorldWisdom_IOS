@@ -10,15 +10,15 @@ import SwiftUI
 
 @MainActor
 class UserQuoteManager: ObservableObject {
-    private let firebaseManager = FirebaseManager.shared  // 🔹 Richtig referenzieren
+    private let firebaseManager = FirebaseManager.shared  
 
     @Published var userQuotes: [Quote] = []
-    @Published var errorMessage: String? // 🔹 Fehlernachricht für die Benutzeroberfläche
+    @Published var errorMessage: String?
 
     // Benutzerdefinierte Zitate abrufen
     func loadUserQuotes() async {
         do {
-            let quotes = try await firebaseManager.fetchUserQuotes() // 🔹 Zugriff auf FirebaseManager
+            let quotes = try await firebaseManager.fetchUserQuotes()
             self.userQuotes = quotes
         } catch {
             self.errorMessage = "Fehler beim Laden der Zitate: \(error.localizedDescription)"
@@ -40,8 +40,8 @@ class UserQuoteManager: ObservableObject {
 
         do {
             try await firebaseManager.saveUserQuote(quoteText: quoteText, author: author, authorImageURL: authorImageURL!)
-            await loadUserQuotes() // 🔹 Liste sofort aktualisieren
-            self.errorMessage = nil // Fehler zurücksetzen, wenn der Vorgang erfolgreich war
+            await loadUserQuotes()
+            self.errorMessage = nil
         } catch {
             self.errorMessage = "Fehler beim Speichern des Zitats: \(error.localizedDescription)"
             print("Fehler beim Speichern des Zitats: \(error)")

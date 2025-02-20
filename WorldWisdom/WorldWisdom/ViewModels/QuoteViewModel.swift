@@ -17,7 +17,7 @@ class QuoteViewModel: ObservableObject {
     @Published var randomQuote: Quote?
     @Published var favoriteQuotes: [Quote] = []
     @Published var errorMessage: String?
-    @Published var recoverySuggestion: String? // Vorschläge zur Fehlerbehebung
+    @Published var recoverySuggestion: String?
     @Published var hasError: Bool = false
     
     private var firebaseManager = FirebaseManager.shared
@@ -60,8 +60,8 @@ class QuoteViewModel: ObservableObject {
                 await fetchQuotesFromSwiftData()
             }
         } catch {
-            self.handleError(error) // Fehler direkt behandeln
-            throw error // Fehler weiterwerfen
+            self.handleError(error)
+            throw error
         }
     }
 
@@ -211,7 +211,7 @@ class QuoteViewModel: ObservableObject {
                 try await firebaseManager.saveUserQuote(
                     quoteText: quote.quote,
                     author: quote.author,
-                    authorImageURL: "" // Leerer String oder Standardwert
+                    authorImageURL: ""
                 )
             }
 
@@ -249,7 +249,28 @@ class QuoteViewModel: ObservableObject {
             throw error
         }
     }
-
+    
+    
+    // Funktion zum Laden des vollständigen Zitats
+    func loadCompleteQuote(for favoriteQuote: FavoriteQuote) async {
+        do {
+            // Aufruf der Funktion im FavoriteManager
+            if let completeQuote = try await favoriteManager.fetchCompleteQuote(for: favoriteQuote) {
+                
+                // Verhindere, dass doppelte Zitate hinzugefügt werden
+                if !favoriteQuotes.contains(where: { $0.id == completeQuote.id }) {
+                    favoriteQuotes.append(completeQuote)
+                }
+            }
+        } catch let error as QuoteError {
+            // Fehler im Fehler-Block behandeln
+            errorMessage = error.errorDescription
+        } catch {
+            // Fängt alle anderen Fehler
+            errorMessage = "Ein unerwarteter Fehler ist aufgetreten."
+        }
+    }
+    
     // Gemeinsame Fehlerbehandlung
     private func handleError(_ error: Error) {
         // Fehlerbehandlung für QuoteError
@@ -265,7 +286,7 @@ class QuoteViewModel: ObservableObject {
         // Fehlerbehandlung für FavoriteError
         else if let favoriteError = error as? FavoriteError {
             self.errorMessage = favoriteError.errorMessage
-            self.recoverySuggestion = favoriteError.errorMessage // Gleich wie die Fehlermeldung
+            self.recoverySuggestion = favoriteError.errorMessage 
         }
         // Unbekannter Fehler
         else {

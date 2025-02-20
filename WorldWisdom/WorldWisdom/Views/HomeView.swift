@@ -23,7 +23,14 @@ struct HomeView: View {
                 .padding(20)
             }
             .navigationTitle("Home")
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color(red: 0.95, green: 0.95, blue: 0.98), Color(red: 0.90, green: 0.92, blue: 0.96)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
             .task {
                 if quoteViewModel.quotes.isEmpty {
                     await loadQuotes()
@@ -39,7 +46,7 @@ struct HomeView: View {
     private var welcomeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Willkommen zurück!")
-                .font(.largeTitle)
+                .font(.system(.largeTitle, design: .rounded))
                 .bold()
                 .foregroundColor(.primary)
                 .padding(.bottom, 5)
@@ -58,7 +65,7 @@ struct HomeView: View {
     private var dailyQuoteSection: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Zitat des Tages")
-                .font(.title2)
+                .font(.system(.title2, design: .rounded))
                 .bold()
                 .foregroundColor(.primary)
 
@@ -66,25 +73,6 @@ struct HomeView: View {
                 NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
                     quoteCard(quote)
                 }
-
-                Button(action: {
-                    Task {
-                        let isFavorite = !quote.isFavorite
-                        await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: quote.isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(quote.isFavorite ? .red : .gray)
-                        Text(quote.isFavorite ? "Favorit entfernen" : "Favorisieren")
-                            .font(.caption)
-                            .foregroundColor(.primary)
-                    }
-                    .padding(10)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
-                }
-                .buttonStyle(PlainButtonStyle())
             } else {
                 ProgressView("Lädt Zitat des Tages...")
                     .padding()
@@ -105,7 +93,7 @@ struct HomeView: View {
     private var recommendedQuotesSection: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Empfohlene Zitate")
-                .font(.title2)
+                .font(.system(.title2, design: .rounded))
                 .bold()
                 .foregroundColor(.primary)
 
@@ -117,8 +105,8 @@ struct HomeView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 20) // Padding für besseren Abstand zum Rand
-                .padding(.trailing, 20) // Extra Padding, um den nächsten Card-Teil sichtbar zu machen
+                .padding(.horizontal, 20)
+                .padding(.trailing, 20) 
             }
         }
     }
@@ -138,7 +126,7 @@ struct HomeView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color(.systemBackground))
+        .background(Color(.systemBackground).opacity(0.9))
         .cornerRadius(15)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
@@ -159,10 +147,11 @@ struct HomeView: View {
         }
         .padding()
         .frame(width: 250) // Breitere Karte (250 Punkte)
-        .background(Color(.systemBackground))
+        .background(Color(.systemBackground).opacity(0.9))
         .cornerRadius(15)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
+
     // MARK: - Neues Zitat-Button
     private var newQuoteButton: some View {
         Button(action: { Task { quoteViewModel.getRandomQuote() } }) {
@@ -175,9 +164,9 @@ struct HomeView: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.orange, Color.pink]), startPoint: .leading, endPoint: .trailing))
+            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing))
             .cornerRadius(15)
-            .shadow(color: .orange.opacity(0.3), radius: 5, x: 0, y: 2)
+            .shadow(color: .blue.opacity(0.3), radius: 5, x: 0, y: 2)
         }
     }
 

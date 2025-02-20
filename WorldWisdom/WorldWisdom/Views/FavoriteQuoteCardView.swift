@@ -7,11 +7,11 @@
 import SwiftUI
 
 struct FavoriteQuoteCardView: View {
+    @ObservedObject var favoriteManager: FavoriteManager
     let quote: Quote
-    let unfavoriteAction: () async throws -> Void  // Action, die Fehler werfen kann
-
-    @State private var showErrorMessage: Bool = false  // Anzeige der Fehlermeldung
-    @State private var isRemoving: Bool = false  // Wird gesetzt, wenn das Entfernen läuft
+    @State private var showErrorMessage: Bool = false
+    @State private var isRemoving: Bool = false
+    @State private var showAuthorDetails: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -20,8 +20,8 @@ struct FavoriteQuoteCardView: View {
                 AsyncImage(url: url) { image in
                     image.resizable()
                         .scaledToFill()
-                        .frame(width: 40, height: 40)  // Größe des Bildes
-                        .clipShape(Circle())  // Bild rund machen
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
                 } placeholder: {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
@@ -41,6 +41,32 @@ struct FavoriteQuoteCardView: View {
             Text("- \(quote.author)")
                 .font(.caption)
                 .foregroundColor(.secondary)
+
+            // Button zum Anzeigen von weiteren Autoreninfos
+            Button(action: {
+                showAuthorDetails.toggle()
+            }) {
+                Text(showAuthorDetails ? "Weniger erfahren" : "Mehr erfahren")
+                    .font(.footnote)
+                    .foregroundColor(.blue)
+            }
+
+            // Detaillierte Informationen über den Autor
+            if showAuthorDetails {
+                VStack(alignment: .leading, spacing: 8) {
+                    // Hier könnten mehr Details zu diesem Autor angezeigt werden
+                    Text("Biografie:")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    Text("Dies ist eine kurze Biografie des Autors. Hier könnte ein Abschnitt aus Wikipedia oder ein inspirierendes Zitat des Autors stehen.")
+                        .font(.body)
+                        .foregroundColor(.primary)
+                        .lineLimit(5)
+                        .truncationMode(.tail)
+                }
+                .padding(.top, 8)
+                .transition(.move(edge: .bottom))
+            }
 
             // Fehleranzeige (falls nötig)
             if showErrorMessage {
@@ -62,19 +88,6 @@ struct FavoriteQuoteCardView: View {
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))  // Abrundung des Cards
-        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)  // Schattierung für den Card
-    }
-
-    // Swipe-to-Delete-Logik
-    private func unfavoriteQuote() async {
-        isRemoving = true  // Deaktiviert den Button während des Entfernens
-        do {
-            try await unfavoriteAction()  // Führe die unfavoriteAction aus
-            showErrorMessage = false  // Fehleranzeige zurücksetzen, falls erfolgreich
-        } catch {
-            showErrorMessage = true  // Fehleranzeige aktivieren, falls ein Fehler auftritt
-            print("Fehler beim Entfernen des Favoriten: \(error.localizedDescription)")
-        }
-        isRemoving = false  // Entfernen abgeschlossen, Button wieder aktiv
+        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)  
     }
 }

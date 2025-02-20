@@ -11,5 +11,5 @@ struct FireUser {
     var name: String?
     var uid: String
     var favoriteQuoteIds: [String]
-    var authorId: String? // Neuer Parameter für die authorId
+    var authorId: String? 
 }

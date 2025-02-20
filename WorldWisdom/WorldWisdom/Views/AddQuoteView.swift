@@ -75,7 +75,7 @@ struct AddQuoteView: View {
         }
     }
 
-    // 🛠️ Speichert oder aktualisiert das Zitat
+    // Speichert oder aktualisiert das Zitat
     private func saveQuote() {
         isSaving = true
         errorMessage = nil

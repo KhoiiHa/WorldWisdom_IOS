@@ -109,7 +109,7 @@ class SwiftDataSyncManager {
                     isFavorite: entity.isFavorite,
                     description: entity.quoteDescription,
                     source: entity.source,
-                    authorImageURLs: entity.authorImageURLs ?? []  // Hier wird das Array genutzt
+                    authorImageURLs: entity.authorImageURLs ?? []
                 )
             }
         } catch {
@@ -213,8 +213,7 @@ class SwiftDataSyncManager {
                     let description = data["description"] as? String,
                     let source = data["source"] as? String
                 else {
-                    // Hier kannst du entscheiden, was zu tun ist, wenn Daten ungültig sind.
-                    // Hier erstellen wir ein leeres QuoteEntity als Fallback.
+                
                     quoteEntities.append(
                         QuoteEntity(id: "", author: "", quote: "", category: "", tags: [], isFavorite: false, quoteDescription: "", source: "", authorImageURLs: nil, authorImageData: nil)
                     )
@@ -231,7 +230,7 @@ class SwiftDataSyncManager {
                     isFavorite: isFavorite,
                     description: description,
                     source: source,
-                    authorImageURLs: data["authorImageURL"] as? [String] // Optionales Array von URLs
+                    authorImageURLs: data["authorImageURL"] as? [String] 
                 ))
 
                 // Füge das QuoteEntity der Liste hinzu

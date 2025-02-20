@@ -34,10 +34,10 @@ class FavoriteManager: ObservableObject {
             favoriteQuotes = mergedQuotes
         } catch let error as URLError {
             logger.error("Netzwerkfehler beim Laden der Favoriten: \(error.localizedDescription)")
-            errorMessage = "Es gab ein Problem mit der Internetverbindung."
+            errorMessage = FavoriteError.networkError.errorMessage
         } catch let error as FirebaseError {
             logger.error("Fehler bei Firebase-Abfrage: \(error.localizedDescription)")
-            errorMessage = "Fehler beim Laden der Favoriten von Firebase."
+            errorMessage = FavoriteError.firebaseError.errorMessage
         } catch {
             logger.error("Fehler beim Laden der Favoriten: \(error.localizedDescription)")
             errorMessage = FavoriteError.unknownError.errorMessage
@@ -63,10 +63,10 @@ class FavoriteManager: ObservableObject {
             favoriteQuotes.append(quote)
         } catch let error as URLError {
             logger.error("Netzwerkfehler beim Hinzufügen des Zitats: \(error.localizedDescription)")
-            errorMessage = "Es gab ein Problem mit der Internetverbindung."
+            errorMessage = FavoriteError.networkError.errorMessage
         } catch let error as FirebaseError {
             logger.error("Fehler beim Speichern auf Firebase: \(error.localizedDescription)")
-            errorMessage = "Fehler beim Speichern des Zitats auf Firebase."
+            errorMessage = FavoriteError.firebaseError.errorMessage
         } catch {
             logger.error("Fehler beim Hinzufügen des Zitats: \(error.localizedDescription)")
             errorMessage = FavoriteError.unableToUpdateFavorite.errorMessage
@@ -95,13 +95,13 @@ class FavoriteManager: ObservableObject {
             await loadFavoriteQuotes()
         } catch let error as URLError {
             logger.error("Netzwerkfehler beim Entfernen des Zitats: \(error.localizedDescription)")
-            throw FirebaseError.fetchFailed // Netzwerkfehler weiterwerfen
+            throw FirebaseError.fetchFailed
         } catch let error as FirebaseError {
             logger.error("Fehler beim Entfernen des Zitats von Firebase: \(error.localizedDescription)")
-            throw error // Fehler weiterwerfen
+            throw error
         } catch {
             logger.error("Fehler beim Entfernen des Zitats: \(error.localizedDescription)")
-            throw FirebaseError.unknownError("Unbekannter Fehler beim Entfernen des Zitats.") // Allg. Fehler weiterwerfen
+            throw FirebaseError.unknownError("Unbekannter Fehler beim Entfernen des Zitats.")
         }
     }
     
@@ -131,5 +131,28 @@ class FavoriteManager: ObservableObject {
         }
 
         return merged
+    }
+
+    // Funktion zum Abrufen des vollständigen Zitats
+    func fetchCompleteQuote(for favoriteQuote: FavoriteQuote) async throws -> Quote? {
+        let db = Firestore.firestore()
+
+        // Abrufen des Zitats aus Firestore
+        let snapshot = try await db.collection("quotes").document(favoriteQuote.quoteId).getDocument()
+
+        // Prüfen, ob das Dokument existiert
+        guard let data = snapshot.data() else {
+            // Wenn keine Daten vorhanden sind, werfen wir einen Fehler
+            throw QuoteError.noQuotesFound
+        }
+
+        do {
+            // Direktes Decodieren der Daten in das Quote-Modell
+            let decodedQuote = try Firestore.Decoder().decode(Quote.self, from: data)
+            return decodedQuote
+        } catch {
+            // Wenn das Decodieren fehlschlägt, werfen wir einen Fehler
+            throw QuoteError.parsingError("Fehler beim Decodieren des Zitats.")
+        }
     }
 }

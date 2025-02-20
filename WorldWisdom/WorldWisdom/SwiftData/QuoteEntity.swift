@@ -14,11 +14,11 @@ class QuoteEntity {
     var author: String
     var quote: String
     var category: String
-    @Attribute var tags: [String]?
+    var tags: [String]?
     var isFavorite: Bool
     var quoteDescription: String
     var source: String
-    @Attribute var authorImageURLs: [String]?
+    var authorImageURLs: [String]?
     var authorImageData: Data?  // Offline-Bild (lokal gespeichert)
 
     init(id: String, author: String, quote: String, category: String, tags: [String]?, isFavorite: Bool, quoteDescription: String, source: String, authorImageURLs: [String]?, authorImageData: Data?) {

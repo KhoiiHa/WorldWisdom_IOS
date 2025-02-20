@@ -29,12 +29,12 @@ class UserCreatedQuoteEntity {
     // Konvertierung von Firebase UserCreatedQuote zu SwiftData UserCreatedQuoteEntity
     static func fromFirebaseModel(userCreatedQuote: UserCreatedQuote) -> UserCreatedQuoteEntity {
         return UserCreatedQuoteEntity(
-            id: userCreatedQuote.id ?? UUID().uuidString,  // Generiere ID, falls sie nicht vorhanden ist
+            id: userCreatedQuote.id ?? UUID().uuidString,
             userId: userCreatedQuote.userId,
             quoteText: userCreatedQuote.quoteText,
             author: userCreatedQuote.author,
             createdAt: userCreatedQuote.createdAt.dateValue(), // Konvertiere Firebase Timestamp in Date
-            category: userCreatedQuote.category // Kann nil sein
+            category: userCreatedQuote.category 
         )
     }
 }

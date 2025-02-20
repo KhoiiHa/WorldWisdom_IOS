@@ -10,13 +10,12 @@ import SwiftUI
 struct AutorDetailView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
     @State private var isFavorite: Bool
-    @State private var authorImageURL: String?
+    @State private var currentImageIndex: Int = 0
     let quote: Quote
     
     init(quote: Quote, quoteViewModel: QuoteViewModel) {
         self.quote = quote
         self._isFavorite = State(initialValue: quote.isFavorite)
-        self._authorImageURL = State(initialValue: quote.authorImageURLs?.first ?? "")
         self.quoteViewModel = quoteViewModel
     }
     
@@ -31,81 +30,84 @@ struct AutorDetailView: View {
             
             ScrollView {
                 VStack(spacing: 20) {
-                    // 📌 Autor-Bild
+                    // Autor-Bild mit Pfeilen
                     authorImage
                     
+                    // Nur Autor-Name
                     Text(quote.author)
                         .font(.title.bold())
                     
-                    // 📌 Galerie-Button
-                    NavigationLink(destination: GalerieScreen(authorId: quote.author)) {
-                        Text("📸 Galerie ansehen")
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                    }
-                    .padding(.horizontal)
-                    
-                    // 📌 Zitat-Card
+                    // Zitat-Card
                     quoteCard
                     
-                    // 📌 Autor-Info-Card
+                    // Autor-Info-Card
                     authorInfoCard
                 }
                 .padding(.horizontal)
                 .padding(.top, 30)
             }
             
-            // 📌 Favoriten-Button
+            // Favoriten-Button
             favoriteButton
         }
         .navigationTitle(quote.author)
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            Task {
-                await loadAuthorImage() // Bild laden wenn die View erscheint
-            }
-        }
     }
     
     private var authorImage: some View {
-        Group {
-            if let imageURLString = authorImageURL,
-               let imageURL = URL(string: imageURLString), !imageURLString.isEmpty {
-                AsyncImage(url: imageURL) { phase in
+        VStack {
+            if let imageUrls = quote.authorImageURLs, !imageUrls.isEmpty {
+                AsyncImage(url: URL(string: imageUrls[currentImageIndex])) { phase in
                     switch phase {
                     case .empty:
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
-                            .frame(width: 100, height: 100)
+                            .frame(width: 180, height: 180)
                     case .success(let image):
                         image
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
+                            .frame(width: 180, height: 180)
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                            .shadow(radius: 5)
                     case .failure:
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 100, height: 100)
+                            .frame(width: 180, height: 180)
                             .foregroundColor(.gray.opacity(0.5))
                     @unknown default:
                         EmptyView()
                     }
                 }
+                
+                HStack {
+                    Button(action: showPreviousImage) {
+                        Image(systemName: "chevron.left.circle.fill")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                    }
+                    .disabled(currentImageIndex == 0)
+                    
+                    Spacer()
+                    
+                    Button(action: showNextImage) {
+                        Image(systemName: "chevron.right.circle.fill")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                    }
+                    .disabled(currentImageIndex == imageUrls.count - 1)
+                }
+                .padding(.horizontal, 50)
             } else {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 100, height: 100)
+                    .frame(width: 180, height: 180)
                     .foregroundColor(.gray.opacity(0.5))
             }
         }
     }
     
-    // MARK: - Favoriten-Button
     private var favoriteButton: some View {
         VStack {
             Spacer()
@@ -127,7 +129,6 @@ struct AutorDetailView: View {
         }
     }
     
-    // MARK: - Zitat-Card
     private var quoteCard: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("„\(quote.quote)“")
@@ -145,7 +146,6 @@ struct AutorDetailView: View {
         .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
     }
     
-    // MARK: - Autor-Info-Card
     private var authorInfoCard: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Über \(quote.author)")
@@ -179,21 +179,19 @@ struct AutorDetailView: View {
         }
     }
     
-    // MARK: - Autor-Bild laden (mit async/await)
-    @MainActor
-    private func loadAuthorImage() async {
-        do {
-            let imageURLs = try await CloudinaryManager.shared.fetchImagesForAuthor(authorId: quote.id)
-            
-            print("Bild-URLs für den Autor:", imageURLs)
-            
-            if let firstImageURL = imageURLs.first, !firstImageURL.isEmpty {
-                self.authorImageURL = firstImageURL
-            } else {
-                self.authorImageURL = nil // Leeres Bild anzeigen
+    private func showPreviousImage() {
+        if currentImageIndex > 0 {
+            withAnimation {
+                currentImageIndex -= 1
             }
-        } catch {
-            print("Fehler beim Laden des Bildes:", error.localizedDescription)
+        }
+    }
+    
+    private func showNextImage() {
+        if let imageUrls = quote.authorImageURLs, currentImageIndex < imageUrls.count - 1 {
+            withAnimation {
+                currentImageIndex += 1
+            }
         }
     }
 }

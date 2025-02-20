@@ -14,7 +14,7 @@ class FireUserEntity {
     var email: String
     var name: String
     var uid: String
-    @Attribute var favoriteQuoteIds: String // Speichern als String
+    @Attribute var favoriteQuoteIds: String 
     
     init(id: String, email: String, name: String, uid: String, favoriteQuoteIds: String) {
         self.id = id
@@ -27,12 +27,12 @@ class FireUserEntity {
     // Konvertierung von Firebase FireUser zu SwiftData FireUserEntity
     static func fromFirebaseModel(fireUser: FireUser) -> FireUserEntity {
         // Stelle sicher, dass favoriteQuoteIds ein Array von Strings ist und konvertiere es korrekt
-        let favoriteQuoteIdsString = fireUser.favoriteQuoteIds.joined(separator: ", ") // IDs als String speichern
+        let favoriteQuoteIdsString = fireUser.favoriteQuoteIds.joined(separator: ", ")
         
         return FireUserEntity(
             id: fireUser.id,
-            email: fireUser.email ?? "", // Falls email nil ist, verwende einen leeren String
-            name: fireUser.name ?? "", // Falls name nil ist, verwende einen leeren String
+            email: fireUser.email ?? "",
+            name: fireUser.name ?? "",
             uid: fireUser.uid,
             favoriteQuoteIds: favoriteQuoteIdsString
         )

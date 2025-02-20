@@ -10,7 +10,7 @@ import Foundation
 
 @Model
 class FavoriteQuoteEntity {
-    @Attribute(.unique) var id: String  // Markiere id als eindeutig
+    @Attribute(.unique) var id: String  
     var quoteId: String
     var userId: String
     var createdAt: Date

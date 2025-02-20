@@ -10,56 +10,49 @@ import SwiftUI
 struct FavoriteView: View {
     @StateObject private var favoriteManager = FavoriteManager()
     @State private var showErrorMessage: Bool = false
-    @State private var errorMessage: String?  // Hier errorMessage als State hinzufügen
+    @State private var errorMessage: String?
+    @StateObject private var quoteViewModel = QuoteViewModel()
 
     var body: some View {
-        NavigationView {
-            List {
-                // Anzeige der Favoriten oder leere Ansicht
-                if favoriteManager.favoriteQuotes.isEmpty {
-                    emptyStateView
-                } else {
-                    ForEach(favoriteManager.favoriteQuotes) { quote in
-                        NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: QuoteViewModel())) {
-                            FavoriteQuoteCardView(quote: quote, unfavoriteAction: {
+        List {
+            // Anzeige der Favoriten oder leere Ansicht
+            if favoriteManager.favoriteQuotes.isEmpty {
+                emptyStateView
+            } else {
+                ForEach(favoriteManager.favoriteQuotes) { quote in
+                    FavoriteQuoteCardView(favoriteManager: favoriteManager, quote: quote)
+                        .swipeActions {
+                            Button(role: .destructive) {
                                 Task {
                                     await removeFavorite(quote)
                                 }
-                            })
-                            .swipeActions {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await removeFavorite(quote)
-                                    }
-                                } label: {
-                                    Label("Entfernen", systemImage: "trash.fill")
-                                }
+                            } label: {
+                                Label("Entfernen", systemImage: "trash.fill")
                             }
                         }
-                    }
                 }
             }
-            .navigationTitle("Favoriten")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { Task { await favoriteManager.loadFavoriteQuotes() } }) {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
-                        Image(systemName: "plus")
-                            .foregroundColor(.blue)
-                    }
+        }
+        
+        .navigationTitle("Favoriten")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { Task { await favoriteManager.loadFavoriteQuotes() } }) {
+                    Image(systemName: "arrow.clockwise")
                 }
             }
-            .task {
-                await favoriteManager.loadFavoriteQuotes() // Lade die Favoriten bei Initialisierung
+            ToolbarItem(placement: .navigationBarLeading) {
+                NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
+                    Image(systemName: "plus")
+                        .foregroundColor(.blue)
+                }
             }
-            // Fehleranzeige anzeigen, wenn showErrorMessage true ist
-            .alert(isPresented: $showErrorMessage) {
-                Alert(title: Text("Fehler"), message: Text(errorMessage ?? "Unbekannter Fehler"), dismissButton: .default(Text("OK")))
-            }
+        }
+        .task {
+            await favoriteManager.loadFavoriteQuotes() // Lade die Favoriten bei Initialisierung
+        }
+        .alert(isPresented: $showErrorMessage) {
+            Alert(title: Text("Fehler"), message: Text(errorMessage ?? "Unbekannter Fehler"), dismissButton: .default(Text("OK")))
         }
     }
 

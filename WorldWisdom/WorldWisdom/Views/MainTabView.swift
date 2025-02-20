@@ -28,17 +28,6 @@ struct MainTabView: View {
                 FavoriteView()
             }
 
-            // Gallery Tab
-            Tab("Gallery", systemImage: "photo.on.rectangle.angled") {
-                if let authorId = userViewModel.user?.authorId {
-                    // Direkt die authorId übergeben, wenn der User eingeloggt ist
-                    GalerieScreen(authorId: authorId)
-                } else {
-                    // Optional: Zeige einen Platzhalter oder eine Fehlermeldung, falls der user nicht eingeloggt ist
-                    Text("Kein Benutzer gefunden")
-                        .foregroundColor(.gray)
-                }
-            }
 
             // Settings Tab
             Tab("Settings", systemImage: "gear") {

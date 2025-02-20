@@ -68,7 +68,7 @@ class FirebaseManager: ObservableObject {
             "quoteText": quoteText,
             "author": author,
             "category": category,
-            "authorImageURL": authorImageURL, // Bild-URL hinzufügen
+            "authorImageURL": authorImageURL, 
             "createdAt": Timestamp(date: Date())
         ]
         try await store.collection("quotes").document(quoteId).setData(quoteData)
@@ -224,7 +224,7 @@ class FirebaseManager: ObservableObject {
         let userQuoteData: [String: Any] = [
             "quoteText": quoteText,
             "author": author.isEmpty ? "Unbekannt" : author,
-            "authorImageURL": authorImageURL, // authorImageURL speichern
+            "authorImageURL": authorImageURL,
             "userID": currentUser.uid,
             "createdAt": Timestamp(date: Date())
         ]
@@ -273,7 +273,7 @@ class FirebaseManager: ObservableObject {
         let userQuoteData: [String: Any] = [
             "quoteText": quoteText,
             "author": author.isEmpty ? "Unbekannt" : author,
-            "authorImageURL": authorImageURL, // authorImageURL speichern
+            "authorImageURL": authorImageURL,
             "updatedAt": Timestamp(date: Date()) // Aktualisierungszeit
         ]
 
