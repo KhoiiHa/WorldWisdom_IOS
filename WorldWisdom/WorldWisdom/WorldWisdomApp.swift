@@ -17,8 +17,7 @@ struct WorldWisdomApp: App {
     @StateObject private var favoriteManager = FavoriteManager()
     @StateObject private var userQuoteManager = UserQuoteManager()
     
-    @StateObject private var quoteViewModel: QuoteViewModel
-    
+    @StateObject private var quoteViewModel = QuoteViewModel() // Direkte Initialisierung
     let container: ModelContainer
 
     init() {
@@ -28,8 +27,6 @@ struct WorldWisdomApp: App {
         do {
             // Initialisiere den ModelContainer für alle Modelle
             container = try ModelContainer(for: QuoteEntity.self, FireUserEntity.self, FavoriteQuoteEntity.self, UserCreatedQuoteEntity.self)
-            // Initialisiere QuoteViewModel mit dem richtigen ModelContext
-            _quoteViewModel = StateObject(wrappedValue: QuoteViewModel())
         } catch {
             fatalError("Fehler beim Erstellen des ModelContainers: \(error)")
         }
