@@ -28,7 +28,6 @@ struct MainTabView: View {
                 FavoriteView()
             }
 
-
             // Settings Tab
             Tab("Settings", systemImage: "gear") {
                 SettingsView()

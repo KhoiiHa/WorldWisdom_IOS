@@ -14,14 +14,14 @@ class QuoteEntity {
     var author: String
     var quote: String
     var category: String
-    var tags: [String]?
+    var tags: [String]
     var isFavorite: Bool
     var quoteDescription: String
     var source: String
-    var authorImageURLs: [String]?
+    var authorImageURLs: [String]  
     var authorImageData: Data?  // Offline-Bild (lokal gespeichert)
 
-    init(id: String, author: String, quote: String, category: String, tags: [String]?, isFavorite: Bool, quoteDescription: String, source: String, authorImageURLs: [String]?, authorImageData: Data?) {
+    init(id: String, author: String, quote: String, category: String, tags: [String] = [], isFavorite: Bool, quoteDescription: String, source: String, authorImageURLs: [String] = [], authorImageData: Data?) {
         self.id = id
         self.author = author
         self.quote = quote
@@ -45,7 +45,7 @@ class QuoteEntity {
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
             source: quote.source,
-            authorImageURLs: quote.authorImageURLs,
+            authorImageURLs: quote.authorImageURLs ?? [],
             authorImageData: nil
         )
     }
@@ -57,11 +57,11 @@ class QuoteEntity {
             author: self.author,
             quote: self.quote,
             category: self.category,
-            tags: self.tags ?? [],
+            tags: self.tags,
             isFavorite: self.isFavorite,
-            description: self.quoteDescription, // Mapping
+            description: self.quoteDescription,
             source: self.source,
-            authorImageURLs: self.authorImageURLs ?? []
+            authorImageURLs: self.authorImageURLs
         )
     }
 }

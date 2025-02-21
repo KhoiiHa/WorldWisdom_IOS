@@ -27,6 +27,7 @@ struct FilterBar: View {
                 }
             }
             .padding(.horizontal)
+            .background(Color(UIColor.systemBackground)) // Hintergrund für den Dark Mode
         }
     }
     
@@ -45,6 +46,7 @@ struct FilterBar: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(isSelected ? Color.accentColor : Color.gray, lineWidth: 1)
                 )
+                .foregroundColor(isSelected ? .accentColor : .primary) // Textfarbe anpassen
         }
         .buttonStyle(PlainButtonStyle())
     }

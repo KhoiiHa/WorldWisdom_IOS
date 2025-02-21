@@ -86,10 +86,10 @@ class QuoteViewModel: ObservableObject {
             
             let localQuotes = quoteEntities.map { quoteEntity in
                 // Extrahiere die Bild-URL (falls vorhanden) für den Autor
-                let authorImageURL = quoteEntity.authorImageURLs?.first ?? ""
+                let authorImageURL = quoteEntity.authorImageURLs.first ?? ""
                 
                 // Optional entpacken, falls tags nil ist, dann leeres Array verwenden
-                let tags = quoteEntity.tags ?? []
+                let tags = quoteEntity.tags
                 
                 return Quote(
                     id: quoteEntity.id,
@@ -234,7 +234,7 @@ class QuoteViewModel: ObservableObject {
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
             source: quote.source,
-            authorImageURLs: quote.authorImageURLs,
+            authorImageURLs: quote.authorImageURLs!,
             authorImageData: nil // falls du es später hinzufügst
         )
 

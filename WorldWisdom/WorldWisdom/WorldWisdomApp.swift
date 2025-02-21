@@ -26,7 +26,7 @@ struct WorldWisdomApp: App {
         
         do {
             // Initialisiere den ModelContainer für alle Modelle
-            container = try ModelContainer(for: QuoteEntity.self, FireUserEntity.self, FavoriteQuoteEntity.self, UserCreatedQuoteEntity.self)
+            container = try ModelContainer(for: QuoteEntity.self, FireUserEntity.self, FavoriteQuoteEntity.self)
         } catch {
             fatalError("Fehler beim Erstellen des ModelContainers: \(error)")
         }

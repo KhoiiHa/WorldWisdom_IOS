@@ -6,7 +6,6 @@
 //
 import SwiftUI
 
-
 struct FavoriteQuoteCardView: View {
     @ObservedObject var favoriteManager: FavoriteManager
     let quote: Quote
@@ -27,7 +26,6 @@ struct FavoriteQuoteCardView: View {
                     .foregroundColor(.secondary)
                 
                 Spacer()
-                
             }
             
             // Button für Dropdown
@@ -67,17 +65,28 @@ struct FavoriteQuoteCardView: View {
     // MARK: - Autor Info Card (Dropdown)
     private var authorInfoCard: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Über \(quote.author)")
+            Text("Über \(quote.author):")
                 .font(.title2)
                 .fontWeight(.bold)
+                .foregroundColor(.white)
             
             Text(quote.description)
                 .font(.body)
-                .foregroundColor(.primary)
-            
+                .foregroundColor(.white.opacity(0.9))
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true) // Verhindert Textabschneiden
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.purple.opacity(0.8), Color.blue.opacity(0.8)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(15)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .padding(.vertical, 5)
     }
 }

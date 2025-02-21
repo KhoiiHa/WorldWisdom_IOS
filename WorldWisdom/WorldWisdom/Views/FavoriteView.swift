@@ -14,45 +14,41 @@ struct FavoriteView: View {
     @StateObject private var quoteViewModel = QuoteViewModel()
 
     var body: some View {
-        List {
-            // Anzeige der Favoriten oder leere Ansicht
-            if favoriteManager.favoriteQuotes.isEmpty {
-                emptyStateView
-            } else {
-                ForEach(favoriteManager.favoriteQuotes) { quote in
-                    FavoriteQuoteCardView(favoriteManager: favoriteManager, quote: quote)
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                Task {
-                                    await removeFavorite(quote)
+        NavigationStack {
+            List {
+               
+                if favoriteManager.favoriteQuotes.isEmpty {
+                    emptyStateView
+                } else {
+                    ForEach(favoriteManager.favoriteQuotes) { quote in
+                        FavoriteQuoteCardView(favoriteManager: favoriteManager, quote: quote)
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    Task {
+                                        await removeFavorite(quote)
+                                    }
+                                } label: {
+                                    Label("Entfernen", systemImage: "trash.fill")
                                 }
-                            } label: {
-                                Label("Entfernen", systemImage: "trash.fill")
                             }
-                        }
+                    }
                 }
             }
-        }
-        
-        .navigationTitle("Favoriten")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { Task { await favoriteManager.loadFavoriteQuotes() } }) {
-                    Image(systemName: "arrow.clockwise")
+            .navigationTitle("Meine Favoriten")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
+                        Image(systemName: "plus")
+                            .foregroundColor(.blue)
+                    }
                 }
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
-                    Image(systemName: "plus")
-                        .foregroundColor(.blue)
-                }
+            .task {
+                await favoriteManager.loadFavoriteQuotes()
             }
-        }
-        .task {
-            await favoriteManager.loadFavoriteQuotes() // Lade die Favoriten bei Initialisierung
-        }
-        .alert(isPresented: $showErrorMessage) {
-            Alert(title: Text("Fehler"), message: Text(errorMessage ?? "Unbekannter Fehler"), dismissButton: .default(Text("OK")))
+            .alert(isPresented: $showErrorMessage) {
+                Alert(title: Text("Fehler"), message: Text(errorMessage ?? "Unbekannter Fehler"), dismissButton: .default(Text("OK")))
+            }
         }
     }
 

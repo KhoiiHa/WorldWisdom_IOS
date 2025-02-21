@@ -170,7 +170,7 @@ struct AutorDetailView: View {
                 Link("Mehr über \(quote.author)", destination: sourceURL)
                     .foregroundColor(.white)
                     .padding()
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: 250)
                     .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
                     .shadow(radius: 5)
             }
@@ -190,18 +190,16 @@ struct AutorDetailView: View {
     }
     
     private func showPreviousImage() {
-        if currentImageIndex > 0 {
-            withAnimation {
-                currentImageIndex -= 1
-            }
+        guard currentImageIndex > 0 else { return }
+        withAnimation {
+            currentImageIndex -= 1
         }
     }
-    
+
     private func showNextImage() {
-        if let imageUrls = quote.authorImageURLs, currentImageIndex < imageUrls.count - 1 {
-            withAnimation {
-                currentImageIndex += 1
-            }
+        guard let imageUrls = quote.authorImageURLs, currentImageIndex < imageUrls.count - 1 else { return }
+        withAnimation {
+            currentImageIndex += 1
         }
     }
 }

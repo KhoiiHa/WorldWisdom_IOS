@@ -99,14 +99,14 @@ struct HomeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
-                    ForEach(quoteViewModel.quotes.prefix(5), id: \.id) { quote in
+                    ForEach(quoteViewModel.quotes.shuffled().prefix(8), id: \.id) { quote in
                         NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
                             recommendedQuoteCard(quote)
                         }
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.trailing, 20) 
+                .padding(.trailing, 20)
             }
         }
     }
@@ -119,6 +119,7 @@ struct HomeView: View {
                 .italic()
                 .multilineTextAlignment(.leading)
                 .foregroundColor(.primary)
+                .lineLimit(4) 
 
             Text("- \(quote.author)")
                 .font(.caption)

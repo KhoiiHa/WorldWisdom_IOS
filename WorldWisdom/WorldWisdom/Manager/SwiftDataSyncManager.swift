@@ -63,7 +63,7 @@ class SwiftDataSyncManager {
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
             source: quote.source,
-            authorImageURLs: quote.authorImageURLs,
+            authorImageURLs: quote.authorImageURLs!,
             authorImageData: nil
         )
         context.insert(newQuote)
@@ -103,11 +103,11 @@ class SwiftDataSyncManager {
                     author: entity.author,
                     quote: entity.quote,
                     category: entity.category,
-                    tags: entity.tags ?? [],
+                    tags: entity.tags,
                     isFavorite: entity.isFavorite,
                     description: entity.quoteDescription,
                     source: entity.source,
-                    authorImageURLs: entity.authorImageURLs ?? []
+                    authorImageURLs: entity.authorImageURLs
                 )
             }
         } catch {
@@ -163,7 +163,7 @@ class SwiftDataSyncManager {
                 }
 
                 // Hier kannst du die Cloudinary-Logik beibehalten
-                if let authorImageURLs = quoteEntity.authorImageURLs, let firstImageURL = authorImageURLs.first, let url = URL(string: firstImageURL) {
+                if !quoteEntity.authorImageURLs.isEmpty, let firstImageURL = quoteEntity.authorImageURLs.first, let url = URL(string: firstImageURL) {
                     do {
                         let imageData = try await downloadImageData(from: url)
                         quoteEntity.authorImageData = imageData
@@ -213,7 +213,7 @@ class SwiftDataSyncManager {
                 else {
                 
                     quoteEntities.append(
-                        QuoteEntity(id: "", author: "", quote: "", category: "", tags: [], isFavorite: false, quoteDescription: "", source: "", authorImageURLs: nil, authorImageData: nil)
+                        QuoteEntity(id: "", author: "", quote: "", category: "", tags: [], isFavorite: false, quoteDescription: "", source: "", authorImageURLs: [], authorImageData: nil) // leeres Array statt nil
                     )
                     continue // Überspringe ungültige Daten und fahre mit dem nächsten Zitat fort
                 }
@@ -228,7 +228,7 @@ class SwiftDataSyncManager {
                     isFavorite: isFavorite,
                     description: description,
                     source: source,
-                    authorImageURLs: data["authorImageURL"] as? [String] 
+                    authorImageURLs: data["authorImageURL"] as? [String] ?? [] // leeres Array statt nil
                 ))
 
                 // Füge das QuoteEntity der Liste hinzu
