@@ -14,7 +14,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                // 🔹 Sektion: Benutzereinstellungen
+                // Sektion: Benutzereinstellungen
                 Section(header: Text("Benutzereinstellungen")) {
                     NavigationLink(destination: ProfileView()) {
                         HStack {
@@ -33,7 +33,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                // 🔹 Sektion: App-Informationen
+                // Sektion: App-Informationen
                 Section(header: Text("App-Informationen")) {
                     NavigationLink(destination: Text("Datenschutzrichtlinien")) {
                         HStack {
@@ -52,7 +52,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                // 🔹 Sektion: Aktionen
+                // Sektion: Aktionen
                 Section {
                     Button(action: {
                         logout()

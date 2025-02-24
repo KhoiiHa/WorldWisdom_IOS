@@ -17,7 +17,7 @@ struct WorldWisdomApp: App {
     @StateObject private var favoriteManager = FavoriteManager()
     @StateObject private var userQuoteManager = UserQuoteManager()
     
-    @StateObject private var quoteViewModel = QuoteViewModel() // Direkte Initialisierung
+    @StateObject private var quoteViewModel = QuoteViewModel()
     let container: ModelContainer
 
     init() {
@@ -38,7 +38,7 @@ struct WorldWisdomApp: App {
             if userViewModel.isLoggedIn {
                 MainTabView()
                     .environmentObject(userViewModel)
-                    .environmentObject(quoteViewModel) // Weitergabe des quoteViewModel für die Galerie und andere Views
+                    .environmentObject(quoteViewModel) 
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
                     .environmentObject(userQuoteManager)
