@@ -11,12 +11,11 @@ Die App richtet sich an Menschen, die nach Inspiration suchen – von Studenten 
 ## Design 🎨  
 
 <div style="display: flex; justify-content: space-between;">
-  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740135025/Bildschirmfoto_2025-02-21_um_11.48.02_pafz2v.png" alt="Home Screen" width="150" />
-  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740135032/Bildschirmfoto_2025-02-21_um_11.47.33_ppjgsv.png" alt="Explorer Screen" width="150" />
-  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740135042/Bildschirmfoto_2025-02-21_um_11.48.32_abovgm.png" alt="Favoriten Screen" width="150" />
-  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740135053/Bildschirmfoto_2025-02-21_um_11.49.11_bgiefm.png" alt="AutorDetail Screen" width="150" />
-</div>  
-
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740401014/Bildschirmfoto_2025-02-24_um_13.40.36_d2a7p0.png" alt="Home View" width="150" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740400996/Bildschirmfoto_2025-02-24_um_13.40.55_vil0lv.png" alt="Explorer View" width="150" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740401002/Bildschirmfoto_2025-02-24_um_13.41.21_dq1ija.png" alt="Favoriten View" width="150" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1740401008/Bildschirmfoto_2025-02-24_um_13.42.27_aozvtr.png" alt="AutorDetail View" width="150" />
+</div>
 ---  
 
 ## Features ✨  
