@@ -114,58 +114,90 @@ struct HomeView: View {
     // MARK: - Zitat-Karte (für Zitat des Tages)
     private func quoteCard(_ quote: Quote) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("„\(quote.quote)“")
-                .font(.body)
-                .italic()
-                .multilineTextAlignment(.leading)
-                .foregroundColor(.primary)
-                .lineLimit(4) 
+            HStack {
+                Image(systemName: "quote.bubble.fill") // Icon für Zitate
+                    .foregroundColor(.white.opacity(0.8))
+                    .font(.caption)
+                
+                Text("„\(quote.quote)“")
+                    .font(.body)
+                    .italic()
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.white)
+                    .lineLimit(4)
+            }
 
             Text("- \(quote.author)")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.8))
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color(.systemBackground).opacity(0.9))
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
         .cornerRadius(15)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
     }
 
-    // MARK: - Breitere Zitat-Karte (für empfohlene Zitate)
+    // MARK: - Zitat-Karte (für empfohlene Zitate)
     private func recommendedQuoteCard(_ quote: Quote) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("„\(quote.quote)“")
-                .font(.body)
-                .italic()
-                .multilineTextAlignment(.leading)
-                .foregroundColor(.primary)
-                .lineLimit(4) // Begrenze den Text auf 4 Zeilen
+            HStack {
+               
+                Image(systemName: "quote.bubble.fill")
+                    .foregroundColor(.white.opacity(0.8))
+                    .font(.caption)
+                
+                // Zitat-Text
+                Text("„\(quote.quote)“")
+                    .font(.body)
+                    .italic()
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.white)
+                    .lineLimit(4)
+            }
 
+            // Autorenname
             Text("- \(quote.author)")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.8))
         }
         .padding()
-        .frame(width: 250) // Breitere Karte (250 Punkte)
-        .background(Color(.systemBackground).opacity(0.9))
+        .frame(width: 250) 
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
         .cornerRadius(15)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
     }
-
     // MARK: - Neues Zitat-Button
     private var newQuoteButton: some View {
         Button(action: { Task { quoteViewModel.getRandomQuote() } }) {
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundColor(.white)
-                Text("Neues Zitat laden")
+                Text("Neue Zitate laden")
                     .font(.headline)
                     .foregroundColor(.white)
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing))
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
             .cornerRadius(15)
             .shadow(color: .blue.opacity(0.3), radius: 5, x: 0, y: 2)
         }

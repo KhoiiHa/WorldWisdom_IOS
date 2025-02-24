@@ -133,6 +133,7 @@ struct ExplorerView: View {
         isLoading = true
         do {
             try await quoteViewModel.loadAllQuotes()
+            quoteViewModel.quotes = quoteViewModel.quotes.shuffled()
             showErrorMessage = false
         } catch {
             showErrorMessage = true
@@ -146,7 +147,7 @@ struct ExplorerView: View {
     }
 }
 
-// Verbesserte Quote Card mit Tags
+// Verbesserte Quote Card mit dunklerer Schriftfarbe und harmonischem Farbverlauf
 struct QuoteCardView: View {
     let quote: Quote
 
@@ -155,7 +156,7 @@ struct QuoteCardView: View {
             Text("„\(quote.quote)“")
                 .font(.system(.body, design: .serif))
                 .italic()
-                .foregroundColor(.primary)
+                .foregroundColor(Color.white.opacity(0.80))  
                 .multilineTextAlignment(.leading)
 
             Text("- \(quote.author)")
@@ -171,8 +172,8 @@ struct QuoteCardView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                .background(Color.blue.opacity(0.2))
-                                .foregroundColor(.blue)
+                                .background(Color.orange.opacity(0.3))
+                                .foregroundColor(.white)
                                 .cornerRadius(12)
                         }
                     }
@@ -181,7 +182,13 @@ struct QuoteCardView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color(.systemBackground).opacity(0.9))
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.green.opacity(0.6)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
         .cornerRadius(15)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
