@@ -17,13 +17,13 @@ struct FavoriteQuoteCardView: View {
             Text("„\(quote.quote)“")
                 .font(.system(.body, design: .serif))
                 .italic()
-                .foregroundColor(.primary)
+                .foregroundColor(.primary) // Hier bleibt es bei .primary für gute Lesbarkeit
             
             HStack {
                 // Autor Name
                 Text("- \(quote.author)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.gray) // Grau für den Autor-Namen (guter Kontrast)
                 
                 Spacer()
             }
@@ -37,7 +37,7 @@ struct FavoriteQuoteCardView: View {
                 HStack {
                     Text(showAuthorDetails ? "Details ausblenden" : "Mehr über den Autor")
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.blue) // Kräftigeres Blau für Interaktivität
                     Image(systemName: showAuthorDetails ? "chevron.up" : "chevron.down")
                         .foregroundColor(.blue)
                 }
@@ -53,13 +53,13 @@ struct FavoriteQuoteCardView: View {
         .padding()
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.purple.opacity(0.2), Color.blue.opacity(0.2)]),
+                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.gray.opacity(0.2)]), // Sanfter blauer Verlauf
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-        )
+        )  // Die Hintergrundfarbe bleibt hier
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
     }
 
     // MARK: - Autor Info Card (Dropdown)
@@ -72,7 +72,7 @@ struct FavoriteQuoteCardView: View {
             
             Text(quote.description)
                 .font(.body)
-                .foregroundColor(.white.opacity(0.9))
+                .foregroundColor(.white.opacity(0.8)) // Weiß mit leichtem Durchschein-Effekt
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true) // Verhindert Textabschneiden
         }
@@ -80,7 +80,7 @@ struct FavoriteQuoteCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.purple.opacity(0.8), Color.blue.opacity(0.8)]),
+                gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.gray.opacity(0.7)]), // Blau-Grau Verlauf
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

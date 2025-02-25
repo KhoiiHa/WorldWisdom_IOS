@@ -18,15 +18,32 @@ struct ProfileView: View {
                             .fill(Color.blue.opacity(0.1))
                             .frame(width: 120, height: 120)
                         
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .foregroundColor(.blue)
-                            .onTapGesture {
-                                // Optionaler Zoom-Effekt
-                                print("Profilbild getippt!")
+                        // Verwende AsyncImage, um das Bild von der URL zu laden
+                        AsyncImage(url: URL(string: "https://res.cloudinary.com/dpaehynl2/image/upload/v1740478009/IMG_20221104_215959_602_wguwjt.jpg")) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Circle()) // Rundes Profilbild
+                                    .onTapGesture {
+                                        // Optionaler Zoom-Effekt
+                                        print("Profilbild getippt!")
+                                    }
+                            } else if phase.error != nil {
+                                // Fallback-Image, falls ein Fehler auftritt
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(.red)
+                            } else {
+                                // Ladeanzeige, solange das Bild geladen wird
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .frame(width: 100, height: 100)
                             }
+                        }
                     }
                     .padding(.top, 20)
 

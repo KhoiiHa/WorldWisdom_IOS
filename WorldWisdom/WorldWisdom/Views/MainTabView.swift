@@ -8,34 +8,43 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @StateObject var userViewModel = UserViewModel() // UserViewModel für die Benutzerverwaltung
-    @StateObject var quoteViewModel = QuoteViewModel() // QuoteViewModel für Zitateverwaltung
+    @EnvironmentObject var userViewModel: UserViewModel // Benutzer ViewModel über EnvironmentObject
+    @EnvironmentObject var quoteViewModel: QuoteViewModel // Quote ViewModel über EnvironmentObject
 
     var body: some View {
         TabView {
             // Home Tab
-            Tab("Home", systemImage: "house") {
-                HomeView(userViewModel: userViewModel)
-            }
+            HomeView(userViewModel: userViewModel)
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
 
             // Explorer Tab
-            Tab("Explorer", systemImage: "magnifyingglass") {
-                ExplorerView(quoteViewModel: quoteViewModel)
-            }
+            ExplorerView(quoteViewModel: quoteViewModel)
+                .tabItem {
+                    Label("Explorer", systemImage: "magnifyingglass")
+                }
 
             // Favorites Tab
-            Tab("Favorites", systemImage: "heart") {
-                FavoriteView()
-            }
+            FavoriteView()
+                .tabItem {
+                    Label("Favorites", systemImage: "heart.fill")
+                }
 
             // Settings Tab
-            Tab("Settings", systemImage: "gear") {
-                SettingsView()
-            }
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
+        }
+        .onAppear {
+            // Optionale Aktionen, wenn die TabView erscheint (z.B. Daten aktualisieren)
         }
     }
 }
 
 #Preview {
     MainTabView()
+        .environmentObject(UserViewModel())  // Füge hier das UserViewModel hinzu
+        .environmentObject(QuoteViewModel())  // Füge hier das QuoteViewModel hinzu
 }

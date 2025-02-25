@@ -22,7 +22,7 @@ struct AutorDetailView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.6)]),
+                gradient: Gradient(colors: [Color.gray.opacity(0.3), Color.black.opacity(0.6)]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -35,8 +35,9 @@ struct AutorDetailView: View {
                     
                     // Nur Autor-Name
                     Text(quote.author)
-                        .font(.title.bold())
+                        .font(.system(size: 34, weight: .bold, design: .serif)) // Serifenschrift für eleganteren Look
                         .foregroundColor(.white)
+                        .shadow(radius: 2) // Dezente Schattierung für mehr Tiefe
                         .transition(.opacity) // Animation für den Autor-Namen
                     
                     // Zitat-Card
@@ -126,34 +127,60 @@ struct AutorDetailView: View {
                 Button(action: toggleFavorite) {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .font(.title)
-                        .foregroundColor(isFavorite ? .red : .white)
-                        .padding(20)
-                        .background(Circle().fill(isFavorite ? Color.white : Color.red))
-                        .shadow(radius: 10)
+                        .foregroundColor(isFavorite ? Color.red : Color.white)
+                        .padding(18)
+                        .background(
+                            Circle()
+                                .fill(isFavorite ? Color.red.opacity(0.1) : Color.white.opacity(0.3))
+                        )
+                        .overlay(
+                            Circle() // Dünner Rand für den Button
+                                .stroke(isFavorite ? Color.red : Color.white, lineWidth: 2)
+                        )
+                        .shadow(radius: 2) // Weniger auffällige Schattierung
                         .scaleEffect(isFavorite ? 1.1 : 1.0)
-                        .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isFavorite)
+                        .animation(.easeInOut(duration: 0.2), value: isFavorite) // Sanfter Übergang
                 }
                 .padding(.trailing, 30)
-                .padding(.bottom, 30)
+                .padding(.bottom, 25)
             }
         }
     }
     
     private var quoteCard: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("„\(quote.quote)“")
-                .font(.title3)
-                .italic()
-            
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "quote.bubble.fill")
+                    .foregroundColor(.white)
+                    .font(.caption)
+                
+                Text("„\(quote.quote)“")
+                    .font(.body)
+                    .italic()
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.white)
+                    .lineLimit(4)
+            }
+
             if !quote.tags.isEmpty {
                 Text("Themen: \(quote.tags.joined(separator: ", "))")
                     .font(.footnote)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.yellow) // Gelb für einen starken Kontrast zu den anderen Elementen
+                    .bold()
             }
+
+            Text("- \(quote.author)")
+                .font(.caption)
+                .foregroundColor(.white)
         }
         .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
+        .frame(maxWidth: .infinity)
+        .background(
+            Color.black // Fester schwarzer Hintergrund
+                .opacity(0.85)
+        )
+        .cornerRadius(15)
+        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
     }
     
     private var authorInfoCard: some View {
@@ -161,23 +188,38 @@ struct AutorDetailView: View {
             Text("Über \(quote.author)")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+                .foregroundColor(.white) // Weißer Text für besseren Kontrast
+
             Text(quote.description)
                 .font(.body)
-                .foregroundColor(.primary)
-            
+                .foregroundColor(.white.opacity(0.85)) // Leicht transparenter Text für bessere Lesbarkeit
+                .lineLimit(nil) // Keine Begrenzung für die Zeilenanzahl (Text wird komplett angezeigt)
+                .fixedSize(horizontal: false, vertical: true) // Text wächst vertikal, wenn nötig
+                
             if let sourceURL = URL(string: quote.source) {
                 Link("Mehr über \(quote.author)", destination: sourceURL)
-                    .foregroundColor(.white)
+                    .foregroundColor(.white) // Weißer Text für guten Kontrast
                     .padding()
                     .frame(maxWidth: 250)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                    .shadow(radius: 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.gray.opacity(0.7)) // Sanftes Grau statt Blau
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.white, lineWidth: 1) // Weißer Rand für besseres Herausstechen
+                    )
+                    .shadow(radius: 5) // Dezente Schattierung für 3D-Effekt
             }
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(radius: 5))
+        .background(
+            Color.black // Dunkler Hintergrund für stärkeren Kontrast
+                .opacity(0.85)
+        )
+        .cornerRadius(15)
+        .shadow(color: .black.opacity(0.5), radius: 8, x: 0, y: 4)
     }
     
     private func toggleFavorite() {

@@ -38,13 +38,13 @@ struct WorldWisdomApp: App {
             if userViewModel.isLoggedIn {
                 MainTabView()
                     .environmentObject(userViewModel)
-                    .environmentObject(quoteViewModel) 
+                    .environmentObject(quoteViewModel)
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
                     .environmentObject(userQuoteManager)
                     .modelContainer(container)
                     .onAppear {
-                        // Synchronisiere Daten nach dem Laden der App
+                        // Synchronisiere Daten nur nach erfolgreicher Anmeldung
                         Task {
                             await syncData()
                         }
@@ -53,7 +53,7 @@ struct WorldWisdomApp: App {
                 AuthenticationView()
                     .modelContainer(container)
                     .onAppear {
-                        // Synchronisiere Daten nach dem Laden der App
+                        // Synchronisiere Daten nicht, wenn der User nicht eingeloggt ist
                         Task {
                             await syncData()
                         }
@@ -64,7 +64,9 @@ struct WorldWisdomApp: App {
 
     // Startet die Synchronisation mit Firestore
     private func syncData() async {
-        let syncManager = SwiftDataSyncManager()
-        await syncManager.syncQuotesFromFirestore()  // Hol die Zitate aus Firebase und speichere sie in SwiftData
+        if userViewModel.isLoggedIn {
+            let syncManager = SwiftDataSyncManager()
+            await syncManager.syncQuotesFromFirestore()  // Hol die Zitate aus Firebase und speichere sie in SwiftData
+        }
     }
 }

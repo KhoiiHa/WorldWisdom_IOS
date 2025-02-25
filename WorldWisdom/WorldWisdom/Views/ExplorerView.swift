@@ -32,7 +32,6 @@ struct ExplorerView: View {
         NavigationStack {
             VStack(spacing: 15) {
                 searchBar
-                
                 tagFilterView
 
                 ScrollView {
@@ -140,30 +139,35 @@ struct ExplorerView: View {
         }
         isLoading = false
     }
-    
+
     private func randomTagColor(_ tag: String) -> Color {
         let colors: [Color] = [.pink, .purple, .orange, .green, .blue, .cyan]
         return colors[abs(tag.hashValue) % colors.count]
     }
 }
 
-// Verbesserte Quote Card mit dunklerer Schriftfarbe und harmonischem Farbverlauf
 struct QuoteCardView: View {
     let quote: Quote
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("„\(quote.quote)“")
-                .font(.system(.body, design: .serif))
-                .italic()
-                .foregroundColor(Color.white.opacity(0.80))  
-                .multilineTextAlignment(.leading)
+            HStack {
+                Image(systemName: "quote.bubble.fill")
+                    .foregroundColor(.white.opacity(0.8))
+                    .font(.caption)
+
+                Text("„\(quote.quote)“")
+                    .font(.system(.body, design: .serif))
+                    .italic()
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+            }
 
             Text("- \(quote.author)")
                 .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.8))
 
-            // Tags anzeigen
             if !quote.tags.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -172,7 +176,7 @@ struct QuoteCardView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                .background(Color.orange.opacity(0.3))
+                                .background(Color.green.opacity(0.3))
                                 .foregroundColor(.white)
                                 .cornerRadius(12)
                         }
@@ -184,7 +188,10 @@ struct QuoteCardView: View {
         .frame(maxWidth: .infinity)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.green.opacity(0.6)]),
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.65),
+                    Color.purple.opacity(0.75)
+                ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

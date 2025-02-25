@@ -8,13 +8,11 @@
 import SwiftUI
 
 struct LoginView: View {
-    // Bindings für die Eingabefelder
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLoading: Bool = false
     @State private var isLoggedIn: Bool = false  // Neuer Zustand für die Navigation
 
-    // Instanz des ViewModels
     @ObservedObject var userViewModel: UserViewModel
 
     var body: some View {
@@ -23,7 +21,7 @@ struct LoginView: View {
                 Text("Login")
                     .font(.largeTitle)
                     .padding()
-                
+
                 // Eingabefeld für die E-Mail
                 TextField("E-Mail", text: $email)
                     .padding()
@@ -39,7 +37,7 @@ struct LoginView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .accessibilityLabel("Passwort-Eingabefeld")
                     .accessibilityHint("Gib dein Passwort ein")
-                
+
                 // Anmeldebutton
                 if isLoading {
                     ProgressView() // Ladeindikator
@@ -68,7 +66,7 @@ struct LoginView: View {
                     }
                     .padding(.top, 20)
                 }
-                
+
                 // Anzeige einer Fehlermeldung, falls vorhanden
                 if let errorMessage = userViewModel.errorMessage {
                     Text(errorMessage)
@@ -88,7 +86,7 @@ struct LoginView: View {
                 }
             }
             .navigationDestination(isPresented: $isLoggedIn) {
-                HomeView(userViewModel: userViewModel) // Weiterleitung zur HomeView nach erfolgreichem Login
+                MainTabView() // Weiterleitung zur MainTabView nach erfolgreichem Login
             }
         }
     }

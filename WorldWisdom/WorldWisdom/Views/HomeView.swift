@@ -52,7 +52,7 @@ struct HomeView: View {
                 .padding(.bottom, 5)
 
             if let user = userViewModel.user {
-                Text(user.email ?? "Anonym angemeldet. UID: \(user.uid)")
+                Text(user.email ?? "Nutzer ist Anonym angemeldet.")
                     .font(.subheadline)
                     .foregroundColor(user.email != nil ? .green : .blue)
                     .opacity(0.8)
@@ -111,16 +111,16 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Zitat-Karte (für Zitat des Tages)
+    // MARK: - Zitat-Karte (für Zitat des Tages) - Optimierter Dunkler Verlauf & Moderne Schriftart
     private func quoteCard(_ quote: Quote) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Image(systemName: "quote.bubble.fill") // Icon für Zitate
+                Image(systemName: "quote.bubble.fill")
                     .foregroundColor(.white.opacity(0.8))
                     .font(.caption)
                 
                 Text("„\(quote.quote)“")
-                    .font(.body)
+                    .font(.system(.body, design: .serif))  // Modernere Serifenschrift
                     .italic()
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.white)
@@ -128,56 +128,53 @@ struct HomeView: View {
             }
 
             Text("- \(quote.author)")
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.8))
+                .font(.system(.caption, design: .serif)) // Gleiche Schrift für den Autor
+                .foregroundColor(.white.opacity(0.85)) // Helleres Weiß für besseren Kontrast
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                gradient: Gradient(colors: [Color.black.opacity(0.85), Color.blue.opacity(0.6)]), // Dunklerer Verlauf
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .cornerRadius(20) // Sanftere Ecken für eleganteres Aussehen
+        .shadow(color: .black.opacity(0.4), radius: 12, x: 0, y: 6) // Mehr Tiefe durch größeren Schatten
     }
-
-    // MARK: - Zitat-Karte (für empfohlene Zitate)
+    
+    // MARK: - Zitat-Karte (für empfohlene Zitate) - Optimierter Pastellverlauf & Leichte Schriftart
     private func recommendedQuoteCard(_ quote: Quote) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-               
                 Image(systemName: "quote.bubble.fill")
                     .foregroundColor(.white.opacity(0.8))
                     .font(.caption)
                 
-                // Zitat-Text
                 Text("„\(quote.quote)“")
-                    .font(.body)
+                    .font(.system(.body, design: .serif))  // Moderne Serifenschrift für das Zitat
                     .italic()
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.white)
                     .lineLimit(4)
             }
 
-            // Autorenname
             Text("- \(quote.author)")
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.8))
+                .font(.system(.caption, design: .serif)) // Gleiche Schrift für den Autor
+                .foregroundColor(.white.opacity(0.9)) // Etwas kräftigeres Weiß
         }
         .padding()
-        .frame(width: 250) 
+        .frame(width: 250)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                gradient: Gradient(colors: [Color.pink.opacity(0.8), Color.blue.opacity(0.7)]), // Harmonischer Pastellverlauf
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .cornerRadius(20) // Sanftere Ecken für ein verspieltes Aussehen
+        .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4) // Leichter Schatten für zarten Kontrast
     }
     // MARK: - Neues Zitat-Button
     private var newQuoteButton: some View {

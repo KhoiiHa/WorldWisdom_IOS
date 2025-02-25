@@ -49,7 +49,7 @@ struct RegisterView: View {
                             await userViewModel.registerUser(email: email, password: password)
                             isLoading = false // Ladezustand deaktivieren
                             
-                            // Wenn der Benutzer erfolgreich registriert wurde, zur HomeView navigieren
+                            // Wenn der Benutzer erfolgreich registriert wurde, zur MainTabView navigieren
                             if userViewModel.isLoggedIn {
                                 isRegistered = true
                             }
@@ -75,22 +75,23 @@ struct RegisterView: View {
                         .accessibilityLabel("Fehlermeldung")
                         .accessibilityHint(errorMessage)
                 }
+
                 // Zurück zur AuthenticationView Button
                 NavigationLink("Zurück zur Anmeldung", destination: AuthenticationView())
                     .foregroundColor(.blue)
                     .padding(.top, 20)
+
                 Spacer()
             }
             .padding()
             .onAppear {
-                
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
                 Task {
                     await userViewModel.checkCurrentUser()
                 }
             }
             .navigationDestination(isPresented: $isRegistered) {
-                HomeView(userViewModel: userViewModel) // Weiterleitung zur HomeView nach erfolgreicher Registrierung
+                MainTabView() // Weiterleitung zur MainTabView nach erfolgreicher Registrierung
             }
         }
     }
