@@ -124,7 +124,7 @@ struct HomeView: View {
                     .italic()
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.white)
-                    .lineLimit(4)
+                    .lineLimit(5)
             }
 
             Text("- \(quote.author)")
@@ -157,7 +157,7 @@ struct HomeView: View {
                     .italic()
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.white)
-                    .lineLimit(4)
+                    .lineLimit(5)
             }
 
             Text("- \(quote.author)")
