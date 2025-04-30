@@ -9,7 +9,6 @@ import Foundation
 import SwiftData
 import FirebaseFirestore
 
-
 @MainActor
 class SwiftDataSyncManager {
 
@@ -27,31 +26,57 @@ class SwiftDataSyncManager {
         }
     }
 
-    
+    // Actor, der den Zugriff auf QuoteEntity kapselt
+    actor QuoteEntityActor {
+        private let quoteEntity: QuoteEntity
+        
+        // Initializer für den Actor
+        init(quoteEntity: QuoteEntity) {
+            self.quoteEntity = quoteEntity
+        }
+        
+        // Methoden zum sicheren Zugriff auf die Daten
+        func getTags() -> [String] {
+            return quoteEntity.tags
+        }
+        
+        func getAuthorImageURL() -> String {
+            return quoteEntity.authorImageURLs.first ?? ""
+        }
+    }
+
     // Fügt ein Zitat hinzu oder aktualisiert es in Firestore & SwiftData
     func addOrUpdateQuote(_ quoteEntity: QuoteEntity) {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
         let existingQuotes = try? context.fetch(fetchRequest)
 
         if let existingQuote = existingQuotes?.first(where: { $0.id == quoteEntity.id }) {
-            // Update des bestehenden Zitats
-            existingQuote.author = quoteEntity.author
-            existingQuote.quote = quoteEntity.quote
-            existingQuote.category = quoteEntity.category
-            existingQuote.isFavorite = quoteEntity.isFavorite
-            existingQuote.quoteDescription = quoteEntity.quoteDescription
-            existingQuote.source = quoteEntity.source
-            existingQuote.authorImageURLs = quoteEntity.authorImageURLs
-            existingQuote.authorImageData = quoteEntity.authorImageData
+            // Verwende den Actor, um auf die Felder zuzugreifen
+            let actor = QuoteEntityActor(quoteEntity: existingQuote)
+            Task {
+                let tags = await actor.getTags()
+                let authorImageURL = await actor.getAuthorImageURL()
+
+                existingQuote.author = quoteEntity.author
+                existingQuote.quote = quoteEntity.quote
+                existingQuote.category = quoteEntity.category
+                existingQuote.isFavorite = quoteEntity.isFavorite
+                existingQuote.quoteDescription = quoteEntity.quoteDescription
+                existingQuote.source = quoteEntity.source
+                existingQuote.authorImageURLs = quoteEntity.authorImageURLs
+                existingQuote.authorImageData = quoteEntity.authorImageData
+                existingQuote.tags = tags
+                existingQuote.authorImageURLs = [authorImageURL] // Beispielweise wenn du URLs benötigst
+
+                try? context.save()
+            }
         } else {
             // Neues Zitat einfügen
             context.insert(quoteEntity)
+            try? context.save()
         }
-
-        try? context.save()
     }
-    
-    
+
     // Fügt ein neues Zitat in SwiftData hinzu (ohne Firestore)
     func addQuote(_ quote: Quote) async throws {
         let newQuote = QuoteEntity(
@@ -63,11 +88,10 @@ class SwiftDataSyncManager {
             isFavorite: quote.isFavorite,
             quoteDescription: quote.description,
             source: quote.source,
-            authorImageURLs: quote.authorImageURLs!,
+            authorImageURLs: quote.authorImageURLs ?? [],
             authorImageData: nil
         )
         context.insert(newQuote)
-
         do {
             try context.save()
         } catch {
@@ -75,58 +99,70 @@ class SwiftDataSyncManager {
         }
     }
 
-    // Entfernt ein Zitat aus den Favoriten in SwiftData
-    func removeFavoriteQuote(_ quote: Quote) async throws {
-        let fetchRequest = FetchDescriptor<QuoteEntity>()
-
-        do {
-            let quoteEntities = try context.fetch(fetchRequest)
-
-            if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
-                existingQuote.isFavorite = false
-                try context.save()
+    // Asynchrone Methode zum Abrufen der Zitate
+    func fetchQuotesAsync(request: FetchDescriptor<QuoteEntity>) async throws -> [QuoteEntity] {
+        return try await withCheckedThrowingContinuation { continuation in
+            do {
+                let result = try context.fetch(request)
+                continuation.resume(returning: result)
+            } catch {
+                continuation.resume(throwing: error)
             }
-        } catch {
-            throw SwiftDataError.saveError
         }
     }
 
-    // Lädt alle Favoriten aus SwiftData
-    func fetchFavoriteQuotes() async throws -> [Quote] {
-        let fetchRequest = FetchDescriptor<QuoteEntity>()
+// Lädt alle Favoriten aus SwiftData
+func fetchFavoriteQuotes() async throws -> [Quote] {
+    let fetchRequest = FetchDescriptor<QuoteEntity>()
 
-        do {
-            let quoteEntities = try context.fetch(fetchRequest)
-            return quoteEntities.filter { $0.isFavorite }.map { entity in
-                Quote(
-                    id: entity.id,
-                    author: entity.author,
-                    quote: entity.quote,
-                    category: entity.category,
-                    tags: entity.tags,
-                    isFavorite: entity.isFavorite,
-                    description: entity.quoteDescription,
-                    source: entity.source,
-                    authorImageURLs: entity.authorImageURLs
-                )
+    do {
+        let quoteEntities = try await fetchQuotesAsync(request: fetchRequest)
+
+        return try await withThrowingTaskGroup(of: Quote.self) { group in
+            for quoteEntity in quoteEntities.filter({ $0.isFavorite }) {
+                // Verwende den Actor für sicheren Zugriff
+                let actor = QuoteEntityActor(quoteEntity: quoteEntity)
+                group.addTask {
+                    // Zugriff auf die Felder mit await
+                    let tags = await actor.getTags()
+                    let authorImageURL = await actor.getAuthorImageURL()
+                    return Quote(
+                        id: quoteEntity.id,
+                        author: quoteEntity.author,
+                        quote: quoteEntity.quote,
+                        category: quoteEntity.category,
+                        tags: tags,
+                        isFavorite: quoteEntity.isFavorite,
+                        description: quoteEntity.quoteDescription,
+                        source: quoteEntity.source,
+                        authorImageURLs: [authorImageURL]
+                    )
+                }
             }
-        } catch {
-            throw SwiftDataError.fetchError
+            var localQuotes: [Quote] = []
+            for try await quote in group {
+                localQuotes.append(quote)
+            }
+            return localQuotes
         }
+    } catch {
+        throw SwiftDataError.fetchError
     }
-    
-    
+}
+
     // Löscht ein Zitat aus SwiftData & Firestore
     func deleteQuote(_ quote: Quote) async throws {
         let firestore = Firestore.firestore()
         let fetchRequest = FetchDescriptor<QuoteEntity>()
 
         do {
-            let quoteEntities = try context.fetch(fetchRequest)
+            let quoteEntities = try await fetchQuotesAsync(request: fetchRequest)
 
             if let existingQuote = quoteEntities.first(where: { $0.id == quote.id }) {
                 context.delete(existingQuote)
                 try context.save()
+            } else {
+                throw SwiftDataError.quoteNotFound
             }
 
             // Lösche das Zitat aus Firestore
@@ -136,13 +172,34 @@ class SwiftDataSyncManager {
         }
     }
 
+    // Löscht ein Zitat aus den Favoriten in SwiftData
+    func removeFavoriteQuote(_ quote: Quote) async throws {
+        let fetchRequest = FetchDescriptor<QuoteEntity>()
+        
+        let quoteEntities = try await fetchQuotesAsync(request: fetchRequest)
+        
+        if let quoteEntity = quoteEntities.first(where: { $0.id == quote.id }) {
+            // Entferne das Zitat aus den Favoriten
+            context.delete(quoteEntity)
+            try context.save()
+            print("✅ Zitat erfolgreich aus den Favoriten entfernt.")
+        } else {
+            throw SwiftDataError.quoteNotFound
+        }
+    }
+
     // Synchronisiert die Zitate aus Firestore mit SwiftData
     func syncQuotesFromFirestore() async {
         do {
             let firestoreQuotes = try await fetchQuotesFromFirestore()
 
             for quoteEntity in firestoreQuotes {
-                // Hier prüfst du, ob das Zitat in SwiftData bereits existiert
+                let actor = QuoteEntityActor(quoteEntity: quoteEntity)
+
+                // Sicher auf die Felder zugreifen
+                let tags = await actor.getTags()
+                let authorImageURL = await actor.getAuthorImageURL() // Hier holen wir das Bild-URL
+
                 let fetchRequest = FetchDescriptor<QuoteEntity>()
                 let existingQuotes = try context.fetch(fetchRequest)
 
@@ -151,22 +208,25 @@ class SwiftDataSyncManager {
                     existingQuote.author = quoteEntity.author
                     existingQuote.quote = quoteEntity.quote
                     existingQuote.category = quoteEntity.category
-                    existingQuote.tags = quoteEntity.tags
+                    existingQuote.tags = tags
                     existingQuote.isFavorite = quoteEntity.isFavorite
                     existingQuote.quoteDescription = quoteEntity.quoteDescription
                     existingQuote.source = quoteEntity.source
                     existingQuote.authorImageURLs = quoteEntity.authorImageURLs
                     existingQuote.authorImageData = quoteEntity.authorImageData
+
+                    // Speichern des authorImageURL in die Entity
+                    existingQuote.authorImageURLs = [authorImageURL]  // Speichere das Bild-URL in die Entity
                 } else {
                     // Falls es das Zitat noch nicht gibt, füge es hinzu
                     context.insert(quoteEntity)
                 }
 
-                // Hier kannst du die Cloudinary-Logik beibehalten
+                // Optional: Wenn du das Bild später verwenden möchtest (z.B. als Bilddaten speichern)
                 if !quoteEntity.authorImageURLs.isEmpty, let firstImageURL = quoteEntity.authorImageURLs.first, let url = URL(string: firstImageURL) {
                     do {
                         let imageData = try await downloadImageData(from: url)
-                        quoteEntity.authorImageData = imageData
+                        quoteEntity.authorImageData = imageData // Speichere die Bilddaten, falls gewünscht
                     } catch {
                         print("❌ Fehler beim Laden des Bildes: \(error.localizedDescription)")
                     }

@@ -62,7 +62,15 @@ struct AutorDetailView: View {
     
     private var authorImage: some View {
         VStack {
-            if let imageUrls = quote.authorImageURLs, !imageUrls.isEmpty {
+            if let imageData = quote.authorImageData, let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 180, height: 180)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .shadow(radius: 5)
+                    .transition(.opacity)
+            } else if let imageUrls = quote.authorImageURLs, !imageUrls.isEmpty {
                 AsyncImage(url: URL(string: imageUrls[currentImageIndex])) { phase in
                     switch phase {
                     case .empty:
@@ -75,7 +83,7 @@ struct AutorDetailView: View {
                             .frame(width: 180, height: 180)
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                             .shadow(radius: 5)
-                            .transition(.opacity) // Animation für Bildwechsel
+                            .transition(.opacity)
                     case .failure:
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
@@ -86,24 +94,24 @@ struct AutorDetailView: View {
                         EmptyView()
                     }
                 }
-                
+
                 HStack {
                     Button(action: showPreviousImage) {
                         Image(systemName: "chevron.left.circle.fill")
                             .font(.largeTitle)
                             .foregroundColor(.white)
-                            .scaleEffect(currentImageIndex == 0 ? 1.0 : 1.2) // Animation für Pfeil-Button
+                            .scaleEffect(currentImageIndex == 0 ? 1.0 : 1.2)
                             .animation(.spring(response: 0.3, dampingFraction: 0.5), value: currentImageIndex)
                     }
                     .disabled(currentImageIndex == 0)
-                    
+
                     Spacer()
-                    
+
                     Button(action: showNextImage) {
                         Image(systemName: "chevron.right.circle.fill")
                             .font(.largeTitle)
                             .foregroundColor(.white)
-                            .scaleEffect(currentImageIndex == imageUrls.count - 1 ? 1.0 : 1.2) // Animation für Pfeil-Button
+                            .scaleEffect(currentImageIndex == imageUrls.count - 1 ? 1.0 : 1.2)
                             .animation(.spring(response: 0.3, dampingFraction: 0.5), value: currentImageIndex)
                     }
                     .disabled(currentImageIndex == imageUrls.count - 1)

@@ -18,7 +18,7 @@ class QuoteEntity {
     var isFavorite: Bool
     var quoteDescription: String
     var source: String
-    var authorImageURLs: [String]  
+    var authorImageURLs: [String]
     var authorImageData: Data?  // Offline-Bild (lokal gespeichert)
 
     init(id: String, author: String, quote: String, category: String, tags: [String] = [], isFavorite: Bool, quoteDescription: String, source: String, authorImageURLs: [String] = [], authorImageData: Data?) {

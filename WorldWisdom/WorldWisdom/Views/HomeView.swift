@@ -36,7 +36,7 @@ struct HomeView: View {
                     await loadQuotes()
                 }
                 if quoteViewModel.randomQuote == nil {
-                    quoteViewModel.getRandomQuote()
+                    await quoteViewModel.getRandomQuote()
                 }
             }
         }
@@ -51,6 +51,7 @@ struct HomeView: View {
                 .foregroundColor(.primary)
                 .padding(.bottom, 5)
 
+            // Handle optional email with fallback text
             if let user = userViewModel.user {
                 Text(user.email ?? "Nutzer ist Anonym angemeldet.")
                     .font(.subheadline)
@@ -71,7 +72,7 @@ struct HomeView: View {
 
             if let quote = quoteViewModel.randomQuote {
                 NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
-                    quoteCard(quote)
+                    quoteCard(quote, backgroundColors: [Color.black.opacity(0.85), Color.blue.opacity(0.6)])
                 }
             } else {
                 ProgressView("Lädt Zitat des Tages...")
@@ -101,7 +102,7 @@ struct HomeView: View {
                 HStack(spacing: 15) {
                     ForEach(quoteViewModel.quotes.shuffled().prefix(8), id: \.id) { quote in
                         NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
-                            recommendedQuoteCard(quote)
+                            quoteCard(quote, backgroundColors: [Color.pink.opacity(0.8), Color.blue.opacity(0.7)])
                         }
                     }
                 }
@@ -111,8 +112,8 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Zitat-Karte (für Zitat des Tages) - Optimierter Dunkler Verlauf & Moderne Schriftart
-    private func quoteCard(_ quote: Quote) -> some View {
+    // MARK: - Gemeinsame Zitat-Karte (Optimiert für Zitat des Tages und empfohlene Zitate)
+    private func quoteCard(_ quote: Quote, backgroundColors: [Color]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Image(systemName: "quote.bubble.fill")
@@ -135,7 +136,7 @@ struct HomeView: View {
         .frame(maxWidth: .infinity)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.black.opacity(0.85), Color.blue.opacity(0.6)]), // Dunklerer Verlauf
+                gradient: Gradient(colors: backgroundColors),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -143,42 +144,14 @@ struct HomeView: View {
         .cornerRadius(20) // Sanftere Ecken für eleganteres Aussehen
         .shadow(color: .black.opacity(0.4), radius: 12, x: 0, y: 6) // Mehr Tiefe durch größeren Schatten
     }
-    
-    // MARK: - Zitat-Karte (für empfohlene Zitate) - Optimierter Pastellverlauf & Leichte Schriftart
-    private func recommendedQuoteCard(_ quote: Quote) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Image(systemName: "quote.bubble.fill")
-                    .foregroundColor(.white.opacity(0.8))
-                    .font(.caption)
-                
-                Text("„\(quote.quote)“")
-                    .font(.system(.body, design: .serif))  // Moderne Serifenschrift für das Zitat
-                    .italic()
-                    .multilineTextAlignment(.leading)
-                    .foregroundColor(.white)
-                    .lineLimit(5)
-            }
 
-            Text("- \(quote.author)")
-                .font(.system(.caption, design: .serif)) // Gleiche Schrift für den Autor
-                .foregroundColor(.white.opacity(0.9)) // Etwas kräftigeres Weiß
-        }
-        .padding()
-        .frame(width: 250)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color.pink.opacity(0.8), Color.blue.opacity(0.7)]), // Harmonischer Pastellverlauf
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .cornerRadius(20) // Sanftere Ecken für ein verspieltes Aussehen
-        .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4) // Leichter Schatten für zarten Kontrast
-    }
     // MARK: - Neues Zitat-Button
     private var newQuoteButton: some View {
-        Button(action: { Task { quoteViewModel.getRandomQuote() } }) {
+        Button(action: {
+            Task {
+                await quoteViewModel.getRandomQuote()
+            }
+        }) {
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundColor(.white)
