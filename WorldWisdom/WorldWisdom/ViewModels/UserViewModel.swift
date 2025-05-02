@@ -94,11 +94,8 @@ class UserViewModel: ObservableObject {
 
     func anonymousLogin() async {
         do {
-            let authResult = try await FirebaseManager.shared.anonymousLogin()
-            let anonymousUser = FireUser(id: authResult.user.uid, email: nil, name: nil, uid: authResult.user.uid, favoriteQuoteIds: [])
-            
-            self.user = anonymousUser
-            self.isLoggedIn = true
+            _ = try await FirebaseManager.shared.anonymousLogin()
+            await checkCurrentUser()
             saveLoginStatus(isLoggedIn: true)
         } catch {
             self.errorMessage = "Fehler bei der anonymen Anmeldung: \(error.localizedDescription)"
@@ -132,11 +129,16 @@ class UserViewModel: ObservableObject {
     func signOut() async {
         do {
             try FirebaseManager.shared.signOut()
-            self.isLoggedIn = false
-            saveLoginStatus(isLoggedIn: false)
-            self.user = nil
+            await MainActor.run {
+                self.isLoggedIn = false
+                self.user = nil
+                self.favoriteQuotes = []
+                self.saveLoginStatus(isLoggedIn: false)
+            }
         } catch {
-            self.errorMessage = "Fehler beim Abmelden: \(error.localizedDescription)"
+            await MainActor.run {
+                self.errorMessage = "Fehler beim Abmelden: \(error.localizedDescription)"
+            }
         }
     }
 

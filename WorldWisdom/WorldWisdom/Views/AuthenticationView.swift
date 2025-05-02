@@ -93,6 +93,10 @@ struct AuthenticationView: View {
             .onAppear {
                 Task {
                     await viewModel.checkCurrentUser()
+                    email = ""
+                    password = ""
+                    viewModel.errorMessage = nil
+                    navigateToHome = false
                 }
             }
             .alert("Fehler", isPresented: .constant(viewModel.errorMessage != nil), actions: {
@@ -101,7 +105,12 @@ struct AuthenticationView: View {
                 Text(viewModel.errorMessage ?? "")
             })
             .navigationDestination(isPresented: $navigateToHome) {
-                HomeView(userViewModel: viewModel) // Zur HomeView navigieren, wenn der Benutzer erfolgreich eingeloggt oder registriert wurde
+                MainTabView()
+                    .environmentObject(viewModel)
+                    .environmentObject(QuoteViewModel())
+                    .environmentObject(FirebaseManager.shared)
+                    .environmentObject(FavoriteManager.shared)
+                    .environmentObject(UserQuoteManager.shared)
             }
         }
     }

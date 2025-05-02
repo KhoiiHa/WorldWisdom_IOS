@@ -83,6 +83,10 @@ struct LoginView: View {
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
                 Task {
                     await userViewModel.checkCurrentUser()
+                    email = ""
+                    password = ""
+                    userViewModel.errorMessage = nil
+                    isLoggedIn = false
                 }
             }
             .navigationDestination(isPresented: $isLoggedIn) {

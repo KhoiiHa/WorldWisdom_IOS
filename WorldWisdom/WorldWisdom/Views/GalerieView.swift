@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GalerieScreen: View {
     let authorId: String
+    @Environment(\.modelContext) private var modelContext
     @State private var imageUrls: [String] = []
     @State private var filteredImages: [String] = []
     @State private var selectedCategory: String? = nil
@@ -115,7 +117,7 @@ struct GalerieScreen: View {
             }
             .onAppear {
                 Task {
-                    await fetchImagesForAuthor() // Bilder laden
+                    await fetchImagesForAuthor(modelContext: modelContext) // Bilder laden
                 }
             }
             .onChange(of: selectedCategory) { _, _ in
@@ -168,10 +170,10 @@ struct GalerieScreen: View {
     }
 
     // Bilder für den Autor abrufen
-    private func fetchImagesForAuthor() async {
+    private func fetchImagesForAuthor(modelContext: ModelContext) async {
         isLoading = true
         do {
-            let fetchedImageUrls = try await CloudinaryManager.shared.fetchImagesForAuthor(authorId: authorId)
+            let fetchedImageUrls = try await CloudinaryManager.shared.fetchImagesForAuthor(authorId: authorId, modelContext: modelContext)
             print("🚀 Geladene Bild-URLs: \(fetchedImageUrls)")  // Prüfen, ob URLs korrekt abgerufen werden
             imageUrls = fetchedImageUrls
             filterImages()

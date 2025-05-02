@@ -55,10 +55,9 @@ class SwiftDataSyncManager {
             let actor = QuoteEntityActor(quoteEntity: existingQuote)
             Task {
                 let tags = await actor.getTags()
-                let authorImageURL = await actor.getAuthorImageURL()
 
                 existingQuote.author = quoteEntity.author
-                existingQuote.quote = quoteEntity.quote
+                existingQuote.quoteText = quoteEntity.quoteText
                 existingQuote.category = quoteEntity.category
                 existingQuote.isFavorite = quoteEntity.isFavorite
                 existingQuote.quoteDescription = quoteEntity.quoteDescription
@@ -66,7 +65,7 @@ class SwiftDataSyncManager {
                 existingQuote.authorImageURLs = quoteEntity.authorImageURLs
                 existingQuote.authorImageData = quoteEntity.authorImageData
                 existingQuote.tags = tags
-                existingQuote.authorImageURLs = [authorImageURL] // Beispielweise wenn du URLs benötigst
+                // existingQuote.authorImageURLs = [authorImageURL] // entfernt, da doppelte Zuweisung
 
                 try? context.save()
             }
@@ -82,7 +81,7 @@ class SwiftDataSyncManager {
         let newQuote = QuoteEntity(
             id: quote.id,
             author: quote.author,
-            quote: quote.quote,
+            quoteText: quote.quote,
             category: quote.category,
             tags: quote.tags,
             isFavorite: quote.isFavorite,
@@ -129,7 +128,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
                     return Quote(
                         id: quoteEntity.id,
                         author: quoteEntity.author,
-                        quote: quoteEntity.quote,
+                        quote: quoteEntity.quoteText,
                         category: quoteEntity.category,
                         tags: tags,
                         isFavorite: quoteEntity.isFavorite,
@@ -206,7 +205,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
                 if let existingQuote = existingQuotes.first(where: { $0.id == quoteEntity.id }) {
                     // Falls das Zitat existiert, aktualisiere es
                     existingQuote.author = quoteEntity.author
-                    existingQuote.quote = quoteEntity.quote
+                    existingQuote.quoteText = quoteEntity.quoteText
                     existingQuote.category = quoteEntity.category
                     existingQuote.tags = tags
                     existingQuote.isFavorite = quoteEntity.isFavorite
@@ -271,10 +270,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
                     let description = data["description"] as? String,
                     let source = data["source"] as? String
                 else {
-                
-                    quoteEntities.append(
-                        QuoteEntity(id: "", author: "", quote: "", category: "", tags: [], isFavorite: false, quoteDescription: "", source: "", authorImageURLs: [], authorImageData: nil) // leeres Array statt nil
-                    )
+                    print("⚠️ Ungültige Daten, Zitat übersprungen: \(data)")
                     continue // Überspringe ungültige Daten und fahre mit dem nächsten Zitat fort
                 }
 
@@ -288,7 +284,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
                     isFavorite: isFavorite,
                     description: description,
                     source: source,
-                    authorImageURLs: data["authorImageURL"] as? [String] ?? [] // leeres Array statt nil
+                    authorImageURLs: data["authorImageURLs"] as? [String] ?? [] // richtiges Feld
                 ))
 
                 // Füge das QuoteEntity der Liste hinzu

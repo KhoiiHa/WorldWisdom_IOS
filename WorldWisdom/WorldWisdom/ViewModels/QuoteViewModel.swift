@@ -21,7 +21,7 @@ class QuoteViewModel: ObservableObject {
     @Published var hasError: Bool = false
     
     private var firebaseManager = FirebaseManager.shared
-    private let favoriteManager = FavoriteManager()
+    private let favoriteManager = FavoriteManager.shared
 
     // SwiftData Manager für lokale Speicherung
     private var swiftDataSyncManager: SwiftDataSyncManager
@@ -98,7 +98,7 @@ class QuoteViewModel: ObservableObject {
                         return Quote(
                             id: quoteEntity.id,
                             author: quoteEntity.author,
-                            quote: quoteEntity.quote,
+                            quote: quoteEntity.quoteText,
                             category: quoteEntity.category,
                             tags: tags,
                             isFavorite: quoteEntity.isFavorite,

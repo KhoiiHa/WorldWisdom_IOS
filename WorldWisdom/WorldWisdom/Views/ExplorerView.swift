@@ -135,7 +135,7 @@ struct ExplorerView: View {
             quoteViewModel.quotes = quoteViewModel.quotes.shuffled()
             showErrorMessage = false
         } catch {
-            showErrorMessage = true
+            showErrorMessage = quoteViewModel.quotes.isEmpty
         }
         isLoading = false
     }

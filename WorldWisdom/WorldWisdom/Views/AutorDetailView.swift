@@ -95,6 +95,7 @@ struct AutorDetailView: View {
                     }
                 }
 
+                let imageUrls = quote.authorImageURLs ?? []
                 HStack {
                     Button(action: showPreviousImage) {
                         Image(systemName: "chevron.left.circle.fill")

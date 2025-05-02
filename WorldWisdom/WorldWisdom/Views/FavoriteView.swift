@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavoriteView: View {
-    @StateObject private var favoriteManager = FavoriteManager()
+    @StateObject private var favoriteManager = FavoriteManager.shared
     @State private var showErrorMessage: Bool = false
     @State private var errorMessage: String?
     @State private var successMessage: String? // Für Erfolgsmeldung

@@ -45,7 +45,19 @@ class FirebaseManager: ObservableObject {
     }
     
     func anonymousLogin() async throws -> AuthDataResult {
-        return try await auth.signInAnonymously()
+        let result = try await auth.signInAnonymously()
+        let uid = result.user.uid
+        let userRef = store.collection("users").document(uid)
+        
+        let doc = try await userRef.getDocument()
+        if !doc.exists {
+            try await userRef.setData([
+                "id": uid,
+                "createdAt": Timestamp(date: Date())
+            ])
+        }
+        
+        return result
     }
     
     func signOut() throws {
@@ -68,7 +80,7 @@ class FirebaseManager: ObservableObject {
             "quoteText": quoteText,
             "author": author,
             "category": category,
-            "authorImageURL": authorImageURL, 
+            "authorImageURL": authorImageURL,
             "createdAt": Timestamp(date: Date())
         ]
         try await store.collection("quotes").document(quoteId).setData(quoteData)
@@ -174,9 +186,9 @@ class FirebaseManager: ObservableObject {
         let userRef = store.collection("users").document(userId)
         
         do {
-            try await userRef.updateData([
+            try await userRef.setData([
                 "favoriteQuoteIds": add ? FieldValue.arrayUnion([quoteId]) : FieldValue.arrayRemove([quoteId])
-            ])
+            ], merge: true)
         } catch let error as NSError {
             throw FirebaseError.unknownError(error.localizedDescription)
         }

@@ -13,6 +13,8 @@ import OSLog
 
 @MainActor
 class FavoriteManager: ObservableObject {
+    static let shared = FavoriteManager()
+    private init() {}
     private let firebaseManager = FirebaseManager.shared
     private let syncManager = SwiftDataSyncManager()
     private let logger = Logger(subsystem: "com.deineApp.Zitate", category: "FavoriteManager")

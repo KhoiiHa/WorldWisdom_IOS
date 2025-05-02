@@ -111,5 +111,5 @@ struct AddQuoteView: View {
 
 #Preview {
     AddQuoteView(quoteToEdit: nil)
-        .environmentObject(UserQuoteManager())
+        .environmentObject(UserQuoteManager.shared)
 }

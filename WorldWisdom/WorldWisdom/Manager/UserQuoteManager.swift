@@ -10,6 +10,8 @@ import SwiftUI
 
 @MainActor
 class UserQuoteManager: ObservableObject {
+    static let shared = UserQuoteManager()
+    private init() {}
     private let firebaseManager = FirebaseManager.shared  
 
     @Published var userQuotes: [Quote] = []
