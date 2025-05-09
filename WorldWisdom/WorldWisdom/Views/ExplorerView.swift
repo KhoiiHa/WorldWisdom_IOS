@@ -156,8 +156,16 @@ struct QuoteCardView: View {
     let quote: Quote
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("„\(quote.quote)“")
+                .font(.system(.body, design: .serif))
+                .italic()
+                .foregroundColor(.white)
+                .multilineTextAlignment(.leading)
+                .lineLimit(4)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(alignment: .center, spacing: 10) {
                 WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
                     .resizable()
                     .scaledToFill()
@@ -165,18 +173,9 @@ struct QuoteCardView: View {
                     .clipShape(Circle())
                     .shadow(radius: 3)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("„\(quote.quote)“")
-                        .font(.system(.body, design: .serif))
-                        .italic()
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(nil)
-
-                    Text("- \(quote.author)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.white.opacity(0.8))
-                }
+                Text("- \(quote.author)")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.85))
             }
 
             if !quote.tags.isEmpty {
@@ -184,12 +183,12 @@ struct QuoteCardView: View {
                     HStack(spacing: 8) {
                         ForEach(quote.tags, id: \.self) { tag in
                             Text(tag)
-                                .font(.caption)
+                                .font(.caption2)
                                 .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.green.opacity(0.3))
+                                .padding(.vertical, 4)
+                                .background(Color.green.opacity(0.25))
                                 .foregroundColor(.white)
-                                .cornerRadius(12)
+                                .cornerRadius(10)
                         }
                     }
                 }
@@ -199,16 +198,13 @@ struct QuoteCardView: View {
         .frame(maxWidth: .infinity)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.65),
-                    Color.purple.opacity(0.75)
-                ]),
+                gradient: Gradient(colors: [Color.purple.opacity(0.6), Color.indigo.opacity(0.8)]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .cornerRadius(18)
+        .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 2)
     }
 }
 

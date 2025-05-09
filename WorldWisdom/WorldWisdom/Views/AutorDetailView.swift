@@ -13,16 +13,26 @@ import Foundation
 struct AutorDetailView: View {
     @State private var currentImageIndex: Int = 0
     let authorName: String
+    let selectedQuoteText: String? // optional für gezieltes Anzeigen
     @Query var quotes: [QuoteEntity]
     @State private var isFavorite: Bool = false
+    @State private var selectedQuote: QuoteEntity? = nil
     
     var filteredQuotes: [QuoteEntity] {
         quotes.filter { $0.author == authorName }
     }
     var quote: QuoteEntity? {
-        filteredQuotes.first
+        if let selectedText = selectedQuoteText {
+            return filteredQuotes.first(where: { $0.quoteText == selectedText })
+        }
+        return filteredQuotes.first
     }
     
+    init(authorName: String, selectedQuoteText: String? = nil) {
+        self.authorName = authorName
+        self.selectedQuoteText = selectedQuoteText
+    }
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -48,24 +58,33 @@ struct AutorDetailView: View {
                     quoteCard
                         .transition(.move(edge: .bottom).combined(with: .opacity)) // Animation für die Zitat-Karte
                     
-                    if let quote = quote {
-                        Button(action: {
-                            isFavorite.toggle()
-                            Task {
-                                await FavoriteManager.shared.updateFavoriteStatus(for: quote.toQuote(), isFavorite: isFavorite)
-                            }
-                        }) {
-                            Label(isFavorite ? "Gespeichert" : "Zitat speichern", systemImage: isFavorite ? "heart.fill" : "heart")
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(isFavorite ? Color.red : Color.gray)
-                                .cornerRadius(10)
-                        }
-                    }
-                    
                     // Autor-Info-Card
                     authorInfoCard
                         .transition(.move(edge: .trailing).combined(with: .opacity)) // Animation für die Autor-Info-Karte
+                    
+                    if filteredQuotes.count > 1 {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Weitere Zitate von \(authorName)")
+                                .font(.title3)
+                                .foregroundColor(.white)
+
+                            ForEach(filteredQuotes.dropFirst(), id: \.self) { additionalQuote in
+                                Button(action: {
+                                    selectedQuote = additionalQuote
+                                }) {
+                                    Text("„\(additionalQuote.quoteText)“")
+                                        .font(.body)
+                                        .italic()
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal)
+                                        .background(Color.white.opacity(0.1))
+                                        .cornerRadius(10)
+                                }
+                            }
+                        }
+                        .padding()
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 30)
@@ -74,6 +93,9 @@ struct AutorDetailView: View {
         .navigationTitle(quote?.author ?? authorName)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.easeInOut(duration: 0.5), value: currentImageIndex) // Animation für Bildwechsel
+        .navigationDestination(item: $selectedQuote) { quote in
+            AutorDetailView(authorName: quote.author, selectedQuoteText: quote.quoteText)
+        }
     }
     
     private var authorImage: some View {
@@ -131,17 +153,36 @@ struct AutorDetailView: View {
     private var quoteCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Image(systemName: "quote.bubble.fill")
-                    .foregroundColor(.white)
-                    .font(.caption)
-                
-                Text("„\(quote?.quoteText ?? "")“")
-                    .font(.body)
-                    .italic()
-                    .multilineTextAlignment(.leading)
-                    .foregroundColor(.white)
-                    .lineLimit(4)
+                Spacer()
+                if let quote = quote {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                            isFavorite.toggle()
+                        }
+                        Task {
+                            await FavoriteManager.shared.updateFavoriteStatus(for: quote.toQuote(), isFavorite: isFavorite)
+                        }
+                    }) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .foregroundColor(isFavorite ? .red : .white)
+                            .padding(8)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(Circle())
+                            .scaleEffect(isFavorite ? 1.2 : 1.0)
+                    }
+                    
+                }
             }
+            
+            Text("„\(quote?.quoteText ?? "")“")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .italic()
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(6)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity)
 
             if let tags = quote?.tags, !tags.isEmpty {
                 Text("Themen: \(tags.joined(separator: ", "))")
@@ -234,3 +275,4 @@ private extension QuoteEntity {
         )
     }
 }
+

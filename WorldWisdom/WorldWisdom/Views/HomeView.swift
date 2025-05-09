@@ -7,10 +7,13 @@
 import SwiftUI
 import SwiftData
 import SDWebImageSwiftUI
+import Foundation // falls nicht vorhanden
 
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
     @StateObject private var quoteViewModel = QuoteViewModel()
+    @State private var randomAuthorFact: (author: String, fact: String)? = nil
+    @State private var recommendedQuotes: [Quote] = []
 
     var body: some View {
         NavigationStack {
@@ -19,6 +22,7 @@ struct HomeView: View {
                     welcomeSection
                     dailyQuoteSection
                     recommendedQuotesSection
+                    authorFactSection
                     newQuoteButton
                 }
                 .padding(20)
@@ -38,6 +42,14 @@ struct HomeView: View {
                 }
                 if quoteViewModel.randomQuote == nil {
                     await quoteViewModel.getRandomQuote()
+                }
+                if recommendedQuotes.isEmpty {
+                    recommendedQuotes = quoteViewModel.quotes.shuffled()
+                }
+                if randomAuthorFact == nil {
+                    if let random = AuthorFacts.facts.randomElement() {
+                        randomAuthorFact = (author: random.key, fact: random.value)
+                    }
                 }
             }
         }
@@ -73,7 +85,7 @@ struct HomeView: View {
 
             if let quote = quoteViewModel.randomQuote {
                 NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
-                    quoteCard(quote, backgroundColors: [Color.black.opacity(0.85), Color.blue.opacity(0.6)])
+                    dailyQuoteCard(quote, backgroundColors: [Color.black.opacity(0.85), Color.blue.opacity(0.6)])
                 }
             } else {
                 ProgressView("Lädt Zitat des Tages...")
@@ -101,9 +113,9 @@ struct HomeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
-                    ForEach(quoteViewModel.quotes.shuffled().prefix(8), id: \.id) { quote in
+                    ForEach(recommendedQuotes.prefix(8), id: \.id) { quote in
                         NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
-                            quoteCard(quote, backgroundColors: [Color.pink.opacity(0.8), Color.blue.opacity(0.7)])
+                            recommendedQuoteCard(quote, backgroundColors: [Color.pink.opacity(0.8), Color.blue.opacity(0.7)])
                         }
                     }
                 }
@@ -113,10 +125,46 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Gemeinsame Zitat-Karte (Optimiert für Zitat des Tages und empfohlene Zitate)
-    private func quoteCard(_ quote: Quote, backgroundColors: [Color]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 10) {
+    private var authorFactSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Wusstest du schon?")
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(.primary)
+
+                Spacer()
+
+                Button(action: {
+                    if let random = AuthorFacts.facts.randomElement() {
+                        randomAuthorFact = (author: random.key, fact: random.value)
+                    }
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundColor(.blue)
+                }
+            }
+
+            if let factItem = randomAuthorFact {
+                Text("**\(factItem.author)**: \(factItem.fact)")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    // MARK: - Zitat des Tages Karte
+    private func dailyQuoteCard(_ quote: Quote, backgroundColors: [Color]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("„\(quote.quote)“")
+                .font(.system(.body, design: .serif))
+                .italic()
+                .multilineTextAlignment(.leading)
+                .foregroundColor(.white)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(alignment: .center, spacing: 10) {
                 WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
                     .resizable()
                     .scaledToFill()
@@ -124,22 +172,13 @@ struct HomeView: View {
                     .clipShape(Circle())
                     .shadow(radius: 3)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("„\(quote.quote)“")
-                        .font(.system(.body, design: .serif))
-                        .italic()
-                        .multilineTextAlignment(.leading)
-                        .foregroundColor(.white)
-                        .lineLimit(5)
-
-                    Text("- \(quote.author)")
-                        .font(.system(.caption, design: .serif))
-                        .foregroundColor(.white.opacity(0.85))
-                }
+                Text("- \(quote.author)")
+                    .font(.system(.caption, design: .serif))
+                    .foregroundColor(.white.opacity(0.85))
             }
         }
         .padding()
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: 320)
         .background(
             LinearGradient(
                 gradient: Gradient(colors: backgroundColors),
@@ -147,8 +186,53 @@ struct HomeView: View {
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(20) // Sanftere Ecken für eleganteres Aussehen
-        .shadow(color: .black.opacity(0.4), radius: 12, x: 0, y: 6) // Mehr Tiefe durch größeren Schatten
+        .cornerRadius(20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+    }
+
+    // MARK: - Empfohlenes Zitat Karte
+    private func recommendedQuoteCard(_ quote: Quote, backgroundColors: [Color]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("„\(quote.quote)“")
+                .font(.system(.body, design: .serif))
+                .italic()
+                .multilineTextAlignment(.leading)
+                .foregroundColor(.white)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(alignment: .center, spacing: 10) {
+                WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 35, height: 35)
+                    .clipShape(Circle())
+                    .shadow(radius: 3)
+
+                Text("- \(quote.author)")
+                    .font(.system(.caption, design: .serif))
+                    .foregroundColor(.white.opacity(0.85))
+            }
+        }
+        .padding()
+        .frame(width: 320) // explizit feste Breite für horizontales Scrollen
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: backgroundColors),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
     }
 
     // MARK: - Neues Zitat-Button
@@ -156,6 +240,7 @@ struct HomeView: View {
         Button(action: {
             Task {
                 await quoteViewModel.getRandomQuote()
+                recommendedQuotes = quoteViewModel.quotes.shuffled()
             }
         }) {
             HStack {
@@ -166,7 +251,7 @@ struct HomeView: View {
                     .foregroundColor(.white)
             }
             .padding()
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: 320)
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
