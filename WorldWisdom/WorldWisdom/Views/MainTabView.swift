@@ -31,6 +31,12 @@ struct MainTabView: View {
                     Label("Favorites", systemImage: "heart.fill")
                 }
 
+            // Galerie Tab
+            GalerieScreen()
+                .tabItem {
+                    Label("Galerie", systemImage: "photo.on.rectangle")
+                }
+
             // Settings Tab
             SettingsView()
                 .tabItem {

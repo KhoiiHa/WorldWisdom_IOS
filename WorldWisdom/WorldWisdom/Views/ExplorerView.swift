@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SDWebImageSwiftUI
 
 struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
@@ -41,11 +42,7 @@ struct ExplorerView: View {
                                 .padding()
                         } else {
                             ForEach(filteredQuotes.indices, id: \.self) { index in
-                                NavigationLink(destination: AutorDetailView(quote: filteredQuotes[index], quoteViewModel: quoteViewModel)) {
-                                    QuoteCardView(quote: filteredQuotes[index])
-                                        .transition(.opacity.combined(with: .move(edge: .leading)))
-                                        .animation(.easeInOut(duration: 0.5).delay(Double(index) * 0.1), value: filteredQuotes)
-                                }
+                                quoteNavigationCard(for: filteredQuotes[index], at: index)
                             }
                         }
                     }
@@ -71,6 +68,15 @@ struct ExplorerView: View {
             .task {
                 await loadQuotes()
             }
+        }
+    }
+
+    @ViewBuilder
+    private func quoteNavigationCard(for quote: Quote, at index: Int) -> some View {
+        NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
+            QuoteCardView(quote: quote)
+                .transition(.opacity.combined(with: .move(edge: .leading)))
+                .animation(.easeInOut(duration: 0.5).delay(Double(index) * 0.1), value: filteredQuotes)
         }
     }
 
@@ -151,22 +157,27 @@ struct QuoteCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Image(systemName: "quote.bubble.fill")
-                    .foregroundColor(.white.opacity(0.8))
-                    .font(.caption)
+            HStack(alignment: .top, spacing: 10) {
+                WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 35, height: 35)
+                    .clipShape(Circle())
+                    .shadow(radius: 3)
 
-                Text("„\(quote.quote)“")
-                    .font(.system(.body, design: .serif))
-                    .italic()
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(nil)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("„\(quote.quote)“")
+                        .font(.system(.body, design: .serif))
+                        .italic()
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(nil)
+
+                    Text("- \(quote.author)")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.8))
+                }
             }
-
-            Text("- \(quote.author)")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white.opacity(0.8))
 
             if !quote.tags.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {

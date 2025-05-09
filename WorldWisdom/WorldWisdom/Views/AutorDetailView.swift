@@ -6,17 +6,21 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
+import _SwiftData_SwiftUI
+import Foundation
 
 struct AutorDetailView: View {
-    @ObservedObject var quoteViewModel: QuoteViewModel
-    @State private var isFavorite: Bool
     @State private var currentImageIndex: Int = 0
-    let quote: Quote
+    let authorName: String
+    @Query var quotes: [QuoteEntity]
+    @State private var isFavorite: Bool = false
     
-    init(quote: Quote, quoteViewModel: QuoteViewModel) {
-        self.quote = quote
-        self._isFavorite = State(initialValue: quote.isFavorite)
-        self.quoteViewModel = quoteViewModel
+    var filteredQuotes: [QuoteEntity] {
+        quotes.filter { $0.author == authorName }
+    }
+    var quote: QuoteEntity? {
+        filteredQuotes.first
     }
     
     var body: some View {
@@ -34,7 +38,7 @@ struct AutorDetailView: View {
                     authorImage
                     
                     // Nur Autor-Name
-                    Text(quote.author)
+                    Text(quote?.author ?? authorName)
                         .font(.system(size: 34, weight: .bold, design: .serif)) // Serifenschrift für eleganteren Look
                         .foregroundColor(.white)
                         .shadow(radius: 2) // Dezente Schattierung für mehr Tiefe
@@ -44,6 +48,21 @@ struct AutorDetailView: View {
                     quoteCard
                         .transition(.move(edge: .bottom).combined(with: .opacity)) // Animation für die Zitat-Karte
                     
+                    if let quote = quote {
+                        Button(action: {
+                            isFavorite.toggle()
+                            Task {
+                                await FavoriteManager.shared.updateFavoriteStatus(for: quote.toQuote(), isFavorite: isFavorite)
+                            }
+                        }) {
+                            Label(isFavorite ? "Gespeichert" : "Zitat speichern", systemImage: isFavorite ? "heart.fill" : "heart")
+                                .padding()
+                                .foregroundColor(.white)
+                                .background(isFavorite ? Color.red : Color.gray)
+                                .cornerRadius(10)
+                        }
+                    }
+                    
                     // Autor-Info-Card
                     authorInfoCard
                         .transition(.move(edge: .trailing).combined(with: .opacity)) // Animation für die Autor-Info-Karte
@@ -51,18 +70,15 @@ struct AutorDetailView: View {
                 .padding(.horizontal)
                 .padding(.top, 30)
             }
-            
-            // Favoriten-Button
-            favoriteButton
         }
-        .navigationTitle(quote.author)
+        .navigationTitle(quote?.author ?? authorName)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.easeInOut(duration: 0.5), value: currentImageIndex) // Animation für Bildwechsel
     }
     
     private var authorImage: some View {
         VStack {
-            if let imageData = quote.authorImageData, let uiImage = UIImage(data: imageData) {
+            if let imageData = quote?.authorImageData, let uiImage = UIImage(data: imageData) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFit()
@@ -70,32 +86,16 @@ struct AutorDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 15))
                     .shadow(radius: 5)
                     .transition(.opacity)
-            } else if let imageUrls = quote.authorImageURLs, !imageUrls.isEmpty {
-                AsyncImage(url: URL(string: imageUrls[currentImageIndex])) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(width: 180, height: 180)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 180, height: 180)
-                            .clipShape(RoundedRectangle(cornerRadius: 15))
-                            .shadow(radius: 5)
-                            .transition(.opacity)
-                    case .failure:
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 180, height: 180)
-                            .foregroundColor(.gray.opacity(0.5))
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
+            } else if let imageUrls = quote?.authorImageURLs, !imageUrls.isEmpty {
+                SDWebImageSwiftUI.WebImage(url: URL(string: imageUrls[currentImageIndex]))
+                    .resizable()
+                    .indicator(SDWebImageSwiftUI.Indicator.activity)
+                    .scaledToFit()
+                    .frame(width: 180, height: 180)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .shadow(radius: 5)
 
-                let imageUrls = quote.authorImageURLs ?? []
+                let imageUrls = quote?.authorImageURLs ?? []
                 HStack {
                     Button(action: showPreviousImage) {
                         Image(systemName: "chevron.left.circle.fill")
@@ -128,34 +128,6 @@ struct AutorDetailView: View {
         }
     }
     
-    private var favoriteButton: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Button(action: toggleFavorite) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart")
-                        .font(.title)
-                        .foregroundColor(isFavorite ? Color.red : Color.white)
-                        .padding(18)
-                        .background(
-                            Circle()
-                                .fill(isFavorite ? Color.red.opacity(0.1) : Color.white.opacity(0.3))
-                        )
-                        .overlay(
-                            Circle() // Dünner Rand für den Button
-                                .stroke(isFavorite ? Color.red : Color.white, lineWidth: 2)
-                        )
-                        .shadow(radius: 2) // Weniger auffällige Schattierung
-                        .scaleEffect(isFavorite ? 1.1 : 1.0)
-                        .animation(.easeInOut(duration: 0.2), value: isFavorite) // Sanfter Übergang
-                }
-                .padding(.trailing, 30)
-                .padding(.bottom, 25)
-            }
-        }
-    }
-    
     private var quoteCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -163,7 +135,7 @@ struct AutorDetailView: View {
                     .foregroundColor(.white)
                     .font(.caption)
                 
-                Text("„\(quote.quote)“")
+                Text("„\(quote?.quoteText ?? "")“")
                     .font(.body)
                     .italic()
                     .multilineTextAlignment(.leading)
@@ -171,14 +143,14 @@ struct AutorDetailView: View {
                     .lineLimit(4)
             }
 
-            if !quote.tags.isEmpty {
-                Text("Themen: \(quote.tags.joined(separator: ", "))")
+            if let tags = quote?.tags, !tags.isEmpty {
+                Text("Themen: \(tags.joined(separator: ", "))")
                     .font(.footnote)
                     .foregroundColor(.yellow) // Gelb für einen starken Kontrast zu den anderen Elementen
                     .bold()
             }
 
-            Text("- \(quote.author)")
+            Text("- \(quote?.author ?? authorName)")
                 .font(.caption)
                 .foregroundColor(.white)
         }
@@ -194,19 +166,19 @@ struct AutorDetailView: View {
     
     private var authorInfoCard: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Über \(quote.author)")
+            Text("Über \(quote?.author ?? authorName)")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white) // Weißer Text für besseren Kontrast
 
-            Text(quote.description)
+            Text(quote?.quoteDescription ?? "")
                 .font(.body)
                 .foregroundColor(.white.opacity(0.85)) // Leicht transparenter Text für bessere Lesbarkeit
                 .lineLimit(nil) // Keine Begrenzung für die Zeilenanzahl (Text wird komplett angezeigt)
                 .fixedSize(horizontal: false, vertical: true) // Text wächst vertikal, wenn nötig
                 
-            if let sourceURL = URL(string: quote.source) {
-                Link("Mehr über \(quote.author)", destination: sourceURL)
+            if let sourceString = quote?.source, let sourceURL = URL(string: sourceString) {
+                Link("Mehr über \(quote?.author ?? authorName)", destination: sourceURL)
                     .foregroundColor(.white) // Weißer Text für guten Kontrast
                     .padding()
                     .frame(maxWidth: 250)
@@ -231,15 +203,6 @@ struct AutorDetailView: View {
         .shadow(color: .black.opacity(0.5), radius: 8, x: 0, y: 4)
     }
     
-    private func toggleFavorite() {
-        Task {
-            await quoteViewModel.updateFavoriteStatus(for: quote, isFavorite: !isFavorite)
-            withAnimation {
-                isFavorite.toggle()
-            }
-        }
-    }
-    
     private func showPreviousImage() {
         guard currentImageIndex > 0 else { return }
         withAnimation {
@@ -248,9 +211,26 @@ struct AutorDetailView: View {
     }
 
     private func showNextImage() {
-        guard let imageUrls = quote.authorImageURLs, currentImageIndex < imageUrls.count - 1 else { return }
+        guard let imageUrls = quote?.authorImageURLs, currentImageIndex < imageUrls.count - 1 else { return }
         withAnimation {
             currentImageIndex += 1
         }
+    }
+}
+
+private extension QuoteEntity {
+    func toQuote() -> Quote {
+        return Quote(
+            id: self.id,
+            author: self.author,
+            quote: self.quoteText,
+            category: self.category,
+            tags: self.tags,
+            isFavorite: self.isFavorite,
+            description: self.quoteDescription,
+            source: self.source,
+            authorImageURLs: self.authorImageURLs,
+            authorImageData: self.authorImageData
+        )
     }
 }

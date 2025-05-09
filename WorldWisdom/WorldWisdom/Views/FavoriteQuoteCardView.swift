@@ -5,6 +5,7 @@
 //  Created by Vu Minh Khoi Ha on 05.02.25.
 //
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct FavoriteQuoteCardView: View {
     @ObservedObject var favoriteManager: FavoriteManager
@@ -13,20 +14,26 @@ struct FavoriteQuoteCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                    .shadow(radius: 3)
+
+                Text("- \(quote.author)")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+
+                Spacer()
+            }
+            
             // Zitat Text
             Text("„\(quote.quote)“")
                 .font(.system(.body, design: .serif))
                 .italic()
                 .foregroundColor(.primary) // Hier bleibt es bei .primary für gute Lesbarkeit
-            
-            HStack {
-                // Autor Name
-                Text("- \(quote.author)")
-                    .font(.caption)
-                    .foregroundColor(.gray) // Grau für den Autor-Namen (guter Kontrast)
-                
-                Spacer()
-            }
             
             // Button für Dropdown
             Button(action: {

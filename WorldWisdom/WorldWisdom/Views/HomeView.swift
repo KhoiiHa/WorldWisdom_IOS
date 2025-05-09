@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import SwiftData
+import SDWebImageSwiftUI
 
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
@@ -71,7 +72,7 @@ struct HomeView: View {
                 .foregroundColor(.primary)
 
             if let quote = quoteViewModel.randomQuote {
-                NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
+                NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
                     quoteCard(quote, backgroundColors: [Color.black.opacity(0.85), Color.blue.opacity(0.6)])
                 }
             } else {
@@ -101,7 +102,7 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
                     ForEach(quoteViewModel.quotes.shuffled().prefix(8), id: \.id) { quote in
-                        NavigationLink(destination: AutorDetailView(quote: quote, quoteViewModel: quoteViewModel)) {
+                        NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
                             quoteCard(quote, backgroundColors: [Color.pink.opacity(0.8), Color.blue.opacity(0.7)])
                         }
                     }
@@ -115,22 +116,27 @@ struct HomeView: View {
     // MARK: - Gemeinsame Zitat-Karte (Optimiert für Zitat des Tages und empfohlene Zitate)
     private func quoteCard(_ quote: Quote, backgroundColors: [Color]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Image(systemName: "quote.bubble.fill")
-                    .foregroundColor(.white.opacity(0.8))
-                    .font(.caption)
-                
-                Text("„\(quote.quote)“")
-                    .font(.system(.body, design: .serif))  // Modernere Serifenschrift
-                    .italic()
-                    .multilineTextAlignment(.leading)
-                    .foregroundColor(.white)
-                    .lineLimit(5)
-            }
+            HStack(alignment: .top, spacing: 10) {
+                WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 35, height: 35)
+                    .clipShape(Circle())
+                    .shadow(radius: 3)
 
-            Text("- \(quote.author)")
-                .font(.system(.caption, design: .serif)) // Gleiche Schrift für den Autor
-                .foregroundColor(.white.opacity(0.85)) // Helleres Weiß für besseren Kontrast
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("„\(quote.quote)“")
+                        .font(.system(.body, design: .serif))
+                        .italic()
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.white)
+                        .lineLimit(5)
+
+                    Text("- \(quote.author)")
+                        .font(.system(.caption, design: .serif))
+                        .foregroundColor(.white.opacity(0.85))
+                }
+            }
         }
         .padding()
         .frame(maxWidth: .infinity)
