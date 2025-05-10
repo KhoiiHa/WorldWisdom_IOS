@@ -8,7 +8,7 @@ Die App richtet sich an Menschen, die nach Inspiration suchen – von Studenten 
 
 ---
 
-## 📱 Design-Eindrücke  
+## 📱 Design-Eindrücke *(in Bearbeitung – folgen bald)*
 
 | Home View | Explorer View | Favoriten View | Autoren-Detail View |
 |-----------|---------------|----------------|---------------------|
@@ -18,65 +18,61 @@ Die App richtet sich an Menschen, die nach Inspiration suchen – von Studenten 
 
 ## Features ✨  
 
-- [ ] **Benutzer bleiben angemeldet (App-Status speichern)** 🔐  
-- [ ] **Inspirierende Zitate**: Abruf von Zitaten über die **Mockoon API** 🌍💬  
-- [ ] **Lieblingszitate speichern**: Nutzer können Zitate speichern, um sie jederzeit wieder anzusehen 💖  
-- [ ] **Filteroptionen**: Zitate nach Kategorien wie **Motivation**, **Erfolg**, **Glück** filtern 🔍  
-- [ ] **Suchoptionen**: Zitate nach Kategorien und Autoren suchen 🔍  
-- [ ] **Autoren-Detailansicht**: Mehr Informationen über die Persönlichkeiten hinter den Zitaten ✍️👤  
-- [ ] **Zitate Sammlung**: Eigene Sammlung der Lieblingszitate auf einem separaten Screen 📚🌟  
-- [ ] **Offline-Modus mit SwiftData**: Die App und Favoriten bleiben auch ohne Internet verfügbar 🔄📴  
+- [x] **Automatischer Login**: Nutzer bleiben nach dem Start automatisch eingeloggt 🔐  
+- [x] **Inspirierende Zitate**: Abruf über eine eigene **Mockoon API** 🌍💬  
+- [x] **Favoriten speichern & verwalten** 💖  
+- [x] **GalerieView mit Autorensuche & alphabetischer Sortierung** 📚🔍  
+- [x] **Autoren-Detailansicht**: Mehr Infos über berühmte Persönlichkeiten 👤  
+- [x] **Offline-Modus mit SwiftData**: App funktioniert auch ohne Internet 📴  
+- [ ] **Filter nach Kategorien (kommt zurück)**  
+- [ ] **Eigene Zitate eintragen (in Planung)**  
 
 ---
 
 ## Technischer Aufbau 🛠️  
 
-### 🧱 Projektstruktur  
-Die App folgt dem **MVVM-Designmuster** (Model-View-ViewModel), um eine klare Trennung zwischen der Logik und der Benutzeroberfläche zu gewährleisten.  
+### 🧱 Architektur
+Die App basiert auf **MVVM (Model-View-ViewModel)** zur sauberen Trennung von UI und Logik.
 
-- **Views**: UI-Komponenten, erstellt mit **SwiftUI**  
-- **ViewModels**: Geschäftslogik und API-Kommunikation  
-- **Models**: Strukturierte Datenobjekte für Zitate und Autoren  
+- **Views**: Interface in SwiftUI  
+- **ViewModels**: Logik, Datenfluss & API-Aufrufe  
+- **Models**: Quote- & Author-Strukturen  
 
-### 💾 Datenspeicherung  
-Die App nutzt **Firebase** als Hauptquelle für Daten und **SwiftData** für den Offline-Modus:  
+### 💾 Datenverwaltung  
+- **Firebase Auth** für anonyme oder echte Anmeldung  
+- **Firestore** für Nutzer-bezogene Daten wie Favoriten  
+- **SwiftData** zur Offline-Speicherung der Zitate  
+- **Cloudinary** für Autorenbilder  
 
-- **Firebase Authentication**: Sichere Anmeldung via E-Mail/Passwort oder anonyme Anmeldung  
-- **Firestore Database**: Speicherung von benutzerspezifischen Daten wie Anmeldedaten und Lieblingszitaten  
-- **SwiftData**: Lokale Speicherung von Zitaten und Favoriten, damit die App auch **ohne Internet funktioniert**  
+### 🔍 Suche & Filterung  
+- Autorensuche mit Live-Filtering in der Galerie  
+- Autoren werden alphabetisch und fehlerfrei dargestellt  
+- Leere oder ungültige Einträge werden automatisch ausgeschlossen  
 
-🔄 **Logik:**  
-- Daten werden aus **Firebase** abgerufen und in **SwiftData gespeichert**.  
-- Die Synchronisation stellt sicher, dass die **lokalen Daten immer aktuell** bleiben.  
+### 🌐 API & Netzwerke  
+- Abruf der Zitate erfolgt über **Mockoon API** (lokale Simulation)  
+- `URLSession` für Netzwerkanfragen  
 
-📸 **Bildverwaltung:**  
-- Die App verwendet **Cloudinary** zur Speicherung von Autorenbildern und Medien, die zu den Zitaten gehören.  
-
-### 🔒 Fehlerbehandlung & Validierung  
-- **E-Mail und Passwort**: Verifizierung der Eingaben für eine sichere Anmeldung  
-- **Fehlermeldungen**: Klare und hilfreiche Hinweise bei fehlerhaften Eingaben  
-
-### 🌐 API Calls  
-- Die Zitate werden aus der **Mockoon API** geladen, um den Nutzern regelmäßig neue Inhalte zu bieten.  
-
-### 📦 3rd-Party Frameworks  
-- `Firebase SDK`: Für Authentifizierung und Datenverwaltung  
-- `Cloudinary SDK`: Für Medienverwaltung  
-- `SwiftData`: Für lokale Speicherung & Offline-Modus  
-- `URLSession`: Für API-Aufrufe  
+### 📦 Frameworks & Tools  
+- `Firebase SDK`  
+- `Cloudinary SDK`  
+- `SwiftData`  
+- `Kingfisher` oder `SDWebImageSwiftUI` (optional, für Bild-Handling)  
+- `Xcode`, `SwiftLint`, `GitHub`  
 
 ---
 
 ## 🔮 Ausblick  
 
-- [ ] **Push-Benachrichtigungen**: Benachrichtigungen über neue Zitate und Updates  
-- [ ] **Community-Features**: Benutzer können eigene Zitate einreichen und teilen  
-- [ ] **Like & Kommentar-System**: Zitate liken und kommentieren  
-- [ ] **Medienintegration**: Bilder, Videos und andere Medien in Zitate einbinden  
-- [ ] **Mehrsprachigkeit**: Unterstützung für mehrere Sprachen  
+- [ ] **Push Notifications** für neue tägliche Zitate  
+- [ ] **Eigene Beiträge & Community-Zitate**  
+- [ ] **Kommentar- & Like-System**  
+- [ ] **Dark Mode Verbesserungen**  
+- [ ] **Mehrsprachige Unterstützung (EN/DE)**  
 
 ---
 
 ## ✨ Werde Teil der Weisheit!  
 
-Lass dich inspirieren und finde deine tägliche Dosis an Motivation – für deine persönliche und berufliche Reise! 🚀🌟
+Lass dich inspirieren und finde deine tägliche Dosis an Motivation – für deine persönliche und berufliche Reise! 🚀🌟  
+
