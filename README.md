@@ -57,7 +57,7 @@ Die App basiert auf **MVVM (Model-View-ViewModel)** zur sauberen Trennung von UI
 - `Firebase SDK`  
 - `Cloudinary SDK`  
 - `SwiftData`  
-- `Kingfisher` oder `SDWebImageSwiftUI` (optional, für Bild-Handling)  
+- `SDWebImageSwiftUI` 
 - `Xcode`, `SwiftLint`, `GitHub`  
 
 ---
