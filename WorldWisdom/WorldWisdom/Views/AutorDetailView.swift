@@ -10,6 +10,7 @@ import SDWebImageSwiftUI
 import _SwiftData_SwiftUI
 import Foundation
 
+
 struct AutorDetailView: View {
     @State private var currentImageIndex: Int = 0
     let authorName: String
@@ -220,9 +221,12 @@ struct AutorDetailView: View {
                 
             if let sourceString = quote?.source, let sourceURL = URL(string: sourceString) {
                 Link("Mehr über \(quote?.author ?? authorName)", destination: sourceURL)
+                    .font(.subheadline)
                     .foregroundColor(.white) // Weißer Text für guten Kontrast
-                    .padding()
-                    .frame(maxWidth: 250)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: 200)
+                    .multilineTextAlignment(.center)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
                             .fill(Color.gray.opacity(0.7)) // Sanftes Grau statt Blau
@@ -232,6 +236,19 @@ struct AutorDetailView: View {
                             .stroke(Color.white, lineWidth: 1) // Weißer Rand für besseres Herausstechen
                     )
                     .shadow(radius: 5) // Dezente Schattierung für 3D-Effekt
+            }
+            
+            if let facts = AuthorFunFacts.facts[quote?.author ?? authorName], !facts.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Wusstest du schon?")
+                        .font(.headline)
+                        .foregroundColor(.yellow)
+                    
+                    Text(facts.randomElement() ?? "")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                        .italic()
+                }
             }
         }
         .padding()
@@ -275,4 +292,3 @@ private extension QuoteEntity {
         )
     }
 }
-

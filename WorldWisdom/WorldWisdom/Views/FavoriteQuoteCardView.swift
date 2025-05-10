@@ -8,12 +8,27 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct FavoriteQuoteCardView: View {
-    @ObservedObject var favoriteManager: FavoriteManager
+    @EnvironmentObject var favoriteManager: FavoriteManager
     let quote: Quote
     @State private var showAuthorDetails = false
+    @State private var navigateToDetail = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Spacer()
+                Button(action: {
+                    Task {
+                        try? await favoriteManager.removeFavoriteQuote(quote)
+                    }
+                }) {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
+                        .padding(6)
+                        .background(Color.white.opacity(0.2))
+                        .clipShape(Circle())
+                }
+            }
             HStack {
                 WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
                     .resizable()
@@ -30,10 +45,18 @@ struct FavoriteQuoteCardView: View {
             }
             
             // Zitat Text
-            Text("„\(quote.quote)“")
-                .font(.system(.body, design: .serif))
-                .italic()
-                .foregroundColor(.primary) // Hier bleibt es bei .primary für gute Lesbarkeit
+            Button(action: {
+                navigateToDetail = true
+            }) {
+                Text("„\(quote.quote)“")
+                    .font(.system(.body, design: .serif))
+                    .italic()
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .buttonStyle(PlainButtonStyle())
             
             // Button für Dropdown
             Button(action: {
@@ -67,6 +90,9 @@ struct FavoriteQuoteCardView: View {
         )  // Die Hintergrundfarbe bleibt hier
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
+        .navigationDestination(isPresented: $navigateToDetail) {
+            AutorDetailView(authorName: quote.author, selectedQuoteText: quote.quote)
+        }
     }
 
     // MARK: - Autor Info Card (Dropdown)

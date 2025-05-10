@@ -52,14 +52,13 @@ struct WorldWisdomApp: App {
                     }
                 }
             } else {
-                AuthenticationView()
+                StartView()
+                    .environmentObject(userViewModel)
+                    .environmentObject(quoteViewModel)
+                    .environmentObject(firebaseManager)
+                    .environmentObject(favoriteManager)
+                    .environmentObject(userQuoteManager)
                     .modelContainer(container)
-                    .onAppear {
-                        // Synchronisiere Daten nicht, wenn der User nicht eingeloggt ist
-                        Task {
-                            await syncData()
-                        }
-                    }
             }
         }
     }

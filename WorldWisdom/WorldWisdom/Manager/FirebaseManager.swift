@@ -24,6 +24,10 @@ class FirebaseManager: ObservableObject {
         didSet {}
     }
     
+    var isUserLoggedIn: Bool {
+        return auth.currentUser != nil
+    }
+    
     private init() {
         self.currentUser = auth.currentUser
         _ = auth.addStateDidChangeListener { _, user in
@@ -52,8 +56,7 @@ class FirebaseManager: ObservableObject {
         let doc = try await userRef.getDocument()
         if !doc.exists {
             try await userRef.setData([
-                "id": uid,
-                "createdAt": Timestamp(date: Date())
+                "id": uid
             ])
         }
         
@@ -64,12 +67,16 @@ class FirebaseManager: ObservableObject {
         try auth.signOut()
     }
     
+    func signOutAndStartAnonymously() async throws {
+        try signOut()
+        _ = try await anonymousLogin()
+    }
+    
     // MARK: - Firestore Funktionen
     func createUserInFirestore(id: String, email: String) async throws {
         let userData: [String: Any] = [
             "id": id,
-            "email": email,
-            "createdAt": Timestamp(date: Date())
+            "email": email
         ]
         try await store.collection("users").document(id).setData(userData)
     }
@@ -80,8 +87,7 @@ class FirebaseManager: ObservableObject {
             "quoteText": quoteText,
             "author": author,
             "category": category,
-            "authorImageURL": authorImageURL,
-            "createdAt": Timestamp(date: Date())
+            "authorImageURL": authorImageURL
         ]
         try await store.collection("quotes").document(quoteId).setData(quoteData)
     }
@@ -162,8 +168,7 @@ class FirebaseManager: ObservableObject {
             "tags": quote.tags,
             "description": quote.description,
             "source": quote.source,
-            "authorImageURLs": quote.authorImageURLs ?? [],
-            "createdAt": Timestamp(date: Date())
+            "authorImageURLs": quote.authorImageURLs ?? []
         ]
 
         let userRef = store.collection("users").document(currentUser.uid)
@@ -241,8 +246,7 @@ class FirebaseManager: ObservableObject {
             "quoteText": quoteText,
             "author": author.isEmpty ? "Unbekannt" : author,
             "authorImageURL": authorImageURL,
-            "userID": currentUser.uid,
-            "createdAt": Timestamp(date: Date())
+            "userID": currentUser.uid
         ]
 
         do {
@@ -265,7 +269,8 @@ class FirebaseManager: ObservableObject {
 
         return snapshot.documents.compactMap { document in
             let data = document.data()
-            let authorImageURLs = data["authorImageURLs"] as? [String] ?? []
+            let authorImageURL = data["authorImageURL"] as? String ?? ""
+            let authorImageURLs = [authorImageURL]
             
             return Quote(
                 id: document.documentID,
@@ -304,4 +309,22 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+    // Löscht alle Favoriten eines Nutzers in Firebase
+    func deleteAllFavoriteQuotes() async throws {
+        guard let currentUser = auth.currentUser else {
+            throw FavoriteError.userNotAuthenticated
+        }
+
+        let userRef = store.collection("users").document(currentUser.uid)
+        let favoritesRef = userRef.collection("favorites")
+
+        let snapshot = try await favoritesRef.getDocuments()
+
+        for document in snapshot.documents {
+            try await favoritesRef.document(document.documentID).delete()
+        }
+
+        // Leere auch die Referenzliste der Favoriten im User-Dokument (optional)
+        try await userRef.updateData(["favoriteQuoteIds": []])
+    }
 }

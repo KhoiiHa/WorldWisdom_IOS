@@ -13,6 +13,7 @@ import FirebaseFirestore
 @MainActor
 class UserViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
+    @AppStorage("isLoggedIn") private var storedLoginStatus: Bool = false
     @Published var errorMessage: String?
     @Published var user: FireUser?
     @Published var favoriteQuotes: [FavoriteQuote] = []
@@ -24,11 +25,11 @@ class UserViewModel: ObservableObject {
     }
 
     private func saveLoginStatus(isLoggedIn: Bool) {
-        UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn")
+        storedLoginStatus = isLoggedIn
     }
 
     func isUserLoggedIn() -> Bool {
-        return UserDefaults.standard.bool(forKey: "isLoggedIn")
+        return storedLoginStatus
     }
     
     // MARK: - Validierungsfunktionen
@@ -181,5 +182,11 @@ class UserViewModel: ObservableObject {
         }
     }
     
+
+    func startWithoutAccount() async {
+        if !isUserLoggedIn() {
+            await anonymousLogin()
+        }
+    }
     
 }

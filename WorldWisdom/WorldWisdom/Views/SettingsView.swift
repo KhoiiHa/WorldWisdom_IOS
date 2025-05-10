@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var firebaseManager: FirebaseManager
     @Environment(\.presentationMode) var presentationMode  // Zum Schließen der View nach dem Abmelden
+    @State private var shouldNavigateToStart = false
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,11 @@ struct SettingsView: View {
                             Text("Benachrichtigungen")
                         }
                     }
+                    
+                    Toggle(isOn: .constant(false)) {
+                        Label("Dunkelmodus", systemImage: "moon.fill")
+                    }
+                    .disabled(true)
                 }
                 
                 // Sektion: App-Informationen
@@ -50,6 +56,13 @@ struct SettingsView: View {
                             Text("Über die App")
                         }
                     }
+                    
+                    HStack {
+                        Label("Version", systemImage: "gear")
+                        Spacer()
+                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 // Sektion: Aktionen
@@ -68,17 +81,18 @@ struct SettingsView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Einstellungen")
+            .navigationDestination(isPresented: $shouldNavigateToStart) {
+                StartView()
+                    .environmentObject(firebaseManager)
+            }
         }
     }
 
     private func logout() {
         do {
-            try firebaseManager.signOut() // Abmelden durch FirebaseManager
+            try firebaseManager.signOut()
             print("Erfolgreich abgemeldet")
-
-            // Optional: Zurück zum Login-Screen
-            presentationMode.wrappedValue.dismiss() // Schließt die aktuelle View
-
+            shouldNavigateToStart = true
         } catch {
             print("Fehler beim Abmelden: \(error.localizedDescription)")
         }

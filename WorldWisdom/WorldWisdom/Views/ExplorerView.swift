@@ -34,6 +34,15 @@ struct ExplorerView: View {
             VStack(spacing: 15) {
                 searchBar
                 tagFilterView
+                
+                Button("Neue Zitate laden") {
+                    Task {
+                        await loadQuotes()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.blue)
+                .padding(.horizontal)
 
                 ScrollView {
                     LazyVStack(spacing: 15) {
@@ -41,8 +50,15 @@ struct ExplorerView: View {
                             ProgressView()
                                 .padding()
                         } else {
-                            ForEach(filteredQuotes.indices, id: \.self) { index in
-                                quoteNavigationCard(for: filteredQuotes[index], at: index)
+                            if filteredQuotes.isEmpty {
+                                Text("Keine passenden Zitate gefunden.")
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .padding()
+                                    .multilineTextAlignment(.center)
+                            } else {
+                                ForEach(filteredQuotes.indices, id: \.self) { index in
+                                    quoteNavigationCard(for: filteredQuotes[index], at: index)
+                                }
                             }
                         }
                     }
@@ -94,7 +110,7 @@ struct ExplorerView: View {
                 }
         }
         .padding(12)
-        .background(Color.white.opacity(0.9))
+        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white.opacity(0.95)))
         .cornerRadius(15)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
@@ -103,6 +119,20 @@ struct ExplorerView: View {
     private var tagFilterView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
+                Button(action: {
+                    withAnimation {
+                        selectedTag = nil
+                    }
+                }) {
+                    Text("Alle")
+                        .font(.subheadline)
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20).fill(selectedTag == nil ? Color.gray : Color.gray.opacity(0.5))
+                        )
+                        .foregroundColor(.white)
+                }
                 ForEach(allTags, id: \.self) { tag in
                     Button(action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
@@ -113,7 +143,10 @@ struct ExplorerView: View {
                             .font(.subheadline)
                             .padding(.horizontal, 15)
                             .padding(.vertical, 8)
-                            .background(selectedTag == tag ? Color.blue : randomTagColor(tag))
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(selectedTag == tag ? Color.blue : randomTagColor(tag).opacity(0.8))
+                            )
                             .foregroundColor(.white)
                             .cornerRadius(20)
                             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
@@ -166,7 +199,7 @@ struct QuoteCardView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(alignment: .center, spacing: 10) {
-                WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
+                WebImage(url: URL(string: quote.authorImageURLs?.first ?? "https://via.placeholder.com/100"))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 35, height: 35)
@@ -186,7 +219,7 @@ struct QuoteCardView: View {
                                 .font(.caption2)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 4)
-                                .background(Color.green.opacity(0.25))
+                                .background(Color.white.opacity(0.15))
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
                         }

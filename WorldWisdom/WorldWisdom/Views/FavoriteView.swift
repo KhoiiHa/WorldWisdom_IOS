@@ -8,21 +8,37 @@
 import SwiftUI
 
 struct FavoriteView: View {
-    @StateObject private var favoriteManager = FavoriteManager.shared
+    @EnvironmentObject var favoriteManager: FavoriteManager
     @State private var showErrorMessage: Bool = false
     @State private var errorMessage: String?
-    @State private var successMessage: String? // Für Erfolgsmeldung
+    @State private var successMessage: String?
     @StateObject private var quoteViewModel = QuoteViewModel()
+    @State private var selectedCategory: String = "Alle"
 
     var body: some View {
         NavigationStack {
             VStack {
+                let allCategories = ["Alle"] + Array(Set(favoriteManager.favoriteQuotes.map { $0.category })).sorted()
+                
+                Picker("Kategorie", selection: $selectedCategory) {
+                    ForEach(allCategories, id: \.self) { category in
+                        Text(category).tag(category)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                
+                let sortedQuotes = favoriteManager.favoriteQuotes
+                let filteredQuotes = sortedQuotes.filter {
+                    selectedCategory == "Alle" || $0.category == selectedCategory
+                }
+                
                 List {
-                    if favoriteManager.favoriteQuotes.isEmpty {
+                    if filteredQuotes.isEmpty {
                         emptyStateView
                     } else {
-                        ForEach(favoriteManager.favoriteQuotes) { quote in
-                            FavoriteQuoteCardView(favoriteManager: favoriteManager, quote: quote)
+                        ForEach(filteredQuotes) { quote in
+                            FavoriteQuoteCardView(quote: quote)
                                 .swipeActions {
                                     Button(role: .destructive) {
                                         Task {
@@ -41,6 +57,21 @@ struct FavoriteView: View {
                         NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
                             Image(systemName: "plus")
                                 .foregroundColor(.blue)
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(role: .destructive) {
+                            Task {
+                                do {
+                                    try await favoriteManager.removeAllFavorites()
+                                } catch {
+                                    showErrorMessage = true
+                                    errorMessage = "Favoriten konnten nicht gelöscht werden."
+                                    print("Fehler beim Löschen aller Favoriten: \(error.localizedDescription)")
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "trash")
                         }
                     }
                 }

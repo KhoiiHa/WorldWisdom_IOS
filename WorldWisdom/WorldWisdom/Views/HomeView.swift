@@ -47,8 +47,9 @@ struct HomeView: View {
                     recommendedQuotes = quoteViewModel.quotes.shuffled()
                 }
                 if randomAuthorFact == nil {
-                    if let random = AuthorFacts.facts.randomElement() {
-                        randomAuthorFact = (author: random.key, fact: random.value)
+                    if let (author, facts) = AuthorFunFacts.facts.randomElement(),
+                       let fact = facts.randomElement() {
+                        randomAuthorFact = (author: author, fact: fact)
                     }
                 }
             }
@@ -136,8 +137,9 @@ struct HomeView: View {
                 Spacer()
 
                 Button(action: {
-                    if let random = AuthorFacts.facts.randomElement() {
-                        randomAuthorFact = (author: random.key, fact: random.value)
+                    if let (author, facts) = AuthorFunFacts.facts.randomElement(),
+                       let fact = facts.randomElement() {
+                        randomAuthorFact = (author: author, fact: fact)
                     }
                 }) {
                     Image(systemName: "arrow.clockwise")

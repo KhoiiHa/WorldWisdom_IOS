@@ -11,6 +11,5 @@ struct FavoriteQuote: Codable, Identifiable {
     @DocumentID var id: String?
     let quoteId: String
     let userId: String
-    let createdAt: Timestamp 
     var quoteText: String
 }

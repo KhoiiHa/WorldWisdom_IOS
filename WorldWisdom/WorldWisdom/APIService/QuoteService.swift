@@ -47,6 +47,9 @@ class QuoteService {
         // Abrufen der Zitate von der API
         let quotes: [Quote] = try await fetchData(from: url)
 
+        print("🧠 \(quotes.count) Zitate erfolgreich von Mockoon geladen.")
+        print(quotes.map { $0.author })
+
         // Setze "isFavorite" auf false für jedes Zitat
         let updatedQuotes = quotes.map { quote -> Quote in
             var modifiedQuote = quote

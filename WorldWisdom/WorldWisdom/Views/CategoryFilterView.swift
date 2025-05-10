@@ -12,18 +12,19 @@ struct CategoryFilterView: View {
     @Binding var selectedCategory: String?
 
     var body: some View {
-        List {
-            // "Alle Kategorien"-Button
-            categoryButton(title: "Alle Kategorien", isSelected: selectedCategory == nil) {
-                selectedCategory = nil
-            }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                categoryButton(title: "Alle Kategorien", isSelected: selectedCategory == nil) {
+                    selectedCategory = nil
+                }
 
-            // Kategorie-Buttons
-            ForEach(categories.sorted(), id: \.self) { category in
-                categoryButton(title: category, isSelected: selectedCategory == category) {
-                    selectedCategory = category
+                ForEach(categories.sorted(), id: \.self) { category in
+                    categoryButton(title: category, isSelected: selectedCategory == category) {
+                        selectedCategory = category
+                    }
                 }
             }
+            .padding()
         }
         .navigationTitle("Kategorie auswählen")
     }

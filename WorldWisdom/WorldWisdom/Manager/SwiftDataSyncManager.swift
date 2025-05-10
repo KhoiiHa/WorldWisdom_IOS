@@ -261,18 +261,20 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
 
                 // Entpacken der Felder und Absichern der optionalen Werte
                 guard
-                    let id = document.documentID as String?,
                     let author = data["author"] as? String,
-                    let quote = data["quote"] as? String,
-                    let category = data["category"] as? String,
-                    let isFavorite = data["isFavorite"] as? Bool,
-                    let tags = data["tags"] as? [String],
-                    let description = data["description"] as? String,
-                    let source = data["source"] as? String
+                    let quote = data["quote"] as? String
                 else {
-                    print("⚠️ Ungültige Daten, Zitat übersprungen: \(data)")
-                    continue // Überspringe ungültige Daten und fahre mit dem nächsten Zitat fort
+                    print("❌ Übersprungen: author oder quote fehlt in \(data)")
+                    print("⚠️ Ungültige Kerndaten (author/quote) im Dokument: \(data)")
+                    continue
                 }
+
+                let id = document.documentID
+                let category = data["category"] as? String ?? "Unbekannt"
+                let isFavorite = data["isFavorite"] as? Bool ?? false
+                let tags = data["tags"] as? [String] ?? []
+                let description = data["description"] as? String ?? ""
+                let source = data["source"] as? String ?? ""
 
                 // Erstelle ein gültiges QuoteEntity
                 let quoteEntity = QuoteEntity.fromFirebaseModel(quote: Quote(
@@ -284,10 +286,11 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
                     isFavorite: isFavorite,
                     description: description,
                     source: source,
-                    authorImageURLs: data["authorImageURLs"] as? [String] ?? [] // richtiges Feld
+                    authorImageURLs: data["authorImageURLs"] as? [String] ?? []
                 ))
 
                 // Füge das QuoteEntity der Liste hinzu
+                print("📥 Eingefügtes Zitat von \(author)")
                 quoteEntities.append(quoteEntity)
             }
             
@@ -316,4 +319,16 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
         print("✅ Favoritenstatus für Zitat \(quote.id) erfolgreich aktualisiert.")
     }
 
+    // Löscht alle Favoriten-Zitate aus SwiftData
+    func removeAllFavoriteQuotes() async throws {
+        let fetchRequest = FetchDescriptor<QuoteEntity>()
+        let quoteEntities = try await fetchQuotesAsync(request: fetchRequest)
+
+        for quoteEntity in quoteEntities where quoteEntity.isFavorite {
+            context.delete(quoteEntity)
+        }
+
+        try context.save()
+        print("✅ Alle Favoriten-Zitate wurden aus SwiftData gelöscht.")
+    }
 }

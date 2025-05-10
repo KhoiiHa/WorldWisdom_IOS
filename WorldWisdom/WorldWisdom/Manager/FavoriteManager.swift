@@ -27,13 +27,28 @@ class FavoriteManager: ObservableObject {
         do {
             // Firebase-Daten abrufen
             let firebaseQuotes = try await firebaseManager.fetchFavoriteQuotes()
-            
+
+            // Mapping von FavoriteQuote zu Quote (ohne createdAt)
+            let mappedFirebaseQuotes = firebaseQuotes.map { favoriteQuote in
+                Quote(
+                    id: favoriteQuote.id,
+                    author: "", // ggf. später mit Daten füllen
+                    quote: favoriteQuote.quote,
+                    category: "",
+                    tags: [],
+                    isFavorite: true,
+                    description: "",
+                    source: "",
+                    authorImageURLs: [],
+                    authorImageData: nil
+                )
+            }
+
             // Lokale Daten von SwiftData abrufen
             let localQuotes = try await syncManager.fetchFavoriteQuotes()
 
             // Favoriten zusammenführen: Firebase-Daten haben Vorrang
-            let mergedQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
-            favoriteQuotes = mergedQuotes
+            favoriteQuotes = mergeFavorites(mappedFirebaseQuotes, with: localQuotes)
 
             // Fehler-Reset, falls erfolgreich
             errorMessage = nil
@@ -163,5 +178,12 @@ class FavoriteManager: ObservableObject {
     
     func getFavoriteQuotesByAuthor(author: String) -> [Quote] {
         return favoriteQuotes.filter { $0.author == author }
+    }
+    
+    @MainActor
+    func removeAllFavorites() async throws {
+        try await firebaseManager.deleteAllFavoriteQuotes()
+        try await syncManager.removeAllFavoriteQuotes()
+        favoriteQuotes.removeAll()
     }
 }
