@@ -65,7 +65,6 @@ class SwiftDataSyncManager {
                 existingQuote.authorImageURLs = quoteEntity.authorImageURLs
                 existingQuote.authorImageData = quoteEntity.authorImageData
                 existingQuote.tags = tags
-                // existingQuote.authorImageURLs = [authorImageURL] // entfernt, da doppelte Zuweisung
 
                 try? context.save()
             }

@@ -19,7 +19,19 @@ struct FavoriteQuoteCardView: View {
                 Spacer()
                 Button(action: {
                     Task {
-                        try? await favoriteManager.removeFavoriteQuote(quote)
+                        let convertedQuote = Quote(
+                            id: quote.id,
+                            author: quote.author,
+                            quote: quote.quote,
+                            category: quote.category,
+                            tags: quote.tags,
+                            isFavorite: true,
+                            description: quote.description,
+                            source: quote.source,
+                            authorImageURLs: quote.authorImageURLs,
+                            authorImageData: nil
+                        )
+                        await favoriteManager.updateFavoriteStatus(for: convertedQuote, isFavorite: true)
                     }
                 }) {
                     Image(systemName: "heart.fill")

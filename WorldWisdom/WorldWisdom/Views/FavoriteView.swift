@@ -15,11 +15,23 @@ struct FavoriteView: View {
     @StateObject private var quoteViewModel = QuoteViewModel()
     @State private var selectedCategory: String = "Alle"
 
+    private var allCategories: [String] {
+        ["Alle"] + Array(Set(favoriteManager.favoriteQuotes.map { $0.category })).sorted()
+    }
+
+    private var sortedQuotes: [Quote] {
+        favoriteManager.favoriteQuotes.sorted(by: { $0.author < $1.author })
+    }
+
+    private var filteredQuotes: [Quote] {
+        sortedQuotes.filter {
+            selectedCategory == "Alle" || $0.category == selectedCategory
+        }
+    }
+
     var body: some View {
         NavigationStack {
             VStack {
-                let allCategories = ["Alle"] + Array(Set(favoriteManager.favoriteQuotes.map { $0.category })).sorted()
-                
                 Picker("Kategorie", selection: $selectedCategory) {
                     ForEach(allCategories, id: \.self) { category in
                         Text(category).tag(category)
@@ -28,26 +40,23 @@ struct FavoriteView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
                 
-                let sortedQuotes = favoriteManager.favoriteQuotes
-                let filteredQuotes = sortedQuotes.filter {
-                    selectedCategory == "Alle" || $0.category == selectedCategory
-                }
-                
                 List {
                     if filteredQuotes.isEmpty {
                         emptyStateView
                     } else {
                         ForEach(filteredQuotes) { quote in
-                            FavoriteQuoteCardView(quote: quote)
-                                .swipeActions {
-                                    Button(role: .destructive) {
-                                        Task {
-                                            await removeFavorite(quote)
-                                        }
-                                    } label: {
-                                        Label("Entfernen", systemImage: "trash.fill")
+                            NavigationLink(destination: AutorDetailView(authorName: quote.author, selectedQuoteText: quote.quote)) {
+                                FavoriteQuoteCardView(quote: quote)
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    Task {
+                                        await removeFavorite(quote)
                                     }
+                                } label: {
+                                    Label("Entfernen", systemImage: "trash.fill")
                                 }
+                            }
                         }
                     }
                 }
@@ -114,6 +123,7 @@ struct FavoriteView: View {
     // MARK: - Remove Favorite
     private func removeFavorite(_ quote: Quote) async {
         do {
+            // Konvertiere Quote zu Quote (keine Konvertierung mehr nötig)
             // Favoriten entfernen
             try await favoriteManager.removeFavoriteQuote(quote)
             showErrorMessage = false  // Fehleranzeige zurücksetzen

@@ -12,4 +12,10 @@ struct FavoriteQuote: Codable, Identifiable {
     let quoteId: String
     let userId: String
     var quoteText: String
+    let author: String
+    let category: String?
+    let tags: [String]?
+    let authorImageURLs: [String]?
+    let description: String?
+    let source: String?
 }

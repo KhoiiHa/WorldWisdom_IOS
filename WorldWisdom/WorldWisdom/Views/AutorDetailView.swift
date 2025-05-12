@@ -15,6 +15,7 @@ struct AutorDetailView: View {
     @State private var currentImageIndex: Int = 0
     let authorName: String
     let selectedQuoteText: String? // optional für gezieltes Anzeigen
+    let favoriteQuote: FavoriteQuote?
     @Query var quotes: [QuoteEntity]
     @State private var isFavorite: Bool = false
     @State private var selectedQuote: QuoteEntity? = nil
@@ -29,9 +30,10 @@ struct AutorDetailView: View {
         return filteredQuotes.first
     }
     
-    init(authorName: String, selectedQuoteText: String? = nil) {
+    init(authorName: String, selectedQuoteText: String? = nil, favoriteQuote: FavoriteQuote? = nil) {
         self.authorName = authorName
         self.selectedQuoteText = selectedQuoteText
+        self.favoriteQuote = favoriteQuote
     }
 
     var body: some View {
@@ -49,7 +51,7 @@ struct AutorDetailView: View {
                     authorImage
                     
                     // Nur Autor-Name
-                    Text(quote?.author ?? authorName)
+                    Text(quote?.author ?? favoriteQuote?.author ?? authorName)
                         .font(.system(size: 34, weight: .bold, design: .serif)) // Serifenschrift für eleganteren Look
                         .foregroundColor(.white)
                         .shadow(radius: 2) // Dezente Schattierung für mehr Tiefe
@@ -91,7 +93,7 @@ struct AutorDetailView: View {
                 .padding(.top, 30)
             }
         }
-        .navigationTitle(quote?.author ?? authorName)
+        .navigationTitle(quote?.author ?? favoriteQuote?.author ?? authorName)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.easeInOut(duration: 0.5), value: currentImageIndex) // Animation für Bildwechsel
         .navigationDestination(item: $selectedQuote) { quote in
@@ -109,7 +111,7 @@ struct AutorDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 15))
                     .shadow(radius: 5)
                     .transition(.opacity)
-            } else if let imageUrls = quote?.authorImageURLs, !imageUrls.isEmpty {
+            } else if let imageUrls = quote?.authorImageURLs ?? favoriteQuote?.authorImageURLs, !imageUrls.isEmpty {
                 SDWebImageSwiftUI.WebImage(url: URL(string: imageUrls[currentImageIndex]))
                     .resizable()
                     .indicator(SDWebImageSwiftUI.Indicator.activity)
@@ -118,7 +120,7 @@ struct AutorDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 15))
                     .shadow(radius: 5)
 
-                let imageUrls = quote?.authorImageURLs ?? []
+                let imageUrls = quote?.authorImageURLs ?? favoriteQuote?.authorImageURLs ?? []
                 HStack {
                     Button(action: showPreviousImage) {
                         Image(systemName: "chevron.left.circle.fill")
@@ -155,13 +157,29 @@ struct AutorDetailView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Spacer()
-                if let quote = quote {
+                if quote != nil || favoriteQuote != nil {
                     Button(action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
                             isFavorite.toggle()
                         }
                         Task {
-                            await FavoriteManager.shared.updateFavoriteStatus(for: quote.toQuote(), isFavorite: isFavorite)
+                            if let quote = quote {
+                                await FavoriteManager.shared.updateFavoriteStatus(for: quote.toQuote(), isFavorite: isFavorite)
+                            } else if let favoriteQuote = favoriteQuote {
+                                let quote = Quote(
+                                    id: favoriteQuote.id ?? UUID().uuidString,
+                                    author: favoriteQuote.author,
+                                    quote: favoriteQuote.quoteText,
+                                    category: favoriteQuote.category ?? "",
+                                    tags: favoriteQuote.tags ?? [],
+                                    isFavorite: isFavorite,
+                                    description: favoriteQuote.description ?? "",
+                                    source: favoriteQuote.source ?? "",
+                                    authorImageURLs: favoriteQuote.authorImageURLs ?? [],
+                                    authorImageData: nil
+                                )
+                                await FavoriteManager.shared.updateFavoriteStatus(for: quote, isFavorite: isFavorite)
+                            }
                         }
                     }) {
                         Image(systemName: isFavorite ? "heart.fill" : "heart")
@@ -175,7 +193,7 @@ struct AutorDetailView: View {
                 }
             }
             
-            Text("„\(quote?.quoteText ?? "")“")
+            Text("„\(quote?.quoteText ?? favoriteQuote?.quoteText ?? "")“")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .italic()
@@ -185,14 +203,14 @@ struct AutorDetailView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity)
 
-            if let tags = quote?.tags, !tags.isEmpty {
+            if let tags = quote?.tags ?? favoriteQuote?.tags, !tags.isEmpty {
                 Text("Themen: \(tags.joined(separator: ", "))")
                     .font(.footnote)
                     .foregroundColor(.yellow) // Gelb für einen starken Kontrast zu den anderen Elementen
                     .bold()
             }
 
-            Text("- \(quote?.author ?? authorName)")
+            Text("- \(quote?.author ?? favoriteQuote?.author ?? authorName)")
                 .font(.caption)
                 .foregroundColor(.white)
         }
@@ -208,19 +226,19 @@ struct AutorDetailView: View {
     
     private var authorInfoCard: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Über \(quote?.author ?? authorName)")
+            Text("Über \(quote?.author ?? favoriteQuote?.author ?? authorName)")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white) // Weißer Text für besseren Kontrast
 
-            Text(quote?.quoteDescription ?? "")
+            Text(quote?.quoteDescription ?? favoriteQuote?.description ?? "")
                 .font(.body)
                 .foregroundColor(.white.opacity(0.85)) // Leicht transparenter Text für bessere Lesbarkeit
                 .lineLimit(nil) // Keine Begrenzung für die Zeilenanzahl (Text wird komplett angezeigt)
                 .fixedSize(horizontal: false, vertical: true) // Text wächst vertikal, wenn nötig
                 
-            if let sourceString = quote?.source, let sourceURL = URL(string: sourceString) {
-                Link("Mehr über \(quote?.author ?? authorName)", destination: sourceURL)
+            if let sourceString = quote?.source ?? favoriteQuote?.source, let sourceURL = URL(string: sourceString) {
+                Link("Mehr über \(quote?.author ?? favoriteQuote?.author ?? authorName)", destination: sourceURL)
                     .font(.subheadline)
                     .foregroundColor(.white) // Weißer Text für guten Kontrast
                     .padding(.horizontal, 12)
@@ -238,7 +256,7 @@ struct AutorDetailView: View {
                     .shadow(radius: 5) // Dezente Schattierung für 3D-Effekt
             }
             
-            if let facts = AuthorFunFacts.facts[quote?.author ?? authorName], !facts.isEmpty {
+            if let facts = AuthorFunFacts.facts[quote?.author ?? favoriteQuote?.author ?? authorName], !facts.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Wusstest du schon?")
                         .font(.headline)
@@ -269,7 +287,7 @@ struct AutorDetailView: View {
     }
 
     private func showNextImage() {
-        guard let imageUrls = quote?.authorImageURLs, currentImageIndex < imageUrls.count - 1 else { return }
+        guard let imageUrls = quote?.authorImageURLs ?? favoriteQuote?.authorImageURLs, currentImageIndex < imageUrls.count - 1 else { return }
         withAnimation {
             currentImageIndex += 1
         }

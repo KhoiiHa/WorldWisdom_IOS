@@ -7,7 +7,7 @@
 import SwiftUI
 import SwiftData
 import SDWebImageSwiftUI
-import Foundation // falls nicht vorhanden
+import Foundation 
 
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
@@ -94,8 +94,8 @@ struct HomeView: View {
                     .foregroundColor(.secondary)
             }
 
-            // Fehleranzeige
-            if let errorMessage = quoteViewModel.errorMessage {
+            // Fehleranzeige nur wenn keine Zitate vorhanden sind
+            if let errorMessage = quoteViewModel.errorMessage, quoteViewModel.quotes.isEmpty {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .font(.caption)

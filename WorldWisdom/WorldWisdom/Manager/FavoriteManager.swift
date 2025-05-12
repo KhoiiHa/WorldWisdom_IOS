@@ -28,18 +28,18 @@ class FavoriteManager: ObservableObject {
             // Firebase-Daten abrufen
             let firebaseQuotes = try await firebaseManager.fetchFavoriteQuotes()
 
-            // Mapping von FavoriteQuote zu Quote (ohne createdAt)
+            // Mapping von FavoriteQuote zu Quote (inkl. neuer Felder)
             let mappedFirebaseQuotes = firebaseQuotes.map { favoriteQuote in
                 Quote(
                     id: favoriteQuote.id,
-                    author: "", // ggf. später mit Daten füllen
+                    author: favoriteQuote.author,
                     quote: favoriteQuote.quote,
-                    category: "",
-                    tags: [],
+                    category: favoriteQuote.category,
+                    tags: favoriteQuote.tags,
                     isFavorite: true,
-                    description: "",
-                    source: "",
-                    authorImageURLs: [],
+                    description: favoriteQuote.description,
+                    source: favoriteQuote.source,
+                    authorImageURLs: favoriteQuote.authorImageURLs ?? [],
                     authorImageData: nil
                 )
             }
@@ -49,6 +49,8 @@ class FavoriteManager: ObservableObject {
 
             // Favoriten zusammenführen: Firebase-Daten haben Vorrang
             favoriteQuotes = mergeFavorites(mappedFirebaseQuotes, with: localQuotes)
+
+            print("✅ Geladene Favoriten (gesamt): \(favoriteQuotes.count)")
 
             // Fehler-Reset, falls erfolgreich
             errorMessage = nil
