@@ -7,11 +7,15 @@
 
 import SwiftUI
 
+/// Einstellungsansicht der App mit Navigation zu Profil, Datenschutz, Benachrichtigungen sowie Logout-Funktion.
+
+// MARK: - SettingsView
 struct SettingsView: View {
     @EnvironmentObject var firebaseManager: FirebaseManager
     @Environment(\.presentationMode) var presentationMode  // Zum Schließen der View nach dem Abmelden
     @State private var shouldNavigateToStart = false
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             List {
@@ -88,6 +92,7 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: - Logout Logik
     private func logout() {
         do {
             try firebaseManager.signOut()

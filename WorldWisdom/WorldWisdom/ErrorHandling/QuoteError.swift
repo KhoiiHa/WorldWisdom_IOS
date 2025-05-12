@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Fehler, die beim Abrufen, Parsen oder Anzeigen von Zitaten auftreten können.
+
+// MARK: - QuoteError
+
 // Enum für verschiedene Fehlerarten im Zusammenhang mit Zitaten
 enum QuoteError: LocalizedError {
     case networkError(String)  // Fehler beim Netzwerkzugriff
@@ -14,6 +18,7 @@ enum QuoteError: LocalizedError {
     case noQuotesFound         // Keine Zitate gefunden
     case unknownError(String)  // Unbekannter Fehler
 
+    /// Benutzerfreundliche Beschreibung des jeweiligen Fehlers
     // Fehlermeldungen basierend auf dem Fehler-Typ
     var errorDescription: String? {
         switch self {
@@ -28,6 +33,7 @@ enum QuoteError: LocalizedError {
         }
     }
     
+    /// Wandelt generische Fehler in spezifische QuoteError-Fälle um
     // Hilfsmethode zur Erstellung des Fehler-Enums
     static func handleError(_ error: Error) -> QuoteError {
         // Wenn es ein Netzwerkfehler ist
@@ -44,6 +50,7 @@ enum QuoteError: LocalizedError {
         }
     }
     
+    /// Vorschläge zur Fehlerbehebung für jede Fehlerart
     // Vorschläge zur Fehlerbehebung
     var recoverySuggestion: String? {
         switch self {

@@ -8,6 +8,10 @@
 import SwiftData
 import Foundation
 
+/// SwiftData-Entity für Benutzerdaten, die aus Firebase geladen und lokal gespeichert werden.
+/// Beinhaltet Konvertierungslogik von FireUser (Firebase-Modell) und Zugriff auf Favoriten-IDs.
+
+// MARK: - FireUserEntity
 @Model
 class FireUserEntity {
     @Attribute(.unique) var id: String
@@ -24,6 +28,7 @@ class FireUserEntity {
         self.favoriteQuoteIds = favoriteQuoteIds
     }
     
+    // MARK: - Konvertierung von Firebase-Modell zu SwiftData-Entity
     // Konvertierung von Firebase FireUser zu SwiftData FireUserEntity
     static func fromFirebaseModel(fireUser: FireUser) -> FireUserEntity {
         // Stelle sicher, dass favoriteQuoteIds ein Array von Strings ist und konvertiere es korrekt
@@ -38,6 +43,7 @@ class FireUserEntity {
         )
     }
     
+    // MARK: - Zugriff auf gespeicherte Quote-IDs als Array
     // Methode, um die gespeicherten Quote-IDs wieder als Array zurückzugeben
     func getFavoriteQuoteIdsArray() -> [String] {
         return favoriteQuoteIds.split(separator: ",").map { String($0) }

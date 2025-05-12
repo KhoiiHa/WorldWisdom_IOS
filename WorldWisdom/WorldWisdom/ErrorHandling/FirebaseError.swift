@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Fehler, die im Zusammenhang mit Firebase-Aktionen wie Authentifizierung, Datenabruf oder Bild-Uploads auftreten können.
+
+// MARK: - FirebaseError
+
 enum FirebaseError: Error, LocalizedError {
     case noAuthenticatedUser
     case unknownError(String)
@@ -18,6 +22,7 @@ enum FirebaseError: Error, LocalizedError {
     case authorImageUploadFailed
     case imageDownloadFailed
     
+    /// Benutzerfreundliche Fehlermeldungen je nach Fehlerart
     var errorDescription: String? {
         switch self {
         case .noAuthenticatedUser:

@@ -10,6 +10,10 @@ import FirebaseFirestore
 import FirebaseStorage
 import Firebase
 
+/// Zentraler Manager für Firebase Authentication, Firestore und Storage-Funktionen
+
+// MARK: - FirebaseManager
+
 class FirebaseManager: ObservableObject {
     
     static let shared = FirebaseManager()
@@ -28,6 +32,8 @@ class FirebaseManager: ObservableObject {
         return auth.currentUser != nil
     }
     
+    // MARK: - Initialisierung
+    
     private init() {
         self.currentUser = auth.currentUser
         _ = auth.addStateDidChangeListener { _, user in
@@ -39,15 +45,19 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    // MARK: - Auth Funktionen
+    // MARK: - Authentifizierung
+    
+    /// Registriert einen neuen Benutzer mit E-Mail und Passwort
     func registerUser(email: String, password: String) async throws -> AuthDataResult {
         return try await auth.createUser(withEmail: email, password: password)
     }
     
+    /// Meldet einen Benutzer mit E-Mail und Passwort an
     func loginUser(email: String, password: String) async throws -> AuthDataResult {
         return try await auth.signIn(withEmail: email, password: password)
     }
     
+    /// Meldet einen Benutzer anonym an und legt einen Firestore-Datensatz an, falls noch nicht vorhanden
     func anonymousLogin() async throws -> AuthDataResult {
         let result = try await auth.signInAnonymously()
         let uid = result.user.uid
@@ -63,16 +73,20 @@ class FirebaseManager: ObservableObject {
         return result
     }
     
+    /// Meldet den aktuellen Benutzer ab
     func signOut() throws {
         try auth.signOut()
     }
     
+    /// Meldet den aktuellen Benutzer ab und startet eine anonyme Anmeldung
     func signOutAndStartAnonymously() async throws {
         try signOut()
         _ = try await anonymousLogin()
     }
     
-    // MARK: - Firestore Funktionen
+    // MARK: - Zitatverwaltung
+    
+    /// Legt einen neuen Benutzer in Firestore mit ID und E-Mail an
     func createUserInFirestore(id: String, email: String) async throws {
         let userData: [String: Any] = [
             "id": id,
@@ -81,6 +95,7 @@ class FirebaseManager: ObservableObject {
         try await store.collection("users").document(id).setData(userData)
     }
     
+    /// Speichert Metadaten eines Zitats in Firestore
     func saveQuoteMetadata(quoteId: String, quoteText: String, author: String, category: String, authorImageURL: String) async throws {
         let quoteData: [String: Any] = [
             "id": quoteId,
@@ -92,6 +107,7 @@ class FirebaseManager: ObservableObject {
         try await store.collection("quotes").document(quoteId).setData(quoteData)
     }
 
+    /// Lädt Metadaten eines Zitats aus Firestore
     func fetchQuoteMetadata(quoteId: String) async throws -> [String: Any]? {
         do {
             let documentSnapshot = try await store.collection("quotes").document(quoteId).getDocument()
@@ -105,6 +121,7 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+    /// Aktualisiert ein bestehendes Zitat in Firestore
     func updateQuote(_ quote: Quote) async throws {
         let quoteRef = store.collection("quotes").document(quote.id)
         try await quoteRef.updateData([
@@ -117,12 +134,15 @@ class FirebaseManager: ObservableObject {
         ])
     }
     
+    /// Löscht ein Zitat aus Firestore
     func deleteQuote(_ quote: Quote) async throws {
         let quoteRef = store.collection("quotes").document(quote.id)
         try await quoteRef.delete()
     }
     
-    // MARK: - Favorisierte Zitate
+    // MARK: - Favoritenverwaltung
+    
+    /// Lädt alle favorisierten Zitate des aktuellen Benutzers
     func fetchFavoriteQuotes() async throws -> [Quote] {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -155,6 +175,7 @@ class FirebaseManager: ObservableObject {
         }
     }
 
+    /// Speichert ein Zitat als Favorit für den aktuellen Benutzer
     func saveFavoriteQuote(quote: Quote) async throws {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -187,6 +208,7 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+    /// Aktualisiert die Liste der Favoriten-IDs im Benutzer-Dokument
     private func updateFavoriteQuoteIds(for userId: String, quoteId: String, add: Bool) async throws {
         let userRef = store.collection("users").document(userId)
         
@@ -199,6 +221,7 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+    /// Löscht ein favorisiertes Zitat des aktuellen Benutzers
     func deleteFavoriteQuote(_ quote: Quote) async throws {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated
@@ -222,6 +245,7 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+    /// Aktualisiert den Favoritenstatus eines Zitats
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async throws {
         guard auth.currentUser != nil else {
             throw FavoriteError.userNotAuthenticated
@@ -236,80 +260,9 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    // MARK: - Benutzerdefinierte Zitate
-    func saveUserQuote(quoteText: String, author: String, authorImageURL: String) async throws {
-        guard let currentUser = auth.currentUser else {
-            throw FirebaseError.noAuthenticatedUser
-        }
-
-        let userQuoteData: [String: Any] = [
-            "quoteText": quoteText,
-            "author": author.isEmpty ? "Unbekannt" : author,
-            "authorImageURL": authorImageURL,
-            "userID": currentUser.uid
-        ]
-
-        do {
-            try await store.collection("users")
-                .document(currentUser.uid)
-                .collection("userQuotes")
-                .addDocument(data: userQuoteData)
-        } catch {
-            throw FirebaseError.unknownError(error.localizedDescription)
-        }
-    }
+    // MARK: - Wartung & Cleanup
     
-    func fetchUserQuotes() async throws -> [Quote] {
-        guard let currentUser = auth.currentUser else { return [] }
-
-        let snapshot = try await store.collection("users")
-            .document(currentUser.uid)
-            .collection("userQuotes")
-            .getDocuments()
-
-        return snapshot.documents.compactMap { document in
-            let data = document.data()
-            let authorImageURL = data["authorImageURL"] as? String ?? ""
-            let authorImageURLs = [authorImageURL]
-            
-            return Quote(
-                id: document.documentID,
-                author: data["author"] as? String ?? "Unbekannt",
-                quote: data["quoteText"] as? String ?? "",
-                category: data["category"] as? String ?? "Allgemein",
-                tags: data["tags"] as? [String] ?? [],
-                isFavorite: false,
-                description: data["description"] as? String ?? "",
-                source: data["source"] as? String ?? "",
-                authorImageURLs: authorImageURLs
-            )
-        }
-    }
-    
-    func updateUserQuote(id: String, quoteText: String, author: String, authorImageURL: String) async throws {
-        guard let currentUser = auth.currentUser else {
-            throw FirebaseError.noAuthenticatedUser
-        }
-
-        let userQuoteData: [String: Any] = [
-            "quoteText": quoteText,
-            "author": author.isEmpty ? "Unbekannt" : author,
-            "authorImageURL": authorImageURL,
-            "updatedAt": Timestamp(date: Date()) // Aktualisierungszeit
-        ]
-
-        do {
-            try await store.collection("users")
-                .document(currentUser.uid)
-                .collection("userQuotes")
-                .document(id) // Das Zitat anhand der ID finden und aktualisieren
-                .updateData(userQuoteData)
-        } catch {
-            throw FirebaseError.unknownError(error.localizedDescription)
-        }
-    }
-    
-    // Löscht alle Favoriten eines Nutzers in Firebase
+    /// Löscht alle Favoriten des aktuellen Benutzers in Firebase
     func deleteAllFavoriteQuotes() async throws {
         guard let currentUser = auth.currentUser else {
             throw FavoriteError.userNotAuthenticated

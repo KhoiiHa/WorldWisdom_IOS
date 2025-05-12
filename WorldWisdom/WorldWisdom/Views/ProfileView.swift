@@ -7,7 +7,12 @@
 
 import SwiftUI
 
+/// Profilansicht des Nutzers mit Foto, Name, Beschreibung sowie Navigationslinks zu Einstellungen und Logout.
+/// Statisches Beispielprofil mit AsyncImage-Handling und einfacher Benutzeroberfläche.
+
+// MARK: - ProfileView
 struct ProfileView: View {
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             ScrollView {

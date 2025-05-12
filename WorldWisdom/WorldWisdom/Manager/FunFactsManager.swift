@@ -7,9 +7,14 @@
 
 
 
+
+/// Statische Sammlung unterhaltsamer Fakten zu berühmten Persönlichkeiten. 
+/// Wird in der App verwendet, um zusätzliche Informationen zu Autoren anzuzeigen.
 import Foundation
 
 struct AuthorFunFacts {
+
+    // MARK: - FunFacts-Datenbank
     static let facts: [String: [String]] = [
         "Abraham Lincoln": [
             "Lincoln war ein talentierter Wrestler in seiner Jugend.",

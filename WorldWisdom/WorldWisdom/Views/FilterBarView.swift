@@ -7,10 +7,17 @@
 
 import SwiftUI
 
+/// Header-Komponente für verschiedene Screens – zeigt optional einen Begrüßungstext und App-Titel.
+
+/// Zeigt eine horizontale Leiste mit Kategorie-Buttons zur Filterung von Zitaten.
+/// Unterstützt die Auswahl einzelner Kategorien sowie eine "Alle"-Option.
+
+// MARK: - HeaderView
 struct FilterBar: View {
     @Binding var selectedCategory: String?
     let categories: [String]
     
+    // MARK: - View Body
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {

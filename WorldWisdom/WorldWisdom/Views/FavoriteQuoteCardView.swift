@@ -4,6 +4,9 @@
 //
 //  Created by Vu Minh Khoi Ha on 05.02.25.
 //
+
+/// Zeigt eine einzelne Zitatkarte im Favoritenbereich an.
+/// Beinhaltet Zitattext, Autor, Bild, Favoritenstatus und Autor-Dropdown.
 import SwiftUI
 import SDWebImageSwiftUI
 
@@ -13,6 +16,7 @@ struct FavoriteQuoteCardView: View {
     @State private var showAuthorDetails = false
     @State private var navigateToDetail = false
 
+    // MARK: - View Body
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {

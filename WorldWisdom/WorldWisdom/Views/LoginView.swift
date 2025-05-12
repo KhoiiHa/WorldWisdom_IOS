@@ -5,8 +5,12 @@
 //  Created by Vu Minh Khoi Ha on 21.01.25.
 //
 
+
+/// Login-Ansicht für registrierte Benutzer.
+/// Enthält E-Mail- und Passwortfelder, eine Ladeanzeige und Navigation zur Hauptansicht bei erfolgreichem Login.
 import SwiftUI
 
+// MARK: - LoginView
 struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
@@ -15,6 +19,7 @@ struct LoginView: View {
 
     @ObservedObject var userViewModel: UserViewModel
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             VStack {

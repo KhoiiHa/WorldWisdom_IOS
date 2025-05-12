@@ -9,17 +9,20 @@ import SwiftUI
 import Firebase
 import SwiftData
 
+/// Einstiegspunkt der App – initialisiert Firebase, SwiftData und stellt ViewModels global bereit.
+
+// MARK: - WorldWisdomApp
 @main
 struct WorldWisdomApp: App {
     
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var firebaseManager = FirebaseManager.shared
     @StateObject private var favoriteManager = FavoriteManager.shared
-    @StateObject private var userQuoteManager = UserQuoteManager.shared
     
     @StateObject private var quoteViewModel = QuoteViewModel()
     let container: ModelContainer
 
+    // MARK: - Initialisierung von Firebase & SwiftData
     init() {
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.debug) // Optional für Logging
@@ -32,6 +35,7 @@ struct WorldWisdomApp: App {
         }
     }
     
+    // MARK: - Szenenaufbau (Loginprüfung & View-Weiche)
     var body: some Scene {
         WindowGroup {
             // Überprüfe, ob der User eingeloggt ist und zeige das entsprechende View
@@ -43,7 +47,6 @@ struct WorldWisdomApp: App {
                 .environmentObject(quoteViewModel)
                 .environmentObject(firebaseManager)
                 .environmentObject(favoriteManager)
-                .environmentObject(userQuoteManager)
                 .modelContainer(container)
                 .onAppear {
                     // Synchronisiere Daten nur nach erfolgreicher Anmeldung
@@ -57,12 +60,12 @@ struct WorldWisdomApp: App {
                     .environmentObject(quoteViewModel)
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
-                    .environmentObject(userQuoteManager)
                     .modelContainer(container)
             }
         }
     }
 
+    // MARK: - Datensynchronisation
     // Startet die Synchronisation mit Firestore
     private func syncData() async {
         if userViewModel.isLoggedIn {

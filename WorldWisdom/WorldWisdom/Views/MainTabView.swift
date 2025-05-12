@@ -7,42 +7,47 @@
 
 import SwiftUI
 
+/// Haupt-Navigationsansicht mit fünf Tabs: Home, Explorer, Favorites, Galerie und Settings.
+/// Jeder Tab lädt eine eigene SwiftUI-View und ist über das TabBar-Menü erreichbar.
+
+// MARK: - MainTabView
 struct MainTabView: View {
     @EnvironmentObject var userViewModel: UserViewModel // Benutzer ViewModel über EnvironmentObject
     @EnvironmentObject var quoteViewModel: QuoteViewModel // Quote ViewModel über EnvironmentObject
 
     var body: some View {
         TabView {
-            // Home Tab
+            // MARK: - Home Tab
             HomeView(userViewModel: userViewModel)
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
 
-            // Explorer Tab
+            // MARK: - Explorer Tab
             ExplorerView(quoteViewModel: quoteViewModel)
                 .tabItem {
                     Label("Explorer", systemImage: "magnifyingglass")
                 }
 
-            // Favorites Tab
+            // MARK: - Favorites Tab
             FavoriteView()
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
                 }
 
-            // Galerie Tab
+            // MARK: - Galerie Tab
             GalerieScreen()
                 .tabItem {
                     Label("Galerie", systemImage: "photo.on.rectangle")
                 }
 
-            // Settings Tab
+            // MARK: - Settings Tab
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
         }
+        // MARK: - Aktionen beim Erscheinen der View
         .onAppear {
             // Optionale Aktionen, wenn die TabView erscheint (z.B. Daten aktualisieren)
         }

@@ -4,13 +4,19 @@
 //
 //  Created by Vu Minh Khoi Ha on 05.02.25.
 //
+//  Diese View zeigt eine Liste von Kategorien, aus denen der Nutzer eine auswählen kann,
+//  um Inhalte zu filtern. Die Auswahl kann auf eine einzelne Kategorie oder auf alle Kategorien gesetzt werden.
+//  Diese Komponente eignet sich für Filterfunktionen in Apps mit kategorisierten Inhalten.
 
 import SwiftUI
 
+/// Zeigt eine Liste verfügbarer Kategorien als auswählbare Buttons.
+/// Der Nutzer kann eine Kategorie filtern oder "Alle Kategorien" wählen.
 struct CategoryFilterView: View {
     let categories: Set<String>
     @Binding var selectedCategory: String?
 
+    // MARK: - View Body
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -40,8 +46,10 @@ struct CategoryFilterView: View {
                         .foregroundColor(.accentColor)
                 }
             }
-            .contentShape(Rectangle()) // Tappbare Fläche erweitern
+            .contentShape(Rectangle())
         }
         .listRowBackground(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(isSelected ? "\(title), ausgewählt" : title))
     }
 }

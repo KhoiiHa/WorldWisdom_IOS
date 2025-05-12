@@ -5,8 +5,13 @@
 //  Created by Vu Minh Khoi Ha on 22.01.25.
 //
 
+
 import SwiftUI
 
+/// Registrierungsbildschirm für neue Benutzer.
+/// Beinhaltet E-Mail- und Passwortfelder, Ladezustand, Fehlermeldungen und Weiterleitung zur MainTabView.
+
+// MARK: - RegisterView
 struct RegisterView: View {
     @State private var email: String = ""
     @State private var password: String = ""
@@ -15,6 +20,7 @@ struct RegisterView: View {
 
     @ObservedObject var userViewModel: UserViewModel
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             VStack {

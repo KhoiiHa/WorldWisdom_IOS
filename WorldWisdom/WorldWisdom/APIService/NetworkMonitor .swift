@@ -11,16 +11,26 @@ class NetworkMonitor {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue.global(qos: .background)
     
-    var isConnected: Bool = false
+    var isConnected: Bool = false {
+        didSet {
+            onStatusChange?(isConnected)
+        }
+    }
+
+    var onStatusChange: ((Bool) -> Void)?
 
     init() {
         monitor.pathUpdateHandler = { path in
             if path.status == .satisfied {
                 self.isConnected = true
-                print("Internet ist verfügbar")
+                #if DEBUG
+                print("🌐 Verbindung hergestellt (Debug)")
+                #endif
             } else {
                 self.isConnected = false
-                print("Kein Internetzugang")
+                #if DEBUG
+                print("⚠️ Keine Internetverbindung (Debug)")
+                #endif
             }
         }
         monitor.start(queue: queue)

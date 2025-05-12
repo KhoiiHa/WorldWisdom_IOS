@@ -110,7 +110,6 @@ struct AuthenticationView: View {
                     .environmentObject(QuoteViewModel())
                     .environmentObject(FirebaseManager.shared)
                     .environmentObject(FavoriteManager.shared)
-                    .environmentObject(UserQuoteManager.shared)
             }
         }
     }

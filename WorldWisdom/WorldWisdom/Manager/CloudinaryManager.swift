@@ -73,7 +73,7 @@ class CloudinaryManager: ObservableObject {
     
     
     // Bild für einen Autor abrufen (gibt eine Liste der URLs zurück)
-    // modelContext: ModelContext muss von außen übergeben werden
+    // modelContext: wird von außen übergeben, um das erste Bild lokal in SwiftData zu speichern
     func fetchImagesForAuthor(authorId: String, modelContext: ModelContext) async throws -> [String] {
         let authorRef = db.collection("authors").document(authorId)
         let document = try await authorRef.getDocument()
@@ -85,7 +85,8 @@ class CloudinaryManager: ObservableObject {
 
         if let imageUrls = document.get("authorImageUrls") as? [String], !imageUrls.isEmpty {
             // Save first image to SwiftData
-            if let firstUrlString = imageUrls.first, let url = URL(string: firstUrlString), let data = try? Data(contentsOf: url) {
+            if let firstUrlString = imageUrls.first, let url = URL(string: firstUrlString) {
+                let (data, _) = try await URLSession.shared.data(from: url)
                 saveFirstImageToSwiftData(authorId: authorId, imageData: data, modelContext: modelContext)
             }
             return imageUrls
@@ -116,13 +117,13 @@ class CloudinaryManager: ObservableObject {
         let snapshot = try await db.collection("authors").getDocuments()
         return snapshot.documents.compactMap { $0.documentID }
     }
-}
-
-// MARK: - SwiftData helper
-private func saveFirstImageToSwiftData(authorId: String, imageData: Data, modelContext: ModelContext) {
-    let descriptor = FetchDescriptor<QuoteEntity>(predicate: #Predicate { $0.author == authorId })
-    if let quoteEntity = try? modelContext.fetch(descriptor).first {
-        quoteEntity.authorImageData = imageData
-        try? modelContext.save()
+    
+    // MARK: - SwiftData helper
+    private func saveFirstImageToSwiftData(authorId: String, imageData: Data, modelContext: ModelContext) {
+        let descriptor = FetchDescriptor<QuoteEntity>(predicate: #Predicate { $0.author == authorId })
+        if let quoteEntity = try? modelContext.fetch(descriptor).first {
+            quoteEntity.authorImageData = imageData
+            try? modelContext.save()
+        }
     }
 }

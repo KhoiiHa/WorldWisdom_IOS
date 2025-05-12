@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Zeigt die gespeicherten Favoriten des Nutzers an, inkl. Kategoriefilter, Swipe-to-Delete und Gesamtlöschung.
+
 struct FavoriteView: View {
     @EnvironmentObject var favoriteManager: FavoriteManager
     @State private var showErrorMessage: Bool = false
@@ -29,6 +31,7 @@ struct FavoriteView: View {
         }
     }
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             VStack {
@@ -62,12 +65,6 @@ struct FavoriteView: View {
                 }
                 .navigationTitle("Meine Favoriten")
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        NavigationLink(destination: AddQuoteView(quoteToEdit: nil)) {
-                            Image(systemName: "plus")
-                                .foregroundColor(.blue)
-                        }
-                    }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(role: .destructive) {
                             Task {

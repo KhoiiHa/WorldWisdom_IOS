@@ -9,16 +9,22 @@ import SwiftUI
 import SwiftData
 import SDWebImageSwiftUI
 
+/// Galerie-Ansicht zur Anzeige aller Autoren, deren Zitate lokal gespeichert sind.
+/// Unterstützt Suche, Favoriten-Erkennung (basierend auf gespeicherten Zitaten) und Navigation zur Detailansicht.
+
+// MARK: - GalerieScreen
 struct GalerieScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query var quotes: [QuoteEntity]
     @State private var searchText: String = ""
 
+    // MARK: - Favoritenlogik
     func isFavoriteAuthor(_ author: String) -> Bool {
         let count = quotes.filter { $0.author == author && $0.isFavorite }.count
         return count >= 3
     }
 
+    // MARK: - Autorenfilter & -Liste
     var uniqueAuthors: [(author: String, imageUrl: String?)] {
         var seen = Set<String>()
         let result: [(author: String, imageUrl: String?)] = quotes
@@ -37,6 +43,7 @@ struct GalerieScreen: View {
     }
 
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             VStack(spacing: 15) {
@@ -81,27 +88,6 @@ struct GalerieScreen: View {
                     .padding()
                 }
             }
-//            .task {
-//                if quotes.isEmpty {
-//                    let context = modelContext
-//
-//                    let test = QuoteEntity(
-//                        author: "Test Autor",
-//                        quoteText: "Dies ist ein Testzitat.",
-//                        category: "Wissenschaft",
-//                        tags: ["Wissen", "Inspiration"],
-//                        isFavorite: true,
-//                        quoteDescription: "Ein Beispiel für einen lokalen Eintrag.",
-//                        source: "https://example.com",
-//                        authorImageURLs: ["https://res.cloudinary.com/dpaehynl2/image/upload/v1739878248/Albert_Einstein_1_fxwmgq.jpg"],
-//                        authorImageData: nil,
-//                        createdAt: Date()
-//                    )
-//
-//                    context.insert(test)
-//                    try? context.save()
-//                }
-//            }
         }
     }
 }

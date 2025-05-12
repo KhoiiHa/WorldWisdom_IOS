@@ -5,6 +5,10 @@
 //  Created by Vu Minh Khoi Ha on 06.02.25.
 //
 
+/// Fehler, die beim Speichern, Laden oder Verwalten von Favoriten auftreten können
+
+// MARK: - FavoriteError
+
 enum FavoriteError: String, Error, Identifiable {
     case userNotAuthenticated = "Benutzer ist nicht authentifiziert"
     case favoriteAlreadyExists = "Das Zitat ist bereits in den Favoriten"
@@ -14,9 +18,10 @@ enum FavoriteError: String, Error, Identifiable {
     case firebaseError = "Fehler bei Firebase"
     case decodingError = "Fehler beim Decodieren des Zitats"
     
+    /// Erforderlich für Identifiable-Konformität
     var id: String { rawValue }
     
-    // Fehlerbeschreibung für eine einfache Anzeige
+    /// Benutzerfreundliche Fehlermeldungen zur Anzeige im UI
     var errorMessage: String {
         switch self {
         case .userNotAuthenticated:

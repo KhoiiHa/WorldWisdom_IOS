@@ -7,16 +7,19 @@
 
 import Foundation
 
+/// Datenmodell für Zitate – enthält alle relevanten Informationen für Anzeige, Filterung und Favoritenlogik.
+
+// MARK: - Quote
 struct Quote: Identifiable, Codable, Equatable {
-    var id: String
-    var author: String
-    var quote: String
-    var category: String
-    var tags: [String]
-    var isFavorite: Bool
-    var description: String
-    var source: String // URL zur Quelle des Zitats (z.B. Wikipedia-Link)
-    var authorImageURLs: [String]?
-    var localImagePath: String? // Optionaler lokaler Pfad des heruntergeladenen Bildes (Offline)
-    var authorImageData: Data? = nil
+    var id: String                          // Eindeutige ID des Zitats
+    var author: String                      // Name des Autors
+    var quote: String                       // Der eigentliche Zitattext
+    var category: String                    // Kategorie des Zitats (z. B. Motivation, Erfolg)
+    var tags: [String]                      // Stichwörter für Filterung
+    var isFavorite: Bool                    // Ob das Zitat vom Nutzer favorisiert wurde
+    var description: String                 // Kontext oder Hintergrund zum Zitat
+    var source: String                      // URL zur Quelle des Zitats (z. B. Wikipedia-Link)
+    var authorImageURLs: [String]?          // Liste mit URLs zu Autorenbildern (optional)
+    var localImagePath: String?             // Lokaler Pfad für heruntergeladene Bilder (optional)
+    var authorImageData: Data? = nil        // Zwischengespeicherte Bilddaten für Offline-Anzeige
 }

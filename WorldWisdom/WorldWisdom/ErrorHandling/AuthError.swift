@@ -5,8 +5,12 @@
 //  Created by Vu Minh Khoi Ha on 16.01.25.
 //
 
+/// Fehlerbehandlung für Authentifizierungsprozesse (z. B. Login, Registrierung)
+
 import Foundation
 import FirebaseAuth
+
+// MARK: - AuthError
 
 // Enum für Authentifizierungsfehler
 enum AuthError: LocalizedError {
@@ -16,7 +20,9 @@ enum AuthError: LocalizedError {
     case unknownError
     case customError(String) // Möglichkeit, benutzerdefinierte Fehlernachrichten hinzuzufügen
 
-    // Fehlermeldung für jedes Error-Case
+    // MARK: - Error Descriptions
+
+    /// Benutzerfreundliche Fehlermeldungen für jede Fehlerart
     var errorDescription: String? {
         switch self {
         case .invalidEmail:
@@ -32,12 +38,16 @@ enum AuthError: LocalizedError {
         }
     }
 
-    // Fehlerbehandlung für benutzerdefinierte Fehlercodes oder andere Fehler
+    // MARK: - Custom Error Handling
+
+    /// Gibt eine eigene Fehlermeldung als String zurück (für benutzerdefinierte Fehler)
     static func handleCustomError(_ message: String) -> String {
         return AuthError.customError(message).errorDescription ?? "Unbekannter Fehler"
     }
     
-    // Statische Methode zur Fehlerbehandlung mit Firebase-Fehlercode
+    // MARK: - Firebase Error Handling
+
+    /// Wandelt Firebase-Fehlercodes in zugeordnete AuthError-Fälle um
     static func handleFirebaseError(_ error: NSError) -> AuthError {
         // Firebase-spezifische Fehlerbehandlung
         switch error.code {

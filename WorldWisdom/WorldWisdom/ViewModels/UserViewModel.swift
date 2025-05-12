@@ -10,24 +10,32 @@ import FirebaseAuth
 import Foundation
 import FirebaseFirestore
 
+/// ViewModel zur Verwaltung der Benutzeranmeldung, Authentifizierung und Lieblingszitate.
+/// Unterstützt Registrierung, Login, anonyme Anmeldung und Speichern von Benutzerdaten.
+
+// MARK: - UserViewModel
 @MainActor
 class UserViewModel: ObservableObject {
+    // MARK: - Veröffentlichte Eigenschaften
     @Published var isLoggedIn: Bool = false
     @AppStorage("isLoggedIn") private var storedLoginStatus: Bool = false
     @Published var errorMessage: String?
     @Published var user: FireUser?
-    @Published var favoriteQuotes: [FavoriteQuote] = []
+    @Published var favoriteQuotes: [Quote] = []
 
+    // MARK: - Initialisierung
     init() {
         Task {
             await checkCurrentUser()
         }
     }
 
+    // MARK: - Loginstatus speichern
     private func saveLoginStatus(isLoggedIn: Bool) {
         storedLoginStatus = isLoggedIn
     }
 
+    // MARK: - Loginstatus abfragen
     func isUserLoggedIn() -> Bool {
         return storedLoginStatus
     }
@@ -154,12 +162,12 @@ class UserViewModel: ObservableObject {
                 .whereField("userId", isEqualTo: userId)
                 .getDocuments()
 
-            let quotes = try snapshot.documents.map { document in
-                try document.data(as: FavoriteQuote.self)
+            let quotes = snapshot.documents.compactMap { document in
+                try? document.data(as: Quote.self)
             }
             self.favoriteQuotes = quotes
         } catch {
-            print("Fehler beim Abrufen der Zitate: \(error.localizedDescription)")
+            print("Fehler beim Abrufen der Lieblingszitate: \(error.localizedDescription)")
         }
     }
 
@@ -182,6 +190,7 @@ class UserViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Anonymer Start bei App-Launch
 
     func startWithoutAccount() async {
         if !isUserLoggedIn() {

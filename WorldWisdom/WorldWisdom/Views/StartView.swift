@@ -6,8 +6,13 @@
 //  Created by Vu Minh Khoi Ha on 10.05.25.
 //
 
+
 import SwiftUI
 
+/// Startbildschirm mit Option zur anonymen Nutzung, Registrierung oder Anmeldung.
+/// Führt bei Auswahl von „Los geht’s“ eine anonyme Firebase-Anmeldung aus.
+
+// MARK: - StartView
 struct StartView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var quoteViewModel: QuoteViewModel
@@ -15,6 +20,7 @@ struct StartView: View {
     @State private var navigateToRegister = false
     @State private var navigateToLogin = false
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {

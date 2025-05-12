@@ -11,8 +11,12 @@ import Firebase
 import SwiftData
 import Reachability
 
+/// ViewModel für die Verwaltung und Anzeige von Zitaten, inkl. Offline-Unterstützung, Fehlerbehandlung und Favoritenlogik
+
+// MARK: - QuoteViewModel
 @MainActor
 class QuoteViewModel: ObservableObject {
+    // MARK: - Veröffentlichte Eigenschaften
     @Published var quotes: [Quote] = [] // Alle Zitate
     @Published var randomQuote: Quote?
     @Published var favoriteQuotes: [Quote] = []
@@ -27,16 +31,19 @@ class QuoteViewModel: ObservableObject {
     private var swiftDataSyncManager: SwiftDataSyncManager
     private var reachability: Reachability? // Reachability-Instanz zum Überprüfen der Netzwerkkonnektivität
 
+    // MARK: - Initialisierung
     init() {
         self.swiftDataSyncManager = SwiftDataSyncManager()
         self.reachability = try? Reachability() // Initialisiere Reachability
     }
 
+    // MARK: - Netzwerkprüfung
     // Prüft, ob eine Internetverbindung vorhanden ist
     func isConnectedToInternet() -> Bool {
         return reachability?.connection != .unavailable
     }
 
+    // MARK: - Zitate laden
     // Lädt einmal ALLE Zitate und speichert sie in quotes
     func loadAllQuotes() async throws {
         do {
@@ -65,6 +72,7 @@ class QuoteViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Synchronisation mit SwiftData
     // Synchronisiert die Zitate zwischen Firebase und SwiftData
     private func syncQuotesWithSwiftData() async {
         do {
@@ -76,6 +84,7 @@ class QuoteViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Lokale Zitate abrufen
     // Lädt Zitate aus SwiftData (Offline-Modus)
     private func fetchQuotesFromSwiftData() async {
         do {
@@ -124,6 +133,7 @@ class QuoteViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Actor für sicheren Datenzugriff
     // Actor, der den Zugriff auf QuoteEntity kapselt
     actor QuoteEntityActor {
         private let quoteEntity: QuoteEntity
@@ -143,6 +153,7 @@ class QuoteViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Fehlerbehandlung
     // Gemeinsame Fehlerbehandlung
     private func handleError(_ error: Error) {
         // Fehlerbehandlung für QuoteError
@@ -171,6 +182,7 @@ class QuoteViewModel: ObservableObject {
         print("Vorschlag zur Fehlerbehebung: \(self.recoverySuggestion ?? "Kein Vorschlag")")
     }
     
+    // MARK: - Favoritenstatus aktualisieren
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
         do {
             // Schritt 1: Favoritenstatus lokal ändern
@@ -192,6 +204,7 @@ class QuoteViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Zufälliges Zitat auswählen
     func getRandomQuote() async {
         if quotes.isEmpty {
             if isConnectedToInternet() {

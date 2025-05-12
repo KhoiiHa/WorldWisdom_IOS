@@ -11,7 +11,11 @@ class QuoteService {
 
     static let shared = QuoteService()
 
-    private let baseURL = "http://localhost:3001" // Mockoon läuft lokal auf Port 3001
+    private let baseURL: String
+
+    private init(baseURL: String = "http://localhost:3001") {
+        self.baseURL = baseURL
+    }
 
     private func fetchData<T: Decodable>(from url: URL) async throws -> T {
         do {
@@ -47,10 +51,12 @@ class QuoteService {
         // Abrufen der Zitate von der API
         let quotes: [Quote] = try await fetchData(from: url)
 
+        #if DEBUG
         print("🧠 \(quotes.count) Zitate erfolgreich von Mockoon geladen.")
         print(quotes.map { $0.author })
+        #endif
 
-        // Setze "isFavorite" auf false für jedes Zitat
+        // Initialisiere alle Zitate mit isFavorite = false (Favoriten werden separat gespeichert)
         let updatedQuotes = quotes.map { quote -> Quote in
             var modifiedQuote = quote
             modifiedQuote.isFavorite = false

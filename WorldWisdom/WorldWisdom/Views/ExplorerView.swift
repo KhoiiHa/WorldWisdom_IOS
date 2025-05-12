@@ -5,6 +5,8 @@
 //  Created by Vu Minh Khoi Ha on 28.01.25.
 //
 
+
+/// Zeigt eine durchsuchbare, filterbare Liste inspirierender Zitate mit Kategorien, Autorenbildern und Favoritenstatus.
 import SwiftUI
 import SwiftData
 import SDWebImageSwiftUI
@@ -29,20 +31,12 @@ struct ExplorerView: View {
         }
     }
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
             VStack(spacing: 15) {
                 searchBar
                 tagFilterView
-                
-                Button("Neue Zitate laden") {
-                    Task {
-                        await loadQuotes()
-                    }
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.blue)
-                .padding(.horizontal)
 
                 ScrollView {
                     LazyVStack(spacing: 15) {
@@ -65,12 +59,25 @@ struct ExplorerView: View {
                     .padding()
                 }
                 .scrollIndicators(.hidden)
+                .refreshable {
+                    await loadQuotes()
+                }
 
                 if showErrorMessage {
                     errorMessageView
                 }
             }
             .navigationTitle("Inspiration entdecken")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        Task { await loadQuotes() }
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundColor(.white)
+                    }
+                }
+            }
             .font(.title3.bold())
             .foregroundColor(.primary)
             .background(
@@ -87,6 +94,7 @@ struct ExplorerView: View {
         }
     }
 
+    // MARK: - Zitatkarten-Navigation
     @ViewBuilder
     private func quoteNavigationCard(for quote: Quote, at index: Int) -> some View {
         NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
@@ -96,6 +104,7 @@ struct ExplorerView: View {
         }
     }
 
+    // MARK: - Suchleiste
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -116,6 +125,7 @@ struct ExplorerView: View {
         .padding(.horizontal)
     }
 
+    // MARK: - Tag-Filter
     private var tagFilterView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
@@ -158,6 +168,7 @@ struct ExplorerView: View {
         }
     }
 
+    // MARK: - Fehlermeldung
     private var errorMessageView: some View {
         Text("Fehler beim Laden der Zitate. Bitte versuchen Sie es später erneut.")
             .foregroundColor(.white)
@@ -167,6 +178,7 @@ struct ExplorerView: View {
             .padding(.horizontal)
     }
 
+    // MARK: - Ladefunktion für Zitate
     private func loadQuotes() async {
         isLoading = true
         do {
@@ -179,12 +191,14 @@ struct ExplorerView: View {
         isLoading = false
     }
 
+    // MARK: - Farblogik für Tags
     private func randomTagColor(_ tag: String) -> Color {
         let colors: [Color] = [.pink, .purple, .orange, .green, .blue, .cyan]
         return colors[abs(tag.hashValue) % colors.count]
     }
 }
 
+// MARK: - Einzelne Zitatkarte
 struct QuoteCardView: View {
     let quote: Quote
 

@@ -4,11 +4,17 @@
 //
 //  Created by Vu Minh Khoi Ha on 22.01.25.
 //
+
 import SwiftUI
 import SwiftData
 import SDWebImageSwiftUI
-import Foundation 
+import Foundation
 
+// Startbildschirm der App.
+// Zeigt eine Willkommensnachricht, Zitat des Tages, empfohlene Zitate, einen Fun Fact und einen Button zum Laden neuer Inhalte.
+// Bindet sowohl Firebase-Daten als auch lokale Daten über QuoteViewModel ein.
+
+// MARK: - HomeView
 struct HomeView: View {
     @ObservedObject var userViewModel: UserViewModel
     @StateObject private var quoteViewModel = QuoteViewModel()

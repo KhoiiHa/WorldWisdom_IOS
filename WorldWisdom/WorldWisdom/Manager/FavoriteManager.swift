@@ -11,6 +11,9 @@ import FirebaseAuth
 import SwiftData
 import OSLog
 
+/// Verwaltet das Speichern, Laden und Entfernen von Favoriten über Firebase & SwiftData
+
+// MARK: - FavoriteManager
 @MainActor
 class FavoriteManager: ObservableObject {
     static let shared = FavoriteManager()
@@ -22,33 +25,21 @@ class FavoriteManager: ObservableObject {
     @Published private(set) var favoriteQuotes: [Quote] = []
     @Published var errorMessage: String?
 
-    // Favoriten aus Firestore & SwiftData laden
+    // MARK: - Favoriten laden
+
+    /// Lädt Favoriten aus Firebase und SwiftData und führt sie zusammen.
     func loadFavoriteQuotes() async {
         do {
             // Firebase-Daten abrufen
             let firebaseQuotes = try await firebaseManager.fetchFavoriteQuotes()
 
-            // Mapping von FavoriteQuote zu Quote (inkl. neuer Felder)
-            let mappedFirebaseQuotes = firebaseQuotes.map { favoriteQuote in
-                Quote(
-                    id: favoriteQuote.id,
-                    author: favoriteQuote.author,
-                    quote: favoriteQuote.quote,
-                    category: favoriteQuote.category,
-                    tags: favoriteQuote.tags,
-                    isFavorite: true,
-                    description: favoriteQuote.description,
-                    source: favoriteQuote.source,
-                    authorImageURLs: favoriteQuote.authorImageURLs ?? [],
-                    authorImageData: nil
-                )
-            }
+            // Zitate aus Firebase sind bereits im Quote-Format
 
             // Lokale Daten von SwiftData abrufen
             let localQuotes = try await syncManager.fetchFavoriteQuotes()
 
             // Favoriten zusammenführen: Firebase-Daten haben Vorrang
-            favoriteQuotes = mergeFavorites(mappedFirebaseQuotes, with: localQuotes)
+            favoriteQuotes = mergeFavorites(firebaseQuotes, with: localQuotes)
 
             print("✅ Geladene Favoriten (gesamt): \(favoriteQuotes.count)")
 
@@ -66,7 +57,10 @@ class FavoriteManager: ObservableObject {
         }
     }
 
-    // Zitat zu Favoriten hinzufügen (Firebase + SwiftData)
+    // MARK: - Favorit hinzufügen
+
+    /// Fügt ein Zitat als Favorit hinzu, sowohl in Firebase als auch in SwiftData.
+    /// - Parameter quote: Das hinzuzufügende Zitat.
     func addFavoriteQuote(_ quote: Quote) async throws {
         guard !favoriteQuotes.contains(where: { $0.id == quote.id }) else {
             logger.warning("Zitat ist bereits in den Favoriten.")
@@ -96,7 +90,10 @@ class FavoriteManager: ObservableObject {
         }
     }
 
-    // Favoriten-Zitat entfernen (Firebase + SwiftData)
+    // MARK: - Favorit entfernen
+
+    /// Entfernt ein Zitat aus den Favoriten in Firebase und SwiftData.
+    /// - Parameter quote: Das zu entfernende Zitat.
     func removeFavoriteQuote(_ quote: Quote) async throws {
         guard favoriteQuotes.contains(where: { $0.id == quote.id }) else {
             logger.warning("Zitat nicht in Favoriten gefunden.")
@@ -127,7 +124,12 @@ class FavoriteManager: ObservableObject {
         }
     }
     
-    // Favoritenstatus aktualisieren
+    // MARK: - Favoritenstatus aktualisieren
+
+    /// Aktualisiert den Favoritenstatus eines Zitats.
+    /// - Parameters:
+    ///   - quote: Das zu aktualisierende Zitat.
+    ///   - isFavorite: Neuer Favoritenstatus.
     func updateFavoriteStatus(for quote: Quote, isFavorite: Bool) async {
         do {
             if isFavorite {
@@ -142,7 +144,13 @@ class FavoriteManager: ObservableObject {
         }
     }
 
-    // Hilfsfunktion: Firebase- und SwiftData-Favoriten zusammenführen
+    // MARK: - Hilfsfunktionen
+
+    /// Führt Favoriten aus Firebase und SwiftData zusammen, wobei Firebase-Daten Vorrang haben.
+    /// - Parameters:
+    ///   - firebaseQuotes: Favoriten aus Firebase.
+    ///   - localQuotes: Favoriten aus SwiftData.
+    /// - Returns: Zusammengeführte Liste von Favoriten.
     private func mergeFavorites(_ firebaseQuotes: [Quote], with localQuotes: [Quote]) -> [Quote] {
         var merged = firebaseQuotes
 
@@ -154,34 +162,19 @@ class FavoriteManager: ObservableObject {
 
         return merged
     }
-
-    // Funktion zum Abrufen des vollständigen Zitats
-    func fetchCompleteQuote(for favoriteQuote: FavoriteQuote) async throws -> Quote? {
-        let db = Firestore.firestore()
-
-        // Abrufen des Zitats aus Firestore
-        let snapshot = try await db.collection("quotes").document(favoriteQuote.quoteId).getDocument()
-
-        // Prüfen, ob das Dokument existiert
-        guard let data = snapshot.data() else {
-            // Wenn keine Daten vorhanden sind, werfen wir einen Fehler
-            throw QuoteError.noQuotesFound
-        }
-
-        do {
-            // Direktes Decodieren der Daten in das Quote-Modell
-            let decodedQuote = try Firestore.Decoder().decode(Quote.self, from: data)
-            return decodedQuote
-        } catch {
-            // Wenn das Decodieren fehlschlägt, werfen wir einen Fehler
-            throw QuoteError.parsingError("Fehler beim Decodieren des Zitats.")
-        }
-    }
     
+    // MARK: - Filter nach Autor
+
+    /// Gibt alle Favoriten eines bestimmten Autors zurück.
+    /// - Parameter author: Der Name des Autors.
+    /// - Returns: Liste der Favoriten des Autors.
     func getFavoriteQuotesByAuthor(author: String) -> [Quote] {
         return favoriteQuotes.filter { $0.author == author }
     }
     
+    // MARK: - Alle Favoriten entfernen
+
+    /// Entfernt alle Favoriten aus Firebase und SwiftData und leert die lokale Liste.
     @MainActor
     func removeAllFavorites() async throws {
         try await firebaseManager.deleteAllFavoriteQuotes()

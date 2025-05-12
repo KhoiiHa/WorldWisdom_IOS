@@ -8,6 +8,9 @@
 import SwiftData
 import Foundation
 
+/// SwiftData-Entity für Zitate, inklusive Offline-Unterstützung und Konvertierung zu Firebase-Modell
+
+// MARK: - QuoteEntity
 @Model
 class QuoteEntity {
     @Attribute(.unique) var id: String
@@ -17,6 +20,7 @@ class QuoteEntity {
     var tagsJSON: String = "[]"
     var authorImageURLsJSON: String = "[]"
 
+    // MARK: - Dekodierte JSON-Eigenschaften (tags & authorImageURLs)
     var tags: [String] {
         get {
             (try? JSONDecoder().decode([String].self, from: Data(tagsJSON.utf8))) ?? []
@@ -42,6 +46,7 @@ class QuoteEntity {
     var source: String
     var authorImageData: Data?  // Offline-Bild (lokal gespeichert)
 
+    // MARK: - Initialisierung
     init(id: String, author: String, quoteText: String, category: String, tags: [String] = [], isFavorite: Bool, quoteDescription: String, source: String, authorImageURLs: [String] = [], authorImageData: Data?) {
         self.id = id
         self.author = author
@@ -57,6 +62,7 @@ class QuoteEntity {
         self.authorImageData = authorImageData
     }
 
+    // MARK: - Konvertierung zu Firebase-Modell
     // Konvertierung von SwiftData QuoteEntity zu Firebase Quote
     func toFirebaseModel() -> Quote {
         return Quote(
@@ -74,6 +80,7 @@ class QuoteEntity {
 }
 
 extension QuoteEntity {
+    // MARK: - Konvertierung von Firebase-Modell zu QuoteEntity
     static func fromFirebaseModel(quote: Quote) -> QuoteEntity {
         return QuoteEntity(
             id: quote.id,

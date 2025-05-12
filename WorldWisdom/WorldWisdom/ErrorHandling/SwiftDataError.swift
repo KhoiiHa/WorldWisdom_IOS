@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Fehler, die im Zusammenhang mit SwiftData-Vorgängen wie Speichern, Abrufen oder Synchronisieren auftreten können.
+
+// MARK: - SwiftDataError
+
 // Enum für Fehler im Zusammenhang mit SwiftData
 enum SwiftDataError: LocalizedError {
     case saveError
@@ -16,7 +20,9 @@ enum SwiftDataError: LocalizedError {
     case syncError
     case unknownError        
 
-    // Fehlermeldungen basierend auf dem Fehler-Typ
+    // MARK: - LocalizedError Conformance
+
+    /// Benutzerfreundliche Beschreibung für jeden Fehlerfall
     var errorDescription: String? {
         switch self {
         case .saveError:
@@ -34,7 +40,7 @@ enum SwiftDataError: LocalizedError {
         }
     }
 
-    // Vorschläge zur Fehlerbehebung
+    /// Vorschläge zur Behebung des jeweiligen Fehlers
     var recoverySuggestion: String? {
         switch self {
         case .saveError:

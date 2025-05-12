@@ -9,6 +9,10 @@ import Foundation
 import SwiftData
 import FirebaseFirestore
 
+/// Verwalten von SwiftData-Operationen inkl. Synchronisation mit Firestore.
+/// Bietet Methoden zum Hinzufügen, Aktualisieren, Löschen und Synchronisieren von Zitaten.
+
+// MARK: - SwiftDataSyncManager
 @MainActor
 class SwiftDataSyncManager {
 
@@ -26,6 +30,7 @@ class SwiftDataSyncManager {
         }
     }
 
+    // MARK: - QuoteEntityActor
     // Actor, der den Zugriff auf QuoteEntity kapselt
     actor QuoteEntityActor {
         private let quoteEntity: QuoteEntity
@@ -45,6 +50,7 @@ class SwiftDataSyncManager {
         }
     }
 
+    // MARK: - Zitat hinzufügen oder aktualisieren
     // Fügt ein Zitat hinzu oder aktualisiert es in Firestore & SwiftData
     func addOrUpdateQuote(_ quoteEntity: QuoteEntity) {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
@@ -75,6 +81,7 @@ class SwiftDataSyncManager {
         }
     }
 
+    // MARK: - Neues Zitat lokal speichern
     // Fügt ein neues Zitat in SwiftData hinzu (ohne Firestore)
     func addQuote(_ quote: Quote) async throws {
         let newQuote = QuoteEntity(
@@ -97,6 +104,7 @@ class SwiftDataSyncManager {
         }
     }
 
+    // MARK: - Zitate abrufen
     // Asynchrone Methode zum Abrufen der Zitate
     func fetchQuotesAsync(request: FetchDescriptor<QuoteEntity>) async throws -> [QuoteEntity] {
         return try await withCheckedThrowingContinuation { continuation in
@@ -109,45 +117,47 @@ class SwiftDataSyncManager {
         }
     }
 
-// Lädt alle Favoriten aus SwiftData
-func fetchFavoriteQuotes() async throws -> [Quote] {
-    let fetchRequest = FetchDescriptor<QuoteEntity>()
+    // MARK: - Favoriten abrufen
+    // Lädt alle Favoriten aus SwiftData
+    func fetchFavoriteQuotes() async throws -> [Quote] {
+        let fetchRequest = FetchDescriptor<QuoteEntity>()
 
-    do {
-        let quoteEntities = try await fetchQuotesAsync(request: fetchRequest)
+        do {
+            let quoteEntities = try await fetchQuotesAsync(request: fetchRequest)
 
-        return try await withThrowingTaskGroup(of: Quote.self) { group in
-            for quoteEntity in quoteEntities.filter({ $0.isFavorite }) {
-                // Verwende den Actor für sicheren Zugriff
-                let actor = QuoteEntityActor(quoteEntity: quoteEntity)
-                group.addTask {
-                    // Zugriff auf die Felder mit await
-                    let tags = await actor.getTags()
-                    let authorImageURL = await actor.getAuthorImageURL()
-                    return Quote(
-                        id: quoteEntity.id,
-                        author: quoteEntity.author,
-                        quote: quoteEntity.quoteText,
-                        category: quoteEntity.category,
-                        tags: tags,
-                        isFavorite: quoteEntity.isFavorite,
-                        description: quoteEntity.quoteDescription,
-                        source: quoteEntity.source,
-                        authorImageURLs: [authorImageURL]
-                    )
+            return try await withThrowingTaskGroup(of: Quote.self) { group in
+                for quoteEntity in quoteEntities.filter({ $0.isFavorite }) {
+                    // Verwende den Actor für sicheren Zugriff
+                    let actor = QuoteEntityActor(quoteEntity: quoteEntity)
+                    group.addTask {
+                        // Zugriff auf die Felder mit await
+                        let tags = await actor.getTags()
+                        let authorImageURL = await actor.getAuthorImageURL()
+                        return Quote(
+                            id: quoteEntity.id,
+                            author: quoteEntity.author,
+                            quote: quoteEntity.quoteText,
+                            category: quoteEntity.category,
+                            tags: tags,
+                            isFavorite: quoteEntity.isFavorite,
+                            description: quoteEntity.quoteDescription,
+                            source: quoteEntity.source,
+                            authorImageURLs: [authorImageURL]
+                        )
+                    }
                 }
+                var localQuotes: [Quote] = []
+                for try await quote in group {
+                    localQuotes.append(quote)
+                }
+                return localQuotes
             }
-            var localQuotes: [Quote] = []
-            for try await quote in group {
-                localQuotes.append(quote)
-            }
-            return localQuotes
+        } catch {
+            throw SwiftDataError.fetchError
         }
-    } catch {
-        throw SwiftDataError.fetchError
     }
-}
 
+    // MARK: - Zitat löschen
     // Löscht ein Zitat aus SwiftData & Firestore
     func deleteQuote(_ quote: Quote) async throws {
         let firestore = Firestore.firestore()
@@ -170,6 +180,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
         }
     }
 
+    // MARK: - Favorit entfernen
     // Löscht ein Zitat aus den Favoriten in SwiftData
     func removeFavoriteQuote(_ quote: Quote) async throws {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
@@ -186,6 +197,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
         }
     }
 
+    // MARK: - Firestore-Synchronisation
     // Synchronisiert die Zitate aus Firestore mit SwiftData
     func syncQuotesFromFirestore() async {
         do {
@@ -238,12 +250,14 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
         }
     }
 
+    // MARK: - Bilddaten laden
     // Hilfsfunktion: Lade Bilddaten asynchron herunter
     private func downloadImageData(from url: URL) async throws -> Data {
         let (data, _) = try await URLSession.shared.data(from: url)
         return data
     }
 
+    // MARK: - Zitate aus Firestore laden
     // Hole alle Zitate aus Firestore
     private func fetchQuotesFromFirestore() async throws -> [QuoteEntity] {
         let firestore = Firestore.firestore()
@@ -300,6 +314,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
         }
     }
     
+    // MARK: - Favoritenstatus aktualisieren
     func updateFavoriteStatus(for quote: Quote, to isFavorite: Bool) async throws {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
         let quotes = try context.fetch(fetchRequest)
@@ -318,6 +333,7 @@ func fetchFavoriteQuotes() async throws -> [Quote] {
         print("✅ Favoritenstatus für Zitat \(quote.id) erfolgreich aktualisiert.")
     }
 
+    // MARK: - Alle Favoriten entfernen
     // Löscht alle Favoriten-Zitate aus SwiftData
     func removeAllFavoriteQuotes() async throws {
         let fetchRequest = FetchDescriptor<QuoteEntity>()
