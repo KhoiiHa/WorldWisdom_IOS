@@ -21,6 +21,7 @@ struct WorldWisdomApp: App {
     
     @StateObject private var quoteViewModel = QuoteViewModel()
     let container: ModelContainer
+    @AppStorage("didSeeInfo") private var didSeeInfo = false
 
     // MARK: - Initialisierung von Firebase & SwiftData
     init() {
@@ -38,29 +39,41 @@ struct WorldWisdomApp: App {
     // MARK: - Szenenaufbau (Loginprüfung & View-Weiche)
     var body: some Scene {
         WindowGroup {
-            // Überprüfe, ob der User eingeloggt ist und zeige das entsprechende View
-            if userViewModel.isLoggedIn {
+            if !didSeeInfo {
                 NavigationStack {
-                    MainTabView()
-                }
-                .environmentObject(userViewModel)
-                .environmentObject(quoteViewModel)
-                .environmentObject(firebaseManager)
-                .environmentObject(favoriteManager)
-                .modelContainer(container)
-                .onAppear {
-                    // Synchronisiere Daten nur nach erfolgreicher Anmeldung
-                    Task {
-                        await syncData()
-                    }
+                    InfoView()
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Weiter") {
+                                    didSeeInfo = true
+                                }
+                            }
+                        }
                 }
             } else {
-                StartView()
+                if userViewModel.isLoggedIn {
+                    NavigationStack {
+                        MainTabView()
+                    }
                     .environmentObject(userViewModel)
                     .environmentObject(quoteViewModel)
                     .environmentObject(firebaseManager)
                     .environmentObject(favoriteManager)
                     .modelContainer(container)
+                    .onAppear {
+                        // Synchronisiere Daten nur nach erfolgreicher Anmeldung
+                        Task {
+                            await syncData()
+                        }
+                    }
+                } else {
+                    StartView()
+                        .environmentObject(userViewModel)
+                        .environmentObject(quoteViewModel)
+                        .environmentObject(firebaseManager)
+                        .environmentObject(favoriteManager)
+                        .modelContainer(container)
+                }
             }
         }
     }

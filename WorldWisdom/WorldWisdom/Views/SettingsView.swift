@@ -53,7 +53,7 @@ struct SettingsView: View {
                         }
                     }
                     
-                    NavigationLink(destination: Text("Über die App")) {
+                    NavigationLink(destination: InfoView()) {
                         HStack {
                             Image(systemName: "info.circle")
                                 .foregroundColor(.green)
