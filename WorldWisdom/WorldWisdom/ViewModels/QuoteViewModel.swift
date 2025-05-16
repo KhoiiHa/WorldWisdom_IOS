@@ -67,8 +67,25 @@ class QuoteViewModel: ObservableObject {
                 await fetchQuotesFromSwiftData()
             }
         } catch {
-            self.handleError(error)
-            throw error
+            print("⚠️ Fehler beim Laden über API – Fallback wird geladen.")
+            let fallbackQuotes = loadQuotesFromFallback()
+            self.quotes = fallbackQuotes
+        }
+    }
+
+    private func loadQuotesFromFallback() -> [Quote] {
+        guard let url = Bundle.main.url(forResource: "QuotesFallback", withExtension: "json") else {
+            print("❌ Fallback-Datei nicht gefunden.")
+            return []
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            return try decoder.decode([Quote].self, from: data)
+        } catch {
+            print("❌ Fehler beim Laden der Fallback-Quotes: \(error)")
+            return []
         }
     }
 

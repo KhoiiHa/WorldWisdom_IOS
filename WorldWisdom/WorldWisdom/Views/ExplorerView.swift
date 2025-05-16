@@ -5,11 +5,10 @@
 //  Created by Vu Minh Khoi Ha on 28.01.25.
 //
 
-
 /// Zeigt eine durchsuchbare, filterbare Liste inspirierender Zitate mit Kategorien, Autorenbildern und Favoritenstatus.
 import SwiftUI
-import SwiftData
 import SDWebImageSwiftUI
+
 
 struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
@@ -17,6 +16,7 @@ struct ExplorerView: View {
     @State private var selectedTag: String? = nil
     @State private var showErrorMessage: Bool = false
     @State private var isLoading: Bool = false
+    @State private var selectedQuote: Quote?
 
     private var allTags: [String] {
         let tags = quoteViewModel.quotes.flatMap { $0.tags }
@@ -31,7 +31,7 @@ struct ExplorerView: View {
         }
     }
 
-    // MARK: - View Body
+    // MARK: - View Body (Hauptansicht)
     var body: some View {
         NavigationStack {
             VStack(spacing: 15) {
@@ -42,11 +42,12 @@ struct ExplorerView: View {
                     LazyVStack(spacing: 15) {
                         if isLoading {
                             ProgressView()
+                                .frame(maxWidth: .infinity)
                                 .padding()
                         } else {
                             if filteredQuotes.isEmpty {
                                 Text("Keine passenden Zitate gefunden.")
-                                    .foregroundColor(.white.opacity(0.8))
+                                    .foregroundColor(.secondary)
                                     .padding()
                                     .multilineTextAlignment(.center)
                             } else {
@@ -79,53 +80,54 @@ struct ExplorerView: View {
                 }
             }
             .font(.title3.bold())
-            .foregroundColor(.primary)
+            .foregroundColor(Color("primaryText"))
             .background(
-                LinearGradient(
-                    gradient: Gradient(colors: [Color("BackgroundStart"), Color("BackgroundEnd")]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                Color("background").ignoresSafeArea()
             )
             .task {
                 await loadQuotes()
             }
+            .navigationDestination(item: $selectedQuote) { quote in
+                AutorDetailView(authorName: quote.author)
+            }
         }
     }
 
-    // MARK: - Zitatkarten-Navigation
+    // MARK: - Zitatkarten-Navigation (Navigation zu Detailansicht)
     @ViewBuilder
     private func quoteNavigationCard(for quote: Quote, at index: Int) -> some View {
-        NavigationLink(destination: AutorDetailView(authorName: quote.author)) {
+        Button {
+            selectedQuote = quote
+        } label: {
             QuoteCardView(quote: quote)
                 .transition(.opacity.combined(with: .move(edge: .leading)))
                 .animation(.easeInOut(duration: 0.5).delay(Double(index) * 0.1), value: filteredQuotes)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 
-    // MARK: - Suchleiste
+    // MARK: - Suchleiste (Sucheingabe)
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
+                .foregroundColor(Color("secondaryText"))
             
             TextField("Suche nach Zitaten oder Autoren...", text: $searchQuery)
                 .font(.subheadline)
-                .foregroundColor(.primary)
+                .foregroundColor(Color("primaryText"))
                 .onChange(of: searchQuery) { _, _ in
                     selectedTag = nil
                     Task { await loadQuotes() }
                 }
         }
         .padding(12)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white.opacity(0.95)))
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .background(Color("cardBackground"))
+        .cornerRadius(20)
+        .shadow(color: Color("buttonColor").opacity(0.10), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
     }
 
-    // MARK: - Tag-Filter
+    // MARK: - Tag-Filter (Filterleiste)
     private var tagFilterView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
@@ -138,10 +140,12 @@ struct ExplorerView: View {
                         .font(.subheadline)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20).fill(selectedTag == nil ? Color.gray : Color.gray.opacity(0.5))
+                        .background(.ultraThinMaterial)
+                        .foregroundColor(Color("primaryText"))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(selectedTag == nil ? Color("mainBlue") : Color.clear, lineWidth: 2)
                         )
-                        .foregroundColor(.white)
                 }
                 ForEach(allTags, id: \.self) { tag in
                     Button(action: {
@@ -155,12 +159,16 @@ struct ExplorerView: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 20)
-                                    .fill(selectedTag == tag ? Color.blue : randomTagColor(tag).opacity(0.8))
+                                    .fill(selectedTag == tag ? Color("mainBlue") : randomTagColor(tag).opacity(0.8))
                             )
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("primaryText"))
                             .cornerRadius(20)
-                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
+                            .shadow(color: Color("buttonColor").opacity(0.10), radius: 2, x: 0, y: 2)
                             .scaleEffect(selectedTag == tag ? 1.1 : 1.0)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(selectedTag == tag ? Color("cardBackground") : Color.clear, lineWidth: 2)
+                            )
                     }
                 }
             }
@@ -168,17 +176,17 @@ struct ExplorerView: View {
         }
     }
 
-    // MARK: - Fehlermeldung
+    // MARK: - Fehlermeldung (Fehleranzeige)
     private var errorMessageView: some View {
         Text("Fehler beim Laden der Zitate. Bitte versuchen Sie es später erneut.")
-            .foregroundColor(.white)
+            .foregroundColor(.red)
             .padding()
-            .background(Color.red.opacity(0.8))
+            .background(.regularMaterial)
             .cornerRadius(8)
             .padding(.horizontal)
     }
 
-    // MARK: - Ladefunktion für Zitate
+    // MARK: - Ladefunktion für Zitate (Async Laden)
     private func loadQuotes() async {
         isLoading = true
         do {
@@ -191,23 +199,29 @@ struct ExplorerView: View {
         isLoading = false
     }
 
-    // MARK: - Farblogik für Tags
+    // MARK: - Farblogik für Tags (Systemfarben)
     private func randomTagColor(_ tag: String) -> Color {
         let colors: [Color] = [.pink, .purple, .orange, .green, .blue, .cyan]
         return colors[abs(tag.hashValue) % colors.count]
     }
 }
 
-// MARK: - Einzelne Zitatkarte
+// MARK: - Einzelne Zitatkarte (Kartenansicht)
 struct QuoteCardView: View {
     let quote: Quote
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "quote.opening")
+                    .font(.title2)
+                    .foregroundColor(Color("secondaryText"))
+                Spacer()
+            }
             Text("„\(quote.quote)“")
                 .font(.system(.body, design: .serif))
                 .italic()
-                .foregroundColor(.white)
+                .foregroundColor(Color("primaryText"))
                 .multilineTextAlignment(.leading)
                 .lineLimit(4)
                 .fixedSize(horizontal: false, vertical: true)
@@ -222,7 +236,8 @@ struct QuoteCardView: View {
 
                 Text("- \(quote.author)")
                     .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.white.opacity(0.85))
+                    .foregroundColor(Color("secondaryText"))
+                    .padding(.leading, 4)
             }
 
             if !quote.tags.isEmpty {
@@ -233,8 +248,8 @@ struct QuoteCardView: View {
                                 .font(.caption2)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 4)
-                                .background(Color.white.opacity(0.15))
-                                .foregroundColor(.white)
+                                .background(.ultraThinMaterial)
+                                .foregroundColor(Color("primaryText"))
                                 .cornerRadius(10)
                         }
                     }
@@ -244,14 +259,15 @@ struct QuoteCardView: View {
         .padding()
         .frame(maxWidth: .infinity)
         .background(
+            // Verlauf zwischen Asset-Farben für Kartenhintergrund
             LinearGradient(
-                gradient: Gradient(colors: [Color.purple.opacity(0.6), Color.indigo.opacity(0.8)]),
+                gradient: Gradient(colors: [Color("mainBlue").opacity(0.7), Color("buttonColor").opacity(0.9)]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
         .cornerRadius(18)
-        .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 2)
+        .shadow(color: Color("buttonColor").opacity(0.13), radius: 8, x: 0, y: 3)
     }
 }
 

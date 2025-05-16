@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// Diese View verwaltet die Benutzeranmeldung und Navigation zur Hauptansicht.
 struct AuthenticationView: View {
     @StateObject private var viewModel = UserViewModel()
 
@@ -20,7 +21,7 @@ struct AuthenticationView: View {
             VStack {
                 if let user = viewModel.user {
                     Text("Angemeldeter Benutzer: \(user.email ?? "Unbekannt")")
-                        .foregroundColor(.green)
+                        .foregroundColor(Color("mainBlue"))
                         .padding()
                     Text("UID: \(user.uid)")
                         .padding()
@@ -32,6 +33,7 @@ struct AuthenticationView: View {
                         .padding()
                 }
 
+                // MARK: - Anmeldeformular
                 Form {
                     Section(header: Text("Benutzeranmeldung")) {
                         TextField("E-Mail", text: $email)
@@ -41,10 +43,11 @@ struct AuthenticationView: View {
                         SecureField("Passwort", text: $password)
                     }
 
+                    // MARK: - Aktionen: Registrierung und Anmeldung
                     Section {
                         NavigationLink(destination: RegisterView(userViewModel: viewModel)) {
                             Text("Jetzt registrieren")
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color("mainBlue"))
                         }
                         .disabled(isLoading)
 
@@ -78,18 +81,21 @@ struct AuthenticationView: View {
                     }
                 }
 
+                // MARK: - Fehleranzeige
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(.red)
+                        .foregroundColor(Color("mainBlue"))
                         .padding()
                 }
 
+                // MARK: - Ladeanzeige
                 if isLoading {
                     ProgressView("Wird verarbeitet...")
                         .padding()
                 }
             }
             .padding()
+            .background(Color("background").ignoresSafeArea()) // Hintergrundfarbe zur Unterstützung des Dunkelmodus
             .onAppear {
                 Task {
                     await viewModel.checkCurrentUser()
@@ -112,6 +118,7 @@ struct AuthenticationView: View {
                     .environmentObject(FavoriteManager.shared)
             }
         }
+        .preferredColorScheme(.none) // Unterstützt automatisch den Hell- und Dunkelmodus
     }
 }
 

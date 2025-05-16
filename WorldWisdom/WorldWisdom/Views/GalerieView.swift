@@ -17,14 +17,17 @@ struct GalerieScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query var quotes: [QuoteEntity]
     @State private var searchText: String = ""
+    @State private var selectedAuthor: String? = nil
 
     // MARK: - Favoritenlogik
+    /// Prüft, ob ein Autor mindestens 3 Favoriten-Zitate hat
     func isFavoriteAuthor(_ author: String) -> Bool {
         let count = quotes.filter { $0.author == author && $0.isFavorite }.count
         return count >= 3
     }
 
     // MARK: - Autorenfilter & -Liste
+    /// Einzigartige Autoren mit optionalem Bild-URL, gefiltert nach Suchtext
     var uniqueAuthors: [(author: String, imageUrl: String?)] {
         var seen = Set<String>()
         let result: [(author: String, imageUrl: String?)] = quotes
@@ -47,47 +50,84 @@ struct GalerieScreen: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 15) {
+                // Suchfeld für Autoren
                 TextField("Autor suchen", text: $searchText)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(10)
+                    .background(
+                        LinearGradient(
+                            colors: [Color("mainBlue").opacity(0.10), Color("cardBackground")],
+                            startPoint: .topLeading, endPoint: .bottomTrailing)
+                    )
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color("mainBlue").opacity(0.15), lineWidth: 1)
+                    )
                     .padding(.horizontal)
                 ScrollView {
                     if uniqueAuthors.isEmpty {
-                        Text("Keine Autoren verfügbar.")
-                            .foregroundColor(.gray)
-                            .padding()
+                        // Anzeige, wenn keine Autoren gefunden wurden
+                        VStack {
+                            Image(systemName: "person.crop.circle.badge.exclamationmark")
+                                .font(.largeTitle)
+                                .foregroundColor(Color("secondaryText"))
+                            Text("Keine Autoren verfügbar.")
+                                .foregroundColor(Color("secondaryText"))
+                                .font(.body)
+                        }
+                        .padding()
                     }
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
-                        ForEach(uniqueAuthors, id: \.author) { item in
-                            NavigationLink(destination: AutorDetailView(authorName: item.author)) {
-                                VStack(spacing: 8) {
-                                    WebImage(url: URL(string: item.imageUrl ?? "https://via.placeholder.com/100"))
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 80, height: 80)
-                                        .clipShape(Circle())
-                                        .shadow(radius: 3)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 8) {
+                        ForEach(Array(uniqueAuthors.enumerated()), id: \.element.author) { index, item in
+                            VStack(spacing: 6) {
+                                Button(action: {
+                                    selectedAuthor = item.author
+                                }) {
+                                    VStack(spacing: 6) {
+                                        WebImage(url: URL(string: item.imageUrl ?? "https://via.placeholder.com/100"))
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 68, height: 68)
+                                            .clipShape(Circle())
+                                            .shadow(color: isFavoriteAuthor(item.author) ? Color("mainBlue").opacity(0.25) : Color("buttonColor").opacity(0.06), radius: isFavoriteAuthor(item.author) ? 8 : 4)
 
-                                    Text(item.author)
-                                        .font(.caption)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(.primary)
-                                        .multilineTextAlignment(.center)
-                                        .lineLimit(2)
-                                        .frame(width: 90)
+                                        Text(item.author)
+                                            .font(.footnote)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(Color("primaryText"))
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(2)
+                                            .frame(width: 78)
+                                    }
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 8)
+                                    .background(
+                                        LinearGradient(
+                                            colors: index % 2 == 0 ?
+                                                [Color("mainBlue").opacity(0.11), Color("cardBackground")] :
+                                                [Color("buttonColor").opacity(0.08), Color("cardBackground")],
+                                            startPoint: .top, endPoint: .bottom)
+                                    )
+                                    .overlay(
+                                        Circle()
+                                            .strokeBorder(isFavoriteAuthor(item.author) ? Color("mainBlue") : Color.clear, lineWidth: 2)
+                                            .frame(width: 74, height: 74)
+                                            .offset(y: -38)
+                                    )
+                                    .cornerRadius(14)
+                                    .shadow(color: Color("buttonColor").opacity(0.03), radius: 2, x: 0, y: 2)
                                 }
-                                .padding()
-                                .background(Color.gray.opacity(0.1))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(isFavoriteAuthor(item.author) ? Color.red : Color.clear, lineWidth: 2)
-                                )
-                                .cornerRadius(12)
                             }
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
             }
+            // Navigation zur Detailansicht des ausgewählten Autors
+            .navigationDestination(item: $selectedAuthor) { author in
+                AutorDetailView(authorName: author)
+            }
         }
+        .background(Color("background").ignoresSafeArea())
     }
 }

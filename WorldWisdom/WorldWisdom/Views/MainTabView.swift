@@ -17,36 +17,45 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            // MARK: - Home Tab
+            // MARK: - Startseite
+            // Startseite/Home Tab
             HomeView(userViewModel: userViewModel)
                 .tabItem {
-                    Label("Home", systemImage: "house.fill")
+                    Label("Home", systemImage: "house.circle.fill")
                 }
 
-            // MARK: - Explorer Tab
+            // MARK: - Entdecken
+            // Explorer Tab
             ExplorerView(quoteViewModel: quoteViewModel)
                 .tabItem {
-                    Label("Explorer", systemImage: "magnifyingglass")
+                    Label("Explorer", systemImage: "sparkle.magnifyingglass")
                 }
 
-            // MARK: - Favorites Tab
+            // MARK: - Favoriten
+            // Favoriten Tab
             FavoriteView()
                 .tabItem {
-                    Label("Favorites", systemImage: "heart.fill")
+                    Label("Favorites", systemImage: "heart.circle.fill")
                 }
 
-            // MARK: - Galerie Tab
+            // MARK: - Galerie
+            // Galerie Tab
             GalerieScreen()
                 .tabItem {
-                    Label("Galerie", systemImage: "photo.on.rectangle")
+                    Label("Galerie", systemImage: "photo.fill.on.rectangle.fill")
                 }
 
-            // MARK: - Settings Tab
+            // MARK: - Einstellungen
+            // Einstellungen/Settings Tab
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
+                    Label("Settings", systemImage: "gear.circle.fill")
                 }
         }
+        // MARK: - Hintergrundfarbe aus Asset-Katalog
+        .background(Color("background").ignoresSafeArea())
+        // MARK: - Akzentfarbe aus Asset-Katalog
+        .accentColor(Color("mainBlue"))
         // MARK: - Aktionen beim Erscheinen der View
         .onAppear {
             // Optionale Aktionen, wenn die TabView erscheint (z.B. Daten aktualisieren)

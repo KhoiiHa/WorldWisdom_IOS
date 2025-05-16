@@ -1,0 +1,1324 @@
+
+[
+  {
+    "id": "1",
+    "author": "Albert Einstein",
+    "quote": "Phantasie ist wichtiger als Wissen, denn Wissen ist begrenzt. Ohne Phantasie wären wir nicht in der Lage, Neues zu entdecken oder über das hinauszudenken, was wir bereits wissen. Sie ist der Motor für Innovation und Fortschritt, während Wissen lediglich das Fundament bildet, auf dem wir aufbauen.",
+    "category": "Wissen",
+    "tags": [
+      "Phantasie",
+      "Wissen",
+      "Innovation",
+      "Fortschritt"
+    ],
+    "isFavorite": false,
+    "description": "Albert Einstein war ein deutscher theoretischer Physiker, der durch seine Entdeckung der Relativitätstheorie weltweit berühmt wurde. Doch jenseits seiner wissenschaftlichen Errungenschaften war er ein großer Denker, der die Bedeutung von Kreativität und Phantasie in der Wissenschaft und im Leben allgemein betonte. Für ihn war Phantasie nicht nur ein Werkzeug der Kunst, sondern auch eine treibende Kraft in der Wissenschaft, die es uns ermöglicht, die Grenzen des Bekannten zu überschreiten.",
+    "source": "https://de.wikipedia.org/wiki/Albert_Einstein",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878248/Albert_Einstein_1_fxwmgq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878256/Albert_Einstein_2_lfo6kp.jpg"
+    ]
+  },
+  {
+    "id": "2",
+    "author": "Albert Einstein",
+    "quote": "Das Wichtigste im Leben ist, nicht aufzuhören zu fragen. Neugier hat ihren eigenen Grund für Existenz. Man kann das Universum nicht verstehen, ohne die Bedeutung der Fragen zu begreifen.",
+    "category": "Fragen",
+    "tags": [
+      "Fragen",
+      "Leben",
+      "Neugier"
+    ],
+    "isFavorite": false,
+    "description": "Albert Einstein war ein genialer Physiker, dessen Theorien die moderne Physik revolutionierten. Neben seiner wissenschaftlichen Arbeit war er auch ein Denker, der tief über die Bedeutung von Wissen, Fragen und Neugier nachdachte. Er glaubte, dass wahre Entdeckungen aus einem unstillbaren Durst nach Fragen und nicht aus vorgefertigten Antworten kommen.",
+    "source": "https://de.wikipedia.org/wiki/Albert_Einstein",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878248/Albert_Einstein_1_fxwmgq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878256/Albert_Einstein_2_lfo6kp.jpg"
+    ]
+  },
+  {
+    "id": "3",
+    "author": "Albert Einstein",
+    "quote": "Wer nie einen Fehler gemacht hat, hat nie etwas Neues ausprobiert. In der Wissenschaft ist der Mut zum Scheitern ebenso wichtig wie der Drang zur Erkenntnis. Fehler sind keine Katastrophen, sondern Lektionen für zukünftige Erfolge.",
+    "category": "Fehler",
+    "tags": [
+      "Fehler",
+      "Neues",
+      "Lernen",
+      "Wissenschaft"
+    ],
+    "isFavorite": false,
+    "description": "Albert Einstein hatte eine einzigartige Einstellung zum Scheitern. Für ihn war ein Fehler keine Niederlage, sondern ein wichtiger Bestandteil des Lernprozesses. Er ermutigte dazu, immer wieder neue Dinge auszuprobieren, ohne sich von Misserfolgen entmutigen zu lassen. Diese Philosophie trug zu seiner außergewöhnlichen Kreativität und seinem Erfolg bei.",
+    "source": "https://de.wikipedia.org/wiki/Albert_Einstein",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878248/Albert_Einstein_1_fxwmgq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878256/Albert_Einstein_2_lfo6kp.jpg"
+    ]
+  },
+  {
+    "id": "4",
+    "author": "Albert Einstein",
+    "quote": "Die beste Weise, die Zukunft vorauszusagen, besteht darin, sie zu gestalten. Wir haben die Macht, unsere Welt zu verändern, aber es erfordert kollektive Anstrengung und das Streben nach Fortschritt. Die Gestaltung der Zukunft beginnt mit den kleinen Entscheidungen, die wir heute treffen.",
+    "category": "Zukunft",
+    "tags": [
+      "Zukunft",
+      "Gestaltung",
+      "Handeln",
+      "Veränderung"
+    ],
+    "isFavorite": false,
+    "description": "Albert Einstein war nicht nur ein Theoretiker, sondern auch ein Visionär, der die Bedeutung des Handelns und der aktiven Gestaltung der Zukunft betonte. Seine Worte ermutigen uns, Verantwortung zu übernehmen und die Welt um uns herum aktiv zu beeinflussen, anstatt passiv zu warten, dass sich etwas verändert.",
+    "source": "https://de.wikipedia.org/wiki/Albert_Einstein",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878248/Albert_Einstein_1_fxwmgq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739878256/Albert_Einstein_2_lfo6kp.jpg"
+    ]
+  },
+  {
+    "id": "5",
+    "author": "Confucius",
+    "quote": "Der Edle verlangt nicht nach einer besonderen Behandlung, sondern strebt nach moralischer Perfektion und nutzt seine Fähigkeiten, um das Wohl der Gemeinschaft zu fördern. Er weiß, dass wahre Größe in der Bescheidenheit und im Dienst für andere zu finden ist.",
+    "category": "Philosophie",
+    "tags": [
+      "Moral",
+      "Gemeinschaft",
+      "Größe",
+      "Bescheidenheit"
+    ],
+    "isFavorite": false,
+    "description": "Konfuzius, einer der einflussreichsten Denker der chinesischen Geschichte, legte großen Wert auf Moral, Ethik und das Streben nach persönlicher und gesellschaftlicher Harmonie. Er betonte immer wieder, dass wahre Größe nicht in Ruhm oder Macht zu finden ist, sondern im ständigen Bemühen, sich selbst zu verbessern und der Gesellschaft zu dienen.",
+    "source": "https://de.wikipedia.org/wiki/Konfuzius",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951882/Konfuzius_standbild_2008_qa7t9u.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951903/Confucius_Tang_Dynasty_kcxu6u.jpg"
+    ]
+  },
+  {
+    "id": "6",
+    "author": "Confucius",
+    "quote": "Es ist besser, einen einzigen Schritt in die richtige Richtung zu tun, als sich hundert Schritte in die falsche Richtung zu bewegen. Jeder noch so kleine Fortschritt zählt, solange er in Übereinstimmung mit unseren moralischen Werten steht.",
+    "category": "Philosophie",
+    "tags": [
+      "Fortschritt",
+      "Moral",
+      "Weisheit",
+      "Veränderung"
+    ],
+    "isFavorite": false,
+    "description": "Konfuzius unterstrich die Bedeutung von Geduld und kontinuierlichem Fortschritt. Für ihn war es entscheidend, dass jeder Schritt im Leben von einem festen moralischen Fundament getragen wird, anstatt hastig und ohne Bedacht voranzuschreiten. Er ermutigte die Menschen, sich auf kleine, aber bedeutungsvolle Veränderungen zu konzentrieren.",
+    "source": "https://de.wikipedia.org/wiki/Konfuzius",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951882/Konfuzius_standbild_2008_qa7t9u.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951903/Confucius_Tang_Dynasty_kcxu6u.jpg"
+    ]
+  },
+  {
+    "id": "7",
+    "author": "Confucius",
+    "quote": "Der wahre Lehrer ist nicht derjenige, der dir alles erklärt, sondern derjenige, der dir hilft, deine eigene Weisheit zu entfalten. Lernen ist der Prozess, sich selbst zu entdecken, nicht einfach nur Fakten zu konsumieren.",
+    "category": "Bildung",
+    "tags": [
+      "Lehrer",
+      "Weisheit",
+      "Lernen",
+      "Selbstentdeckung"
+    ],
+    "isFavorite": false,
+    "description": "Konfuzius, der als Lehrer und Philosoph großen Einfluss auf die chinesische Erziehung hatte, betonte stets, dass der wahre Lernprozess in der Selbstentfaltung liegt. Ein guter Lehrer führt seine Schüler dazu, eigene Einsichten zu gewinnen, anstatt ihnen nur Wissen zu vermitteln. So wird Lernen zu einem aktiven, persönlichen Prozess der Entdeckung und Weiterentwicklung.",
+    "source": "https://de.wikipedia.org/wiki/Konfuzius",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951882/Konfuzius_standbild_2008_qa7t9u.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951903/Confucius_Tang_Dynasty_kcxu6u.jpg"
+    ]
+  },
+  {
+    "id": "8",
+    "author": "Confucius",
+    "quote": "Wer immer nur auf den Moment schaut, wird den langen Weg der Weisheit niemals verstehen. Geduld ist der Schlüssel, um die tieferen Wahrheiten des Lebens zu begreifen. Die wahre Erkenntnis entsteht nicht von heute auf morgen, sondern ist das Ergebnis jahrelangen Nachdenkens und Lernens.",
+    "category": "Philosophie",
+    "tags": [
+      "Geduld",
+      "Weisheit",
+      "Erkenntnis",
+      "Lernen"
+    ],
+    "isFavorite": false,
+    "description": "Konfuzius forderte seine Schüler zu einem Leben der Geduld und des ständigen Nachdenkens auf. Die wahre Weisheit wird nicht durch schnelle Antworten erlangt, sondern durch die Zeit, die wir investieren, um über unsere Erfahrungen und unser Wissen nachzudenken. Weisheit entsteht durch tiefes Verständnis und ist das Resultat eines fortwährenden Prozesses.",
+    "source": "https://de.wikipedia.org/wiki/Konfuzius",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951882/Konfuzius_standbild_2008_qa7t9u.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739951903/Confucius_Tang_Dynasty_kcxu6u.jpg"
+    ]
+  },
+  {
+    "id": "9",
+    "author": "Mahatma Gandhi",
+    "quote": "Die Welt hat genug für jedermanns Bedürfnisse, aber nicht für jedermanns Gier.",
+    "category": "Weltanschauung",
+    "tags": [
+      "Bedürfnisse",
+      "Gier",
+      "Nachhaltigkeit"
+    ],
+    "isFavorite": false,
+    "description": "Gandhi betonte oft die Wichtigkeit von Bescheidenheit und die Gefahren des Konsumismus. Er glaubte, dass die Ressourcen der Erde ausreichen, um die Grundbedürfnisse aller Menschen zu decken, aber dass Gier und Überkonsum die Welt in Ungleichgewicht bringen.",
+    "source": "https://de.wikipedia.org/wiki/Mahatma_Gandhi",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952060/Mahatma-Gandhi__studio__1931_bzauyi.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952068/Gandhi_costume_dyfpn6.jpg"
+    ]
+  },
+  {
+    "id": "10",
+    "author": "Mahatma Gandhi",
+    "quote": "Ein Auge für ein Auge macht die ganze Welt blind.",
+    "category": "Gewaltlosigkeit",
+    "tags": [
+      "Gewaltlosigkeit",
+      "Vergeltung",
+      "Vergebung"
+    ],
+    "isFavorite": false,
+    "description": "Gandhi lehrte, dass Vergeltung niemals der Weg zur Lösung von Konflikten ist. Stattdessen soll Vergebung und Verständnis im Vordergrund stehen, um dauerhaften Frieden zu erreichen.",
+    "source": "https://de.wikipedia.org/wiki/Mahatma_Gandhi",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952060/Mahatma-Gandhi__studio__1931_bzauyi.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952068/Gandhi_costume_dyfpn6.jpg"
+    ]
+  },
+  {
+    "id": "11",
+    "author": "Mahatma Gandhi",
+    "quote": "Die größte Kraft ist nicht die physische Stärke, sondern die Kraft der Liebe und des Mitgefühls, die in den Herzen der Menschen lebt.",
+    "category": "Liebe und Mitgefühl",
+    "tags": [
+      "Liebe",
+      "Mitgefühl",
+      "Stärke"
+    ],
+    "isFavorite": false,
+    "description": "Gandhi sah Liebe und Mitgefühl als die größten Kräfte des Lebens. Diese Kräfte haben die Macht, selbst die härtesten Herzen zu verändern und in den schwersten Zeiten Hoffnung zu bringen.",
+    "source": "https://de.wikipedia.org/wiki/Mahatma_Gandhi",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952060/Mahatma-Gandhi__studio__1931_bzauyi.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952068/Gandhi_costume_dyfpn6.jpg"
+    ]
+  },
+  {
+    "id": "12",
+    "author": "Mahatma Gandhi",
+    "quote": "Es gibt Wichtigeres im Leben, als beständig dessen Geschwindigkeit zu erhöhen.",
+    "category": "Leben und Prioritäten",
+    "tags": [
+      "Leben",
+      "Prioritäten",
+      "Eile"
+    ],
+    "isFavorite": false,
+    "description": "Gandhi mahnt dazu, das Leben nicht im Übermaß der Geschwindigkeit zu leben. Vielmehr sollte man sich Zeit nehmen, um den Moment zu schätzen und das Wesentliche im Leben zu erkennen. Die Konzentration auf das, was wirklich zählt, ist der wahre Weg zu einem erfüllten Leben.",
+    "source": "https://de.wikipedia.org/wiki/Mahatma_Gandhi",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952060/Mahatma-Gandhi__studio__1931_bzauyi.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952068/Gandhi_costume_dyfpn6.jpg"
+    ]
+  },
+  {
+    "id": "13",
+    "author": "William Shakespeare",
+    "quote": "Die Liebe sieht nicht mit den Augen, sondern mit dem Herzen. Deshalb wird der geflügelte Amor oft als blinder Gott dargestellt.",
+    "category": "Liebe",
+    "tags": [
+      "Liebe",
+      "Herz",
+      "Verhältnisse"
+    ],
+    "isFavorite": false,
+    "description": "In dieser berühmten Zeile aus 'Ein Sommernachtstraum' betont Shakespeare, dass wahre Liebe nicht oberflächlich ist, sondern tief aus dem Inneren kommt, jenseits von Äußerlichkeiten.",
+    "source": "https://de.wikipedia.org/wiki/William_Shakespeare",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952387/William_Shakespeare_1609_tdtkpc.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952380/First_Folio__cropped_br44mt.jpg"
+    ]
+  },
+  {
+    "id": "14",
+    "author": "William Shakespeare",
+    "quote": "Es gibt mehr Dinge im Himmel und auf Erden, Horatio, als eure Schulweisheit sich träumen lässt.",
+    "category": "Philosophie",
+    "tags": [
+      "Erkenntnis",
+      "Wissen",
+      "Wahrheit"
+    ],
+    "isFavorite": false,
+    "description": "Diese Zeile stammt aus 'Hamlet' und spricht die Unendlichkeit der menschlichen Erkenntnis und das Unfassbare der Welt an. Sie fordert uns auf, offen für das Unbekannte zu bleiben.",
+    "source": "https://de.wikipedia.org/wiki/William_Shakespeare",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952387/William_Shakespeare_1609_tdtkpc.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952380/First_Folio__cropped_br44mt.jpg"
+    ]
+  },
+  {
+    "id": "15",
+    "author": "William Shakespeare",
+    "quote": "Die Zeit ist eine Mütze, die uns immer zu klein wird, je mehr wir sie tragen.",
+    "category": "Zeit",
+    "tags": [
+      "Zeit",
+      "Vergänglichkeit",
+      "Leben"
+    ],
+    "isFavorite": false,
+    "description": "Shakespeare spricht hier von der flüchtigen Natur der Zeit und wie sie uns im Laufe des Lebens immer mehr davonläuft, während wir versuchen, sie festzuhalten.",
+    "source": "https://de.wikipedia.org/wiki/William_Shakespeare",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952387/William_Shakespeare_1609_tdtkpc.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952380/First_Folio__cropped_br44mt.jpg"
+    ]
+  },
+  {
+    "id": "16",
+    "author": "William Shakespeare",
+    "quote": "Der Mensch ist das Maß aller Dinge, und sein Verstand ist die Krone des Lebens.",
+    "category": "Menschlichkeit",
+    "tags": [
+      "Menschheit",
+      "Verstand",
+      "Würde"
+    ],
+    "isFavorite": false,
+    "description": "In dieser Erkenntnis sieht Shakespeare den menschlichen Verstand als das höchste Gut und als Maßstab für die Entfaltung der Menschlichkeit. Unsere Fähigkeit zu denken und zu verstehen wird als unvergleichliche Stärke dargestellt.",
+    "source": "https://de.wikipedia.org/wiki/William_Shakespeare",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952387/William_Shakespeare_1609_tdtkpc.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952380/First_Folio__cropped_br44mt.jpg"
+    ]
+  },
+  {
+    "id": "17",
+    "author": "Nelson Mandela",
+    "quote": "Die größte Ehre im Leben besteht nicht darin, nie zu fallen, sondern jedes Mal wieder aufzustehen, wenn wir fallen.",
+    "category": "Motivation",
+    "tags": [
+      "Hoffnung",
+      "Überwindung",
+      "Widerstand"
+    ],
+    "isFavorite": false,
+    "description": "Nelson Mandela unterstreicht hier die Bedeutung von Resilienz und dem Wiederaufstehen nach Rückschlägen. Es ist nicht die Abwesenheit von Misserfolgen, sondern die Fähigkeit, nach jedem Fall wieder aufzustehen, die wahre Stärke zeigt.",
+    "source": "https://de.wikipedia.org/wiki/Nelson_Mandela",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952635/Nelson_Mandela_1994__2_ph5duq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952643/Bill-Clinton-with-Nelson-Mandela_nhulxy.jpg"
+    ]
+  },
+  {
+    "id": "18",
+    "author": "Nelson Mandela",
+    "quote": "Freiheit ist nicht die Abwesenheit von Fesseln, sondern die Fähigkeit, in Frieden und Harmonie zu leben.",
+    "category": "Freiheit",
+    "tags": [
+      "Freiheit",
+      "Frieden",
+      "Harmonie"
+    ],
+    "isFavorite": false,
+    "description": "Mandela beschreibt die wahre Bedeutung von Freiheit als einen Zustand innerer und äußerer Harmonie. Freiheit ist mehr als das Fehlen von Unterdrückung – sie ist das Streben nach Frieden und Verständnis.",
+    "source": "https://de.wikipedia.org/wiki/Nelson_Mandela",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952635/Nelson_Mandela_1994__2_ph5duq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952643/Bill-Clinton-with-Nelson-Mandela_nhulxy.jpg"
+    ]
+  },
+  {
+    "id": "19",
+    "author": "Nelson Mandela",
+    "quote": "Es ist nicht das Fehlen von Gewalt, sondern die Präsenz von Liebe, die den Frieden ermöglicht.",
+    "category": "Frieden",
+    "tags": [
+      "Frieden",
+      "Liebe",
+      "Hoffnung"
+    ],
+    "isFavorite": false,
+    "description": "Mandela glaubt, dass Frieden nicht nur durch das Fehlen von Konflikten erreicht wird, sondern durch die aktive Präsenz von Liebe und Verständnis zwischen den Menschen.",
+    "source": "https://de.wikipedia.org/wiki/Nelson_Mandela",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952635/Nelson_Mandela_1994__2_ph5duq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952643/Bill-Clinton-with-Nelson-Mandela_nhulxy.jpg"
+    ]
+  },
+  {
+    "id": "20",
+    "author": "Nelson Mandela",
+    "quote": "Bildung ist die mächtigste Waffe, die du verwenden kannst, um die Welt zu verändern.",
+    "category": "Bildung",
+    "tags": [
+      "Bildung",
+      "Veränderung",
+      "Macht"
+    ],
+    "isFavorite": false,
+    "description": "Mandela hebt die Bedeutung von Bildung hervor. Sie ist der Schlüssel, um die Welt zu transformieren und die sozialen und politischen Strukturen zu verbessern.",
+    "source": "https://de.wikipedia.org/wiki/Nelson_Mandela",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952635/Nelson_Mandela_1994__2_ph5duq.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952643/Bill-Clinton-with-Nelson-Mandela_nhulxy.jpg"
+    ]
+  },
+  {
+    "id": "21",
+    "author": "Oscar Wilde",
+    "quote": "Ich kann allem widerstehen, außer der Versuchung.",
+    "category": "Verführung",
+    "tags": [
+      "Verführung",
+      "Selbstkontrolle",
+      "Lust"
+    ],
+    "isFavorite": false,
+    "description": "Wilde spielt hier auf die menschliche Neigung an, Versuchungen zu erliegen. Der Satz spricht die Schwäche des Menschen gegenüber seinen eigenen Begierden an, was in vielen seiner Werke ein wiederkehrendes Thema ist.",
+    "source": "https://de.wikipedia.org/wiki/Oscar_Wilde",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952737/Oscar_Wilde_Sarony_fgbudu.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952745/Oscar_Wilde__1854-1900__1889__May_23._Picture_by_W._and_D._Downey_slgdva.jpg"
+    ]
+  },
+  {
+    "id": "22",
+    "author": "Oscar Wilde",
+    "quote": "Die einzige Möglichkeit, mit einer Versuchung umzugehen, ist, ihr nachzugeben.",
+    "category": "Verführung",
+    "tags": [
+      "Verführung",
+      "Lust",
+      "Selbstbeherrschung"
+    ],
+    "isFavorite": false,
+    "description": "In diesem Zitat beleuchtet Wilde die menschliche Faszination für das Verbotene. Es spielt auf die Idee an, dass Versuchung nur dann wahrhaftig verstanden werden kann, wenn man ihr selbst nachgibt.",
+    "source": "https://de.wikipedia.org/wiki/Oscar_Wilde",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952737/Oscar_Wilde_Sarony_fgbudu.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952745/Oscar_Wilde__1854-1900__1889__May_23._Picture_by_W._and_D._Downey_slgdva.jpg"
+    ]
+  },
+  {
+    "id": "23",
+    "author": "Oscar Wilde",
+    "quote": "Die Wahrheit ist selten rein und niemals einfach.",
+    "category": "Wahrheit",
+    "tags": [
+      "Wahrheit",
+      "Komplexität",
+      "Gesellschaft"
+    ],
+    "isFavorite": false,
+    "description": "Dieses Zitat spiegelt Wildes kritische Haltung gegenüber der Gesellschaft wider. Er war der Meinung, dass Wahrheit oft von persönlichen und gesellschaftlichen Einflüssen verzerrt wird und nie in ihrer reinsten Form existiert.",
+    "source": "https://de.wikipedia.org/wiki/Oscar_Wilde",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952737/Oscar_Wilde_Sarony_fgbudu.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952745/Oscar_Wilde__1854-1900__1889__May_23._Picture_by_W._and_D._Downey_slgdva.jpg"
+    ]
+  },
+  {
+    "id": "24",
+    "author": "Oscar Wilde",
+    "quote": "Die einzige Art, eine Versuchung loszuwerden, ist, ihr nachzugeben.",
+    "category": "Verführung",
+    "tags": [
+      "Verführung",
+      "Lust",
+      "Selbstkontrolle"
+    ],
+    "isFavorite": false,
+    "description": "Wilde sagt hier, dass der Mensch nicht gegen Versuchungen ankämpfen kann, ohne sie zuerst vollständig zu erleben. Dieses Zitat zeigt seine Ironie und seinen Humor im Umgang mit menschlichen Schwächen.",
+    "source": "https://de.wikipedia.org/wiki/Oscar_Wilde",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952737/Oscar_Wilde_Sarony_fgbudu.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952745/Oscar_Wilde__1854-1900__1889__May_23._Picture_by_W._and_D._Downey_slgdva.jpg"
+    ]
+  },
+  {
+    "id": "25",
+    "author": "Sokrates",
+    "quote": "Das ungeprüfte Leben ist nicht lebenswert.",
+    "category": "Philosophie",
+    "tags": [
+      "Philosophie",
+      "Leben",
+      "Selbstreflexion"
+    ],
+    "isFavorite": false,
+    "description": "Sokrates betont hier die Bedeutung der Selbstreflexion. Für ihn war das Überdenken und Hinterfragen des eigenen Lebens der Schlüssel zu wahrer Weisheit und einem erfüllten Leben.",
+    "source": "https://de.wikipedia.org/wiki/Sokrates",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952448/Socrates_Louvre_zpfvi7.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952466/David_-_The_Death_of_Socrates_xozfol.jpg"
+    ]
+  },
+  {
+    "id": "26",
+    "author": "Sokrates",
+    "quote": "Erkenne dich selbst.",
+    "category": "Selbstkenntnis",
+    "tags": [
+      "Selbstkenntnis",
+      "Wissen",
+      "Selbstreflexion"
+    ],
+    "isFavorite": false,
+    "description": "Dieses Zitat ist eine der zentralen Weisheiten der antiken Philosophie. Sokrates fordert uns auf, uns selbst zu erkennen, unsere eigenen Stärken und Schwächen zu verstehen, um ein besseres Leben zu führen.",
+    "source": "https://de.wikipedia.org/wiki/Sokrates",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952448/Socrates_Louvre_zpfvi7.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952466/David_-_The_Death_of_Socrates_xozfol.jpg"
+    ]
+  },
+  {
+    "id": "27",
+    "author": "Sokrates",
+    "quote": "Wissen ist der Anfang des Handelns, aber der wahre Wert des Wissens zeigt sich erst in der Anwendung.",
+    "category": "Wissen",
+    "tags": [
+      "Wissen",
+      "Aktion",
+      "Lernen"
+    ],
+    "isFavorite": false,
+    "description": "Sokrates macht deutlich, dass Wissen allein nicht ausreichend ist. Es kommt darauf an, das Gelernte in die Praxis umzusetzen, um den wahren Wert des Wissens zu erkennen und zu nutzen.",
+    "source": "https://de.wikipedia.org/wiki/Sokrates",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952448/Socrates_Louvre_zpfvi7.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952466/David_-_The_Death_of_Socrates_xozfol.jpg"
+    ]
+  },
+  {
+    "id": "28",
+    "author": "Sokrates",
+    "quote": "Die beste Methode, sich selbst zu erkennen, ist, anderen zu helfen.",
+    "category": "Selbstentdeckung",
+    "tags": [
+      "Selbstentdeckung",
+      "Hilfe",
+      "Weisheit"
+    ],
+    "isFavorite": false,
+    "description": "In diesem Zitat erklärt Sokrates, dass durch das Helfen von anderen Menschen wir auch unsere eigene Natur besser verstehen können. Die Interaktion mit anderen fördert das Selbstbewusstsein und die persönliche Weiterentwicklung.",
+    "source": "https://de.wikipedia.org/wiki/Sokrates",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952448/Socrates_Louvre_zpfvi7.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952466/David_-_The_Death_of_Socrates_xozfol.jpg"
+    ]
+  },
+  {
+    "id": "29",
+    "author": "John F. Kennedy",
+    "quote": "Der beste Weg, die Zukunft vorherzusagen, ist, sie zu gestalten.",
+    "category": "Zukunft",
+    "tags": [
+      "Zukunft",
+      "Vision",
+      "Gestaltung"
+    ],
+    "isFavorite": false,
+    "description": "John F. Kennedy betont die Verantwortung des Einzelnen und der Gesellschaft, die Zukunft aktiv zu gestalten. Anstatt nur zu warten, dass die Zukunft eintritt, sollen wir sie selbst bestimmen und Einfluss auf sie nehmen.",
+    "source": "https://de.wikipedia.org/wiki/John_F._Kennedy",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952720/John_F._Kennedy__White_House_color_photo_portrait_d2htsx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952729/1942_JFK_uniform_portrait_k9uzsi.jpg"
+    ]
+  },
+  {
+    "id": "30",
+    "author": "John F. Kennedy",
+    "quote": "Es gibt nur einen Weg, mit den Herausforderungen des Lebens umzugehen: Man muss sie annehmen.",
+    "category": "Herausforderungen",
+    "tags": [
+      "Herausforderungen",
+      "Akzeptanz",
+      "Stärke"
+    ],
+    "isFavorite": false,
+    "description": "Kennedy spricht über die unvermeidlichen Herausforderungen im Leben und die Notwendigkeit, sie nicht zu verdrängen, sondern mutig zu akzeptieren. Nur durch diese Akzeptanz können wir Lösungen finden und wachsen.",
+    "source": "https://de.wikipedia.org/wiki/John_F._Kennedy",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952720/John_F._Kennedy__White_House_color_photo_portrait_d2htsx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952729/1942_JFK_uniform_portrait_k9uzsi.jpg"
+    ]
+  },
+  {
+    "id": "31",
+    "author": "John F. Kennedy",
+    "quote": "Die einzige Grenze unserer Verwirklichung von morgen wird unsere Zweifel und Zögern von heute sein.",
+    "category": "Zweifel",
+    "tags": [
+      "Zweifel",
+      "Verwirklichung",
+      "Selbstvertrauen"
+    ],
+    "isFavorite": false,
+    "description": "Kennedy weist auf die Rolle der Selbstzweifel hin, die uns davon abhalten können, unser volles Potenzial zu entfalten. Unsere Ängste und Zweifel sind die größten Hindernisse auf dem Weg zum Erfolg.",
+    "source": "https://de.wikipedia.org/wiki/John_F._Kennedy",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952720/John_F._Kennedy__White_House_color_photo_portrait_d2htsx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952729/1942_JFK_uniform_portrait_k9uzsi.jpg"
+    ]
+  },
+  {
+    "id": "32",
+    "author": "John F. Kennedy",
+    "quote": "Die Zeit für eine Entscheidung ist immer jetzt. Warte nicht, dass du bereit bist – handle einfach.",
+    "category": "Entscheidungen",
+    "tags": [
+      "Entscheidung",
+      "Handeln",
+      "Zeit"
+    ],
+    "isFavorite": false,
+    "description": "In diesem Zitat fordert Kennedy uns dazu auf, nicht auf den perfekten Moment zu warten, sondern sofort zu handeln. Die besten Chancen im Leben kommen oft unerwartet, und es ist entscheidend, im Moment zu entscheiden und zu handeln.",
+    "source": "https://de.wikipedia.org/wiki/John_F._Kennedy",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952720/John_F._Kennedy__White_House_color_photo_portrait_d2htsx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952729/1942_JFK_uniform_portrait_k9uzsi.jpg"
+    ]
+  },
+  {
+    "id": "33",
+    "author": "Leonardo da Vinci",
+    "quote": "Der Unterschied zwischen einem Meister und einem Anfänger liegt nicht in der Fähigkeit, sondern in der Ausdauer.",
+    "category": "Meisterschaft",
+    "tags": [
+      "Meisterschaft",
+      "Ausdauer",
+      "Fähigkeit"
+    ],
+    "isFavorite": false,
+    "description": "Leonardo da Vinci betont, dass es nicht nur auf das Talent ankommt, sondern vor allem auf die Ausdauer und kontinuierliche Anstrengung, die nötig sind, um ein wahrer Meister in einem Bereich zu werden.",
+    "source": "https://de.wikipedia.org/wiki/Leonardo_da_Vinci",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952282/Leonardo_da_Vinci_-_presumed_self-portrait_-_WGA12798_vkvz6y.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952293/Statue_of_Leonardo_da_Vinci__Uffizi_qlchsk.jpg"
+    ]
+  },
+  {
+    "id": "34",
+    "author": "Leonardo da Vinci",
+    "quote": "Einmalige Anstrengung wird nie ausreichen, um Größe zu erreichen.",
+    "category": "Kreativität",
+    "tags": [
+      "Kreativität",
+      "Erfindung",
+      "Großartigkeit"
+    ],
+    "isFavorite": false,
+    "description": "Leonardo da Vinci erinnert uns daran, dass echte Größe nicht durch einmalige Anstrengungen erreicht wird, sondern durch stetige Arbeit, Hingabe und die Bereitschaft, immer wieder neu anzufangen.",
+    "source": "https://de.wikipedia.org/wiki/Leonardo_da_Vinci",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952282/Leonardo_da_Vinci_-_presumed_self-portrait_-_WGA12798_vkvz6y.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952293/Statue_of_Leonardo_da_Vinci__Uffizi_qlchsk.jpg"
+    ]
+  },
+  {
+    "id": "35",
+    "author": "Leonardo da Vinci",
+    "quote": "Lernen ist der einzige Weg, um wahre Freiheit zu erlangen.",
+    "category": "Bildung",
+    "tags": [
+      "Bildung",
+      "Wissen",
+      "Freiheit"
+    ],
+    "isFavorite": false,
+    "description": "Für Leonardo da Vinci war Lernen der Schlüssel zur Freiheit, nicht nur im praktischen Leben, sondern auch in der geistigen und kreativen Entfaltung. Wissen gibt uns die Fähigkeit, die Welt zu gestalten.",
+    "source": "https://de.wikipedia.org/wiki/Leonardo_da_Vinci",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952282/Leonardo_da_Vinci_-_presumed_self-portrait_-_WGA12798_vkvz6y.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952293/Statue_of_Leonardo_da_Vinci__Uffizi_qlchsk.jpg"
+    ]
+  },
+  {
+    "id": "36",
+    "author": "Leonardo da Vinci",
+    "quote": "Es ist einfacher, eine Entschuldigung zu finden als eine Lösung.",
+    "category": "Problemlösung",
+    "tags": [
+      "Problemlösung",
+      "Verantwortung",
+      "Entschuldigungen"
+    ],
+    "isFavorite": false,
+    "description": "Leonardo da Vinci spricht über die Tendenz, Ausflüchte zu suchen, anstatt Lösungen zu finden. Er fordert uns heraus, Verantwortung zu übernehmen und Probleme direkt anzugehen, anstatt sie zu umgehen.",
+    "source": "https://de.wikipedia.org/wiki/Leonardo_da_Vinci",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952282/Leonardo_da_Vinci_-_presumed_self-portrait_-_WGA12798_vkvz6y.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952293/Statue_of_Leonardo_da_Vinci__Uffizi_qlchsk.jpg"
+    ]
+  },
+  {
+    "id": "37",
+    "author": "Maya Angelou",
+    "quote": "Du kannst viele Niederlagen erfahren, aber du darfst nicht besiegt werden.",
+    "category": "Motivation",
+    "tags": [
+      "Mut",
+      "Erfolg",
+      "Durchhaltevermögen"
+    ],
+    "isFavorite": false,
+    "description": "Maya Angelou erinnert uns daran, dass Niederlagen unvermeidlich sind, aber es ist entscheidend, nie aufzugeben und sich nicht von Rückschlägen besiegen zu lassen.",
+    "source": "https://de.wikipedia.org/wiki/Maya_Angelou",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952996/Angelou_at_Clinton_inauguration__cropped_2_xtmzb5.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953013/Maya_Angelou_2007_48-DPA-10-05-07_zze1s4.jpg"
+    ]
+  },
+  {
+    "id": "38",
+    "author": "Maya Angelou",
+    "quote": "Es gibt keine größere Qual, als eine unerzählte Geschichte in dir zu tragen.",
+    "category": "Kreativität",
+    "tags": [
+      "Kreativität",
+      "Selbstverwirklichung",
+      "Ausdruck"
+    ],
+    "isFavorite": false,
+    "description": "Maya Angelou spricht über die Bedeutung des kreativen Ausdrucks und das Gefühl, das entsteht, wenn man seine eigene Geschichte oder seine Ideen nicht teilt.",
+    "source": "https://de.wikipedia.org/wiki/Maya_Angelou",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952996/Angelou_at_Clinton_inauguration__cropped_2_xtmzb5.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953013/Maya_Angelou_2007_48-DPA-10-05-07_zze1s4.jpg"
+    ]
+  },
+  {
+    "id": "39",
+    "author": "Maya Angelou",
+    "quote": "Wenn du immer das tust, was du immer getan hast, wirst du immer das bekommen, was du immer bekommen hast.",
+    "category": "Veränderung",
+    "tags": [
+      "Veränderung",
+      "Wachstum",
+      "Erfolg"
+    ],
+    "isFavorite": false,
+    "description": "Diese Aussage von Maya Angelou fordert uns auf, neue Wege zu gehen und Veränderungen zuzulassen, wenn wir etwas anderes und besseres erreichen wollen.",
+    "source": "https://de.wikipedia.org/wiki/Maya_Angelou",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952996/Angelou_at_Clinton_inauguration__cropped_2_xtmzb5.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953013/Maya_Angelou_2007_48-DPA-10-05-07_zze1s4.jpg"
+    ]
+  },
+  {
+    "id": "40",
+    "author": "Maya Angelou",
+    "quote": "Du musst die Veränderung sein, die du in der Welt sehen möchtest.",
+    "category": "Inspiration",
+    "tags": [
+      "Inspiration",
+      "Veränderung",
+      "Führung"
+    ],
+    "isFavorite": false,
+    "description": "Angelou spricht hier über die Bedeutung des persönlichen Engagements und der Verantwortung. Wenn wir eine Veränderung in der Welt sehen wollen, müssen wir selbst der Anfang dieser Veränderung sein.",
+    "source": "https://de.wikipedia.org/wiki/Maya_Angelou",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952996/Angelou_at_Clinton_inauguration__cropped_2_xtmzb5.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953013/Maya_Angelou_2007_48-DPA-10-05-07_zze1s4.jpg"
+    ]
+  },
+  {
+    "id": "41",
+    "author": "Abraham Lincoln",
+    "quote": "Die beste Art, die Zukunft vorauszusagen, ist, sie zu gestalten.",
+    "category": "Motivation",
+    "tags": [
+      "Zukunft",
+      "Erfolg",
+      "Gestaltung"
+    ],
+    "isFavorite": false,
+    "description": "Abraham Lincoln fordert uns auf, aktiv zu handeln und die Kontrolle über unsere Zukunft zu übernehmen, anstatt darauf zu warten, dass sie uns gegeben wird.",
+    "source": "https://de.wikipedia.org/wiki/Abraham_Lincoln",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952984/Abraham_Lincoln_O-77_matte_collodion_print_cbixth.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952972/Abraham_Lincoln_1860_zyhw7b.jpg"
+    ]
+  },
+  {
+    "id": "42",
+    "author": "Abraham Lincoln",
+    "quote": "Ich gehe in die Zukunft, indem ich die Vergangenheit nicht hinter mir lasse.",
+    "category": "Philosophie",
+    "tags": [
+      "Vergangenheit",
+      "Zukunft",
+      "Lernen"
+    ],
+    "isFavorite": false,
+    "description": "Lincoln erinnert uns daran, dass die Vergangenheit nicht ignoriert werden sollte, da sie uns lehrt und uns hilft, die Zukunft besser zu gestalten.",
+    "source": "https://de.wikipedia.org/wiki/Abraham_Lincoln",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952984/Abraham_Lincoln_O-77_matte_collodion_print_cbixth.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952972/Abraham_Lincoln_1860_zyhw7b.jpg"
+    ]
+  },
+  {
+    "id": "43",
+    "author": "Abraham Lincoln",
+    "quote": "Die Regierung des Volkes, durch das Volk, für das Volk wird nicht von der Erde verschwinden.",
+    "category": "Politik",
+    "tags": [
+      "Demokratie",
+      "Politik",
+      "Freiheit"
+    ],
+    "isFavorite": false,
+    "description": "Lincoln spricht hier über das Grundprinzip der Demokratie und die Unvergänglichkeit der Regierungsform, die auf dem Volk basiert.",
+    "source": "https://de.wikipedia.org/wiki/Abraham_Lincoln",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952984/Abraham_Lincoln_O-77_matte_collodion_print_cbixth.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952972/Abraham_Lincoln_1860_zyhw7b.jpg"
+    ]
+  },
+  {
+    "id": "44",
+    "author": "Abraham Lincoln",
+    "quote": "Es ist besser, ruhig zu bleiben und für klug gehalten zu werden, als zu sprechen und alle Zweifel zu beseitigen.",
+    "category": "Weisheit",
+    "tags": [
+      "Weisheit",
+      "Stille",
+      "Reflexion"
+    ],
+    "isFavorite": false,
+    "description": "Lincoln betont die Bedeutung von Besonnenheit und der Kraft der Stille, um als weise wahrgenommen zu werden.",
+    "source": "https://de.wikipedia.org/wiki/Abraham_Lincoln",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952984/Abraham_Lincoln_O-77_matte_collodion_print_cbixth.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952972/Abraham_Lincoln_1860_zyhw7b.jpg"
+    ]
+  },
+  {
+    "id": "45",
+    "author": "Steve Jobs",
+    "quote": "Dein Werk wird einen großen Teil deines Lebens ausmachen, und die einzige Möglichkeit, zufrieden zu sein, ist, das zu tun, was du für großartige Arbeit hältst.",
+    "category": "Arbeit",
+    "tags": [
+      "Arbeit",
+      "Erfolg",
+      "Leidenschaft"
+    ],
+    "isFavorite": false,
+    "description": "Steve Jobs betont, wie wichtig es ist, in der Arbeit, die man tut, Erfüllung zu finden, um wahre Zufriedenheit im Leben zu erreichen.",
+    "source": "https://de.wikipedia.org/wiki/Steve_Jobs",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952939/Steve_Jobs_Headshot_2010-CROP2_trchkx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952930/Steve_Jobs_in_1972_Pegasus__retouched_ofg3ng.jpg"
+    ]
+  },
+  {
+    "id": "46",
+    "author": "Steve Jobs",
+    "quote": "Manche glauben, dass der Erfolg von einer Idee abhängt. Aber der wahre Erfolg ist die Umsetzung dieser Idee.",
+    "category": "Innovation",
+    "tags": [
+      "Innovation",
+      "Erfolg",
+      "Umsetzung"
+    ],
+    "isFavorite": false,
+    "description": "Steve Jobs unterstreicht, dass es nicht nur um die Idee selbst geht, sondern um die Fähigkeit, sie erfolgreich umzusetzen, um echten Erfolg zu erzielen.",
+    "source": "https://de.wikipedia.org/wiki/Steve_Jobs",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952939/Steve_Jobs_Headshot_2010-CROP2_trchkx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952930/Steve_Jobs_in_1972_Pegasus__retouched_ofg3ng.jpg"
+    ]
+  },
+  {
+    "id": "47",
+    "author": "Steve Jobs",
+    "quote": "Die Leute, die verrückt genug sind zu glauben, dass sie die Welt verändern können, sind die, die es tun.",
+    "category": "Motivation",
+    "tags": [
+      "Vision",
+      "Motivation",
+      "Veränderung"
+    ],
+    "isFavorite": false,
+    "description": "Steve Jobs spricht über den Mut und die Entschlossenheit, die nötig sind, um große Veränderungen in der Welt zu bewirken, und wie es oft die Unkonventionellen sind, die dies tun.",
+    "source": "https://de.wikipedia.org/wiki/Steve_Jobs",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952939/Steve_Jobs_Headshot_2010-CROP2_trchkx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952930/Steve_Jobs_in_1972_Pegasus__retouched_ofg3ng.jpg"
+    ]
+  },
+  {
+    "id": "48",
+    "author": "Steve Jobs",
+    "quote": "Es ist nicht der Arbeitstag, der dich ausmacht, sondern wie du deine Zeit nutzt.",
+    "category": "Produktivität",
+    "tags": [
+      "Produktivität",
+      "Zeitmanagement",
+      "Erfolg"
+    ],
+    "isFavorite": false,
+    "description": "Steve Jobs hebt hervor, dass es nicht nur auf die Länge des Arbeitstags ankommt, sondern wie effizient man seine Zeit nutzt, um zu wachsen und erfolgreich zu sein.",
+    "source": "https://de.wikipedia.org/wiki/Steve_Jobs",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952939/Steve_Jobs_Headshot_2010-CROP2_trchkx.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952930/Steve_Jobs_in_1972_Pegasus__retouched_ofg3ng.jpg"
+    ]
+  },
+  {
+    "id": "49",
+    "author": "Walt Disney",
+    "quote": "Alle unsere Träume können wahr werden, wenn wir den Mut haben, ihnen zu folgen.",
+    "category": "Träume",
+    "tags": [
+      "Träume",
+      "Erfolg",
+      "Mut"
+    ],
+    "isFavorite": false,
+    "description": "Walt Disney spricht über den Mut, der notwendig ist, um die eigenen Träume zu verfolgen, und wie dieser Mut der Schlüssel ist, um Träume wahr werden zu lassen.",
+    "source": "https://de.wikipedia.org/wiki/Walt_Disney",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952862/Walt_Disney_NYWTS_tiit6s.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952852/Walt_Disney_1935_j1lpty.jpg"
+    ]
+  },
+  {
+    "id": "50",
+    "author": "Walt Disney",
+    "quote": "Es ist nicht der der Weg, der schwierig ist, sondern der, den du gehst. Geh, wohin du willst, und der Weg wird sich zeigen.",
+    "category": "Motivation",
+    "tags": [
+      "Motivation",
+      "Entwicklung",
+      "Entschlossenheit"
+    ],
+    "isFavorite": false,
+    "description": "Disney vermittelt hier die Botschaft, dass der Weg, den wir wählen, nicht immer einfach ist, aber dass Entschlossenheit und der Glaube an sich selbst den richtigen Weg offenbaren.",
+    "source": "https://de.wikipedia.org/wiki/Walt_Disney",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952862/Walt_Disney_NYWTS_tiit6s.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952852/Walt_Disney_1935_j1lpty.jpg"
+    ]
+  },
+  {
+    "id": "51",
+    "author": "Walt Disney",
+    "quote": "Der Unterschied zwischen gewinnen und verlieren liegt darin, dass die Gewinner niemals aufhören.",
+    "category": "Erfolg",
+    "tags": [
+      "Erfolg",
+      "Durchhaltevermögen",
+      "Motivation"
+    ],
+    "isFavorite": false,
+    "description": "Disney beschreibt hier, wie wichtig Durchhaltevermögen und Ausdauer sind, um im Leben erfolgreich zu sein. Gewinner sind diejenigen, die niemals aufgeben.",
+    "source": "https://de.wikipedia.org/wiki/Walt_Disney",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952862/Walt_Disney_NYWTS_tiit6s.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952852/Walt_Disney_1935_j1lpty.jpg"
+    ]
+  },
+  {
+    "id": "52",
+    "author": "Walt Disney",
+    "quote": "Die beste Art, die Zukunft vorauszusagen, ist, sie zu erschaffen.",
+    "category": "Zukunft",
+    "tags": [
+      "Zukunft",
+      "Veränderung",
+      "Innovation"
+    ],
+    "isFavorite": false,
+    "description": "Disney betont, dass wir die Zukunft nicht einfach abwarten sollten. Stattdessen sollten wir sie aktiv gestalten, um sie in die Richtung zu lenken, die wir uns wünschen.",
+    "source": "https://de.wikipedia.org/wiki/Walt_Disney",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952862/Walt_Disney_NYWTS_tiit6s.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739952852/Walt_Disney_1935_j1lpty.jpg"
+    ]
+  },
+  {
+    "id": "53",
+    "author": "Martin Luther King Jr.",
+    "quote": "Die Dunkelheit kann die Dunkelheit nicht vertreiben, nur das Licht kann das. Hass kann den Hass nicht vertreiben, nur die Liebe kann das.",
+    "category": "Freiheit",
+    "tags": [
+      "Liebe",
+      "Hass",
+      "Freiheit"
+    ],
+    "isFavorite": false,
+    "description": "Martin Luther King Jr. erklärt, dass nur Liebe und Licht in der Lage sind, Hass und Dunkelheit zu vertreiben und so echte Freiheit und Frieden zu schaffen.",
+    "source": "https://de.wikipedia.org/wiki/Martin_Luther_King_Jr.",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953788/Martin_Luther_King_Jr_NYWTS_vbzgqz.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953796/Martin_Luther_King_-_March_on_Washington_d0topd.jpg"
+    ]
+  },
+  {
+    "id": "54",
+    "author": "Martin Luther King Jr.",
+    "quote": "Injustice anywhere is a threat to justice everywhere.",
+    "category": "Gerechtigkeit",
+    "tags": [
+      "Gerechtigkeit",
+      "Freiheit",
+      "Recht"
+    ],
+    "isFavorite": false,
+    "description": "Martin Luther King Jr. erinnert uns daran, dass Ungerechtigkeit, egal wo sie auftritt, eine Bedrohung für die Freiheit und Gerechtigkeit weltweit darstellt.",
+    "source": "https://de.wikipedia.org/wiki/Martin_Luther_King_Jr.",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953788/Martin_Luther_King_Jr_NYWTS_vbzgqz.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953796/Martin_Luther_King_-_March_on_Washington_d0topd.jpg"
+    ]
+  },
+  {
+    "id": "55",
+    "author": "Martin Luther King Jr.",
+    "quote": "Der wahre Test des Charakters ist nicht, wie du in Zeiten des Komforts und der Bequemlichkeit handelst, sondern wie du in Zeiten der Herausforderung und der Kontroversen handelst.",
+    "category": "Charakter",
+    "tags": [
+      "Charakter",
+      "Herausforderung",
+      "Mut"
+    ],
+    "isFavorite": false,
+    "description": "King spricht davon, dass wahre Größe und Charakter nicht in leichten Zeiten sichtbar sind, sondern in der Art und Weise, wie wir uns in schwierigen und kontroversen Momenten verhalten.",
+    "source": "https://de.wikipedia.org/wiki/Martin_Luther_King_Jr.",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953788/Martin_Luther_King_Jr_NYWTS_vbzgqz.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953796/Martin_Luther_King_-_March_on_Washington_d0topd.jpg"
+    ]
+  },
+  {
+    "id": "56",
+    "author": "Martin Luther King Jr.",
+    "quote": "Die Zeit ist immer reif, um das Richtige zu tun.",
+    "category": "Freiheit",
+    "tags": [
+      "Freiheit",
+      "Gerechtigkeit",
+      "Handeln"
+    ],
+    "isFavorite": false,
+    "description": "King ermutigt uns, dass es nie zu spät ist, das Richtige zu tun und für Gerechtigkeit sowie Freiheit zu kämpfen, wann immer die Gelegenheit dazu besteht.",
+    "source": "https://de.wikipedia.org/wiki/Martin_Luther_King_Jr.",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953788/Martin_Luther_King_Jr_NYWTS_vbzgqz.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953796/Martin_Luther_King_-_March_on_Washington_d0topd.jpg"
+    ]
+  },
+  {
+    "id": "57",
+    "author": "Marie Curie",
+    "quote": "Leben ist nicht genug. Wir müssen es mit Ziel, mit Leidenschaft und mit Mut füllen.",
+    "category": "Leben",
+    "tags": [
+      "Leben",
+      "Mut",
+      "Ziel",
+      "Leidenschaft"
+    ],
+    "isFavorite": false,
+    "description": "Marie Curie erinnert uns daran, dass es nicht ausreicht, nur zu existieren, sondern unser Leben mit Leidenschaft, Zielen und Mut zu füllen.",
+    "source": "https://de.wikipedia.org/wiki/Marie_Curie",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953807/Marie_Curie__Nobel-Chem_a24mjp.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953819/Warschau_Marie_Curie_Denkmal_tmym5f.jpg"
+    ]
+  },
+  {
+    "id": "58",
+    "author": "Marie Curie",
+    "quote": "Man darf niemals aufhören zu forschen, denn was die Wissenschaft heute als Wahrheit anerkennt, kann morgen schon überholt sein.",
+    "category": "Wissenschaft",
+    "tags": [
+      "Wissenschaft",
+      "Forschung",
+      "Fortschritt"
+    ],
+    "isFavorite": false,
+    "description": "Curie betont, dass Wissenschaft und Forschung ständig im Wandel sind und wir niemals aufhören sollten, nach neuen Erkenntnissen zu suchen.",
+    "source": "https://de.wikipedia.org/wiki/Marie_Curie",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953807/Marie_Curie__Nobel-Chem_a24mjp.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953819/Warschau_Marie_Curie_Denkmal_tmym5f.jpg"
+    ]
+  },
+  {
+    "id": "59",
+    "author": "Marie Curie",
+    "quote": "Es gibt keine Entdeckungen, die wirklich bedeutend sind, ohne das Risiko, alles zu verlieren.",
+    "category": "Wissenschaft",
+    "tags": [
+      "Risiko",
+      "Entdeckung",
+      "Wissenschaft"
+    ],
+    "isFavorite": false,
+    "description": "Marie Curie spricht von den Gefahren und dem Risiko, die mit großen Entdeckungen verbunden sind, und betont, dass wahre Fortschritte oft nur durch das Überwinden von Herausforderungen erreicht werden.",
+    "source": "https://de.wikipedia.org/wiki/Marie_Curie",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953807/Marie_Curie__Nobel-Chem_a24mjp.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953819/Warschau_Marie_Curie_Denkmal_tmym5f.jpg"
+    ]
+  },
+  {
+    "id": "59",
+    "author": "Rosa Parks",
+    "quote": "Ich war müde, die gleiche Erfahrung immer wieder zu machen, aber ich habe mich geweigert, von meiner Entscheidung abzuweichen.",
+    "category": "Gleichheit",
+    "tags": [
+      "Freiheit",
+      "Gleichheit",
+      "Widerstand"
+    ],
+    "isFavorite": false,
+    "description": "Rosa Parks' mutiger Widerstand gegen die Rassentrennung auf einem Bus führte zu einem entscheidenden Moment in der Bürgerrechtsbewegung.",
+    "source": "https://de.wikipedia.org/wiki/Rosa_Parks",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953903/Rosaparks_eqfrxs.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953915/RosaParks-BillClinton_rl6imo.jpg"
+    ]
+  },
+  {
+    "id": "60",
+    "author": "Rosa Parks",
+    "quote": "Die Menschen werden nicht vergessen, was du gesagt hast, sie werden nicht vergessen, was du getan hast, aber sie werden nie vergessen, wie du sie hast fühlen lassen.",
+    "category": "Freiheit",
+    "tags": [
+      "Empathie",
+      "Freiheit",
+      "Gleichheit"
+    ],
+    "isFavorite": false,
+    "description": "Rosa Parks erinnert uns daran, dass die Art und Weise, wie wir andere Menschen behandeln, langfristig einen bleibenden Eindruck hinterlässt.",
+    "source": "https://de.wikipedia.org/wiki/Rosa_Parks",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953903/Rosaparks_eqfrxs.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953915/RosaParks-BillClinton_rl6imo.jpg"
+    ]
+  },
+  {
+    "id": "61",
+    "author": "Rosa Parks",
+    "quote": "Ich wollte nicht, dass irgendjemand in der Gesellschaft das Gefühl hat, minderwertig zu sein. Niemand sollte unterdrückt oder diskriminiert werden.",
+    "category": "Gleichheit",
+    "tags": [
+      "Gleichheit",
+      "Freiheit",
+      "Menschenrechte"
+    ],
+    "isFavorite": false,
+    "description": "Rosa Parks kämpfte für die Rechte und die Würde aller Menschen und setzte sich unermüdlich gegen Diskriminierung ein.",
+    "source": "https://de.wikipedia.org/wiki/Rosa_Parks",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953903/Rosaparks_eqfrxs.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739953915/RosaParks-BillClinton_rl6imo.jpg"
+    ]
+  },
+  {
+    "id": "62",
+    "author": "Mother Teresa",
+    "quote": "Nicht alle von uns können große Dinge tun. Aber wir können kleine Dinge mit großer Liebe tun.",
+    "category": "Liebe",
+    "tags": [
+      "Liebe",
+      "Hoffnung",
+      "Mitgefühl"
+    ],
+    "isFavorite": false,
+    "description": "Mother Teresa ermutigte uns, dass wahre Großzügigkeit im täglichen Leben zu finden ist, indem wir mit Liebe handeln, auch bei den kleineren Dingen.",
+    "source": "https://de.wikipedia.org/wiki/Mutter_Teresa",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954002/MotherTeresa_094_narxe9.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954023/President_Ronald_Reagan_presents_Mother_Teresa_with_the_Medal_of_Freedom_at_a_White_House_Ceremony_in_the_Rose_Garden_oijpld.jpg"
+    ]
+  },
+  {
+    "id": "63",
+    "author": "Mother Teresa",
+    "quote": "Lass nicht zu, dass jemand je in deiner Nähe traurig ist, ohne dass er ein wenig Hoffnung und Liebe findet.",
+    "category": "Hoffnung",
+    "tags": [
+      "Hoffnung",
+      "Liebe",
+      "Mitgefühl"
+    ],
+    "isFavorite": false,
+    "description": "Mother Teresa betonte, wie wichtig es ist, anderen in schwierigen Zeiten Hoffnung und Liebe zu schenken.",
+    "source": "https://de.wikipedia.org/wiki/Mutter_Teresa",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954002/MotherTeresa_094_narxe9.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954023/President_Ronald_Reagan_presents_Mother_Teresa_with_the_Medal_of_Freedom_at_a_White_House_Ceremony_in_the_Rose_Garden_oijpld.jpg"
+    ]
+  },
+  {
+    "id": "64",
+    "author": "Mother Teresa",
+    "quote": "Die größte Armut ist die Einsamkeit und das Gefühl, nicht geliebt zu werden.",
+    "category": "Liebe",
+    "tags": [
+      "Liebe",
+      "Einsamkeit",
+      "Mitgefühl"
+    ],
+    "isFavorite": false,
+    "description": "Mother Teresa hob hervor, dass das Fehlen von Liebe und Zuwendung oft die schlimmste Form der Armut ist.",
+    "source": "https://de.wikipedia.org/wiki/Mutter_Teresa",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954002/MotherTeresa_094_narxe9.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954023/President_Ronald_Reagan_presents_Mother_Teresa_with_the_Medal_of_Freedom_at_a_White_House_Ceremony_in_the_Rose_Garden_oijpld.jpg"
+    ]
+  },
+  {
+    "id": "65",
+    "author": "Benjamin Franklin",
+    "quote": "Ein Investment in Wissen bringt immer noch die besten Zinsen.",
+    "category": "Wissen",
+    "tags": [
+      "Bildung",
+      "Erfolg",
+      "Wissen"
+    ],
+    "isFavorite": false,
+    "description": "Benjamin Franklin war ein Pionier in vielen Bereichen, und er betonte, dass Wissen eine der wertvollsten Investitionen ist, die man tätigen kann.",
+    "source": "https://de.wikipedia.org/wiki/Benjamin_Franklin",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954227/Benjamin_Franklin_1767_krab0z.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954078/Benjamin_Franklin_Robert_Feke_kpau1s.jpg"
+    ]
+  },
+  {
+    "id": "66",
+    "author": "Albert Einstein",
+    "quote": "Phantasie ist wichtiger als Wissen, denn Wissen ist begrenzt.",
+    "category": "Kreativität",
+    "tags": [
+      "Kreativität",
+      "Phantasie",
+      "Wissen"
+    ],
+    "isFavorite": false,
+    "description": "Albert Einstein hob die Bedeutung der Kreativität hervor, indem er sagte, dass unsere Vorstellungskraft uns zu größeren Entdeckungen führt als das reine Wissen.",
+    "source": "https://de.wikipedia.org/wiki/Albert_Einstein",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954197/Albert_Einstein_1947_33encl.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954209/Einstein_and_Scholar_A_22rwfh.jpg"
+    ]
+  },
+  {
+    "id": "67",
+    "author": "Albert Einstein",
+    "quote": "Das wahre Zeichen der Intelligenz ist nicht Wissen, sondern Vorstellungskraft.",
+    "category": "Intelligenz",
+    "tags": [
+      "Intelligenz",
+      "Wissen",
+      "Vorstellungskraft"
+    ],
+    "isFavorite": false,
+    "description": "Einstein glaubte, dass die Fähigkeit, sich Dinge vorzustellen, weit über das bloße Wissen hinausgeht und der wahre Schlüssel zur Intelligenz ist.",
+    "source": "https://de.wikipedia.org/wiki/Albert_Einstein",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954197/Albert_Einstein_1947_33encl.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954209/Einstein_and_Scholar_A_22rwfh.jpg"
+    ]
+  },
+  {
+    "id": "68",
+    "author": "Confucius",
+    "quote": "Es ist besser, einen Augenblick der Weisheit zu haben als hundert Jahre des Wissens.",
+    "category": "Weisheit",
+    "tags": [
+      "Weisheit",
+      "Wissen",
+      "Leben"
+    ],
+    "isFavorite": false,
+    "description": "Konfuzius lehrte, dass wahre Weisheit nicht in der bloßen Ansammlung von Wissen liegt, sondern im tiefen Verständnis und der Anwendung dieses Wissens.",
+    "source": "https://de.wikipedia.org/wiki/Confucius",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954070/Confucius_legendary_portrait.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954066/Confucius_Monument_China.jpg"
+    ]
+  },
+  {
+    "id": "69",
+    "author": "Mahatma Gandhi",
+    "quote": "Sei du selbst die Veränderung, die du dir wünschst für diese Welt.",
+    "category": "Veränderung",
+    "tags": [
+      "Veränderung",
+      "Frieden",
+      "Inspiration"
+    ],
+    "isFavorite": false,
+    "description": "Mahatma Gandhi war ein führender Politiker und Aktivist in Indien, der gewaltlosen Widerstand für soziale und politische Veränderungen verkörperte.",
+    "source": "https://de.wikipedia.org/wiki/Mahatma_Gandhi",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954367/Gandhi_vijm8k.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954374/Gandhi_Khadi_Kailas_Pant_v9xein.jpg"
+    ]
+  },
+  {
+    "id": "70",
+    "author": "Nelson Mandela",
+    "quote": "Es scheint immer unmöglich, bis es vollbracht ist.",
+    "category": "Erfolg",
+    "tags": [
+      "Erfolg",
+      "Ausdauer",
+      "Motivation"
+    ],
+    "isFavorite": false,
+    "description": "Nelson Mandela war ein südafrikanischer Anti-Apartheid-Aktivist und Politiker, der für seinen unerschütterlichen Glauben an Freiheit und Gerechtigkeit bekannt ist.",
+    "source": "https://de.wikipedia.org/wiki/Nelson_Mandela",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954447/Nelson_Mandela.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954454/Mandela_Speech_1990.jpg"
+    ]
+  },
+  {
+    "id": "71",
+    "author": "Winston Churchill",
+    "quote": "Erfolg ist nicht endgültig, Misserfolg ist nicht fatal: Es ist der Mut, weiterzumachen, der zählt.",
+    "category": "Motivation",
+    "tags": [
+      "Erfolg",
+      "Motivation",
+      "Ausdauer"
+    ],
+    "isFavorite": false,
+    "description": "Winston Churchill war ein britischer Staatsmann und Premierminister, bekannt für seine Führung während des Zweiten Weltkriegs und seine bemerkenswerte Resilienz.",
+    "source": "https://de.wikipedia.org/wiki/Winston_Churchill",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1740385947/Sir_Winston_Churchill_-_19086236948_kprxp2.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1740385933/Winston_Churchill_1874_-_1965_ZZZ5426F_mxyqyo.jpg"
+    ]
+  },
+  {
+    "id": "72",
+    "author": "Helen Keller",
+    "quote": "Allein können wir so wenig tun, zusammen können wir so viel erreichen.",
+    "category": "Zusammenarbeit",
+    "tags": [
+      "Zusammenarbeit",
+      "Erfolg"
+    ],
+    "isFavorite": false,
+    "description": "Helen Keller war eine amerikanische Aktivistin, die trotz ihrer Taubblindheit ein Symbol für Bildung und soziale Gerechtigkeit wurde.",
+    "source": "https://de.wikipedia.org/wiki/Helen_Keller",
+    "authorImageURLs": [
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954290/Helen_Keller_circa_1920_-_restored__cropped2_nkuebs.jpg",
+      "https://res.cloudinary.com/dpaehynl2/image/upload/v1739954276/Helenkellerannesullivan1898_fr1nxn.jpg"
+    ]
+  }
+]

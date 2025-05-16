@@ -36,8 +36,9 @@ struct AutorDetailView: View {
 
     var body: some View {
         ZStack {
+            // MARK: Hintergrund Gradient
             LinearGradient(
-                gradient: Gradient(colors: [Color.gray.opacity(0.3), Color.black.opacity(0.6)]),
+                gradient: Gradient(colors: [Color("background"), Color("cardBackground")]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -45,29 +46,31 @@ struct AutorDetailView: View {
             
             ScrollView {
                 VStack(spacing: 20) {
-                    // Autor-Bild mit Pfeilen
+                    // MARK: Autor-Bild mit Pfeilen
                     authorImage
                     
-                    // Nur Autor-Name
+                    // MARK: Autor-Name
                     Text(quote?.author ?? authorName)
                         .font(.system(size: 34, weight: .bold, design: .serif)) // Serifenschrift für eleganteren Look
-                        .foregroundColor(.white)
+                        .foregroundColor(Color("primaryText").opacity(0.95))
+                        .shadow(color: Color("primaryText").opacity(0.3), radius: 1)
                         .shadow(radius: 2) // Dezente Schattierung für mehr Tiefe
                         .transition(.opacity) // Animation für den Autor-Namen
                     
-                    // Zitat-Card
+                    // MARK: Zitat-Card
                     quoteCard
                         .transition(.move(edge: .bottom).combined(with: .opacity)) // Animation für die Zitat-Karte
                     
-                    // Autor-Info-Card
+                    // MARK: Autor-Info-Card
                     authorInfoCard
                         .transition(.move(edge: .trailing).combined(with: .opacity)) // Animation für die Autor-Info-Karte
                     
+                    // MARK: Weitere Zitate
                     if filteredQuotes.count > 1 {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Weitere Zitate von \(authorName)")
                                 .font(.title3)
-                                .foregroundColor(.white)
+                                .foregroundColor(Color("primaryText"))
 
                             ForEach(filteredQuotes.dropFirst(), id: \.self) { additionalQuote in
                                 Button(action: {
@@ -76,15 +79,18 @@ struct AutorDetailView: View {
                                     Text("„\(additionalQuote.quoteText)“")
                                         .font(.body)
                                         .italic()
-                                        .foregroundColor(.white.opacity(0.9))
+                                        .foregroundColor(Color("primaryText"))
                                         .padding(.vertical, 6)
                                         .padding(.horizontal)
-                                        .background(Color.white.opacity(0.1))
+                                        .background(Color("cardBackground"))
                                         .cornerRadius(10)
                                 }
                             }
                         }
                         .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(15)
+                        .shadow(color: Color("buttonColor").opacity(0.13), radius: 4, x: 0, y: 2)
                     }
                 }
                 .padding(.horizontal)
@@ -99,6 +105,7 @@ struct AutorDetailView: View {
         }
     }
     
+    // MARK: Autor-Bild mit Navigation
     private var authorImage: some View {
         VStack {
             if let imageData = quote?.authorImageData, let uiImage = UIImage(data: imageData) {
@@ -123,7 +130,7 @@ struct AutorDetailView: View {
                     Button(action: showPreviousImage) {
                         Image(systemName: "chevron.left.circle.fill")
                             .font(.largeTitle)
-                            .foregroundColor(.white)
+                            .accentColor(Color("mainBlue"))
                             .scaleEffect(currentImageIndex == 0 ? 1.0 : 1.2)
                             .animation(.spring(response: 0.3, dampingFraction: 0.5), value: currentImageIndex)
                     }
@@ -134,7 +141,7 @@ struct AutorDetailView: View {
                     Button(action: showNextImage) {
                         Image(systemName: "chevron.right.circle.fill")
                             .font(.largeTitle)
-                            .foregroundColor(.white)
+                            .accentColor(Color("mainBlue"))
                             .scaleEffect(currentImageIndex == imageUrls.count - 1 ? 1.0 : 1.2)
                             .animation(.spring(response: 0.3, dampingFraction: 0.5), value: currentImageIndex)
                     }
@@ -146,11 +153,12 @@ struct AutorDetailView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 180, height: 180)
-                    .foregroundColor(.gray.opacity(0.5))
+                    .foregroundColor(Color("secondaryText").opacity(0.5))
             }
         }
     }
     
+    // MARK: Zitat-Card mit Favoriten Button
     private var quoteCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -167,9 +175,9 @@ struct AutorDetailView: View {
                         }
                     }) {
                         Image(systemName: isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(isFavorite ? .red : .white)
+                            .foregroundColor(isFavorite ? .red : Color("primaryText"))
                             .padding(8)
-                            .background(Color.white.opacity(0.1))
+                            .background(Color("primaryText").opacity(0.1))
                             .clipShape(Circle())
                             .scaleEffect(isFavorite ? 1.2 : 1.0)
                     }
@@ -181,7 +189,7 @@ struct AutorDetailView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .italic()
-                .foregroundColor(.white)
+                .foregroundColor(Color("primaryText"))
                 .multilineTextAlignment(.center)
                 .lineLimit(6)
                 .fixedSize(horizontal: false, vertical: true)
@@ -190,65 +198,65 @@ struct AutorDetailView: View {
             if let tags = quote?.tags, !tags.isEmpty {
                 Text("Themen: \(tags.joined(separator: ", "))")
                     .font(.footnote)
-                    .foregroundColor(.yellow) // Gelb für einen starken Kontrast zu den anderen Elementen
+                    .foregroundColor(Color("mainBlue")) // Gelb für einen starken Kontrast zu den anderen Elementen
                     .bold()
             }
 
             Text("- \(quote?.author ?? authorName)")
                 .font(.caption)
-                .foregroundColor(.white)
+                .foregroundColor(Color("primaryText"))
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background(
-            Color.black // Fester schwarzer Hintergrund
-                .opacity(0.85)
+            Color("cardBackground")
         )
         .cornerRadius(15)
-        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
+        .shadow(color: Color("buttonColor").opacity(0.13), radius: 10, x: 0, y: 5)
     }
     
+    // MARK: Autor-Info-Card mit Beschreibung und Link
     private var authorInfoCard: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Über \(quote?.author ?? authorName)")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(.white) // Weißer Text für besseren Kontrast
+                .foregroundColor(Color("primaryText")) // Weißer Text für besseren Kontrast
 
             Text(quote?.quoteDescription ?? "")
                 .font(.body)
-                .foregroundColor(.white.opacity(0.85)) // Leicht transparenter Text für bessere Lesbarkeit
+                .foregroundColor(Color("primaryText").opacity(0.85)) // Leicht transparenter Text für bessere Lesbarkeit
                 .lineLimit(nil) // Keine Begrenzung für die Zeilenanzahl (Text wird komplett angezeigt)
                 .fixedSize(horizontal: false, vertical: true) // Text wächst vertikal, wenn nötig
                 
             if let sourceString = quote?.source, let sourceURL = URL(string: sourceString) {
                 Link("Mehr über \(quote?.author ?? authorName)", destination: sourceURL)
                     .font(.subheadline)
-                    .foregroundColor(.white) // Weißer Text für guten Kontrast
+                    .foregroundColor(Color("primaryText")) // Weißer Text für guten Kontrast
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .frame(maxWidth: 200)
                     .multilineTextAlignment(.center)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.gray.opacity(0.7)) // Sanftes Grau statt Blau
+                            .fill(Color("mainBlue").opacity(0.8))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white, lineWidth: 1) // Weißer Rand für besseres Herausstechen
+                            .stroke(Color("primaryText"), lineWidth: 1) // Weißer Rand für besseres Herausstechen
                     )
-                    .shadow(radius: 5) // Dezente Schattierung für 3D-Effekt
+                    .shadow(radius: 8) // Dezente Schattierung für 3D-Effekt
             }
             
             if let facts = AuthorFunFacts.facts[quote?.author ?? authorName], !facts.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Wusstest du schon?")
                         .font(.headline)
-                        .foregroundColor(.yellow)
+                        .foregroundColor(Color("mainBlue"))
                     
                     Text(facts.randomElement() ?? "")
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.9))
+                        .foregroundColor(Color("primaryText").opacity(0.9))
                         .italic()
                 }
             }
@@ -256,13 +264,13 @@ struct AutorDetailView: View {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            Color.black // Dunkler Hintergrund für stärkeren Kontrast
-                .opacity(0.85)
+            Color("cardBackground")
         )
         .cornerRadius(15)
-        .shadow(color: .black.opacity(0.5), radius: 8, x: 0, y: 4)
+        .shadow(color: Color("buttonColor").opacity(0.13), radius: 8, x: 0, y: 4)
     }
     
+    // MARK: Bildwechsel Funktionen
     private func showPreviousImage() {
         guard currentImageIndex > 0 else { return }
         withAnimation {

@@ -2,26 +2,27 @@
 //  Colors.swift
 //  WorldWisdom
 //
-//  Created by Vu Minh Khoi Ha on 21.02.25.
+//  Enthält alle zentralen Farbdefinitionen für Light & Dark Mode.
+//  Die Farben werden über den Asset-Katalog gepflegt und hier zentral im Code verwendet.
+//  So bleibt das Farbsystem konsistent und wartbar.
+//
+//  Tipp: Neue Farben immer zuerst im Asset-Katalog und dann hier eintragen!
+//
+//  Stand: Mai 2025
 //
 
 import SwiftUI
 
-/// Enthält zentrale Farbdefinitionen für Light & Dark Mode.
-/// Verwendet benannte Farben aus dem Asset-Katalog (Colors.xcassets).
-/// So wird sichergestellt, dass UI-Elemente konsistent gestylt bleiben.
-
 struct Colors {
-    // MARK: - Light Mode Farben (aus Assets)
-    static let lightBackground = Color("lightBackground")
-    static let darkBackground = Color("darkBackground")
+    // MARK: - Hintergrundfarben
+    static let background = Color("background")            // Haupt-App-Hintergrund
+    static let cardBackground = Color("cardBackground")    // Cards und Listenelemente
+
+    // MARK: - Textfarben
     static let primaryText = Color("primaryText")
     static let secondaryText = Color("secondaryText")
-    static let buttonColor = Color("buttonColor")
+
+    // MARK: - Akzent- & Buttonfarben
     static let accentColor = Color("accentColor")
-    
-    // MARK: - Dark Mode Farben (aus Assets)
-    static let darkPrimaryText = Color("darkPrimaryText")
-    static let darkSecondaryText = Color("darkSecondaryText")
-    static let darkButtonColor = Color("darkButtonColor")
+    static let buttonColor = Color("buttonColor")
 }

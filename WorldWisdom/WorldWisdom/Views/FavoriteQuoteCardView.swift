@@ -6,45 +6,18 @@
 //
 
 /// Zeigt eine einzelne Zitatkarte im Favoritenbereich an.
-/// Beinhaltet Zitattext, Autor, Bild, Favoritenstatus und Autor-Dropdown.
+/// Beinhaltet Zitattext, Autor, Bild, Favoritenstatus
 import SwiftUI
 import SDWebImageSwiftUI
 
 struct FavoriteQuoteCardView: View {
     @EnvironmentObject var favoriteManager: FavoriteManager
     let quote: Quote
-    @State private var showAuthorDetails = false
-    @State private var navigateToDetail = false
 
     // MARK: - View Body
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Spacer()
-                Button(action: {
-                    Task {
-                        let convertedQuote = Quote(
-                            id: quote.id,
-                            author: quote.author,
-                            quote: quote.quote,
-                            category: quote.category,
-                            tags: quote.tags,
-                            isFavorite: true,
-                            description: quote.description,
-                            source: quote.source,
-                            authorImageURLs: quote.authorImageURLs,
-                            authorImageData: nil
-                        )
-                        await favoriteManager.updateFavoriteStatus(for: convertedQuote, isFavorite: true)
-                    }
-                }) {
-                    Image(systemName: "heart.fill")
-                        .foregroundColor(.red)
-                        .padding(6)
-                        .background(Color.white.opacity(0.2))
-                        .clipShape(Circle())
-                }
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            // MARK: - Autor Bild und Name
             HStack {
                 WebImage(url: URL(string: quote.authorImageURLs?.first ?? ""))
                     .resizable()
@@ -55,87 +28,46 @@ struct FavoriteQuoteCardView: View {
 
                 Text("- \(quote.author)")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color("secondaryText"))
 
                 Spacer()
             }
             
-            // Zitat Text
-            Button(action: {
-                navigateToDetail = true
-            }) {
-                Text("„\(quote.quote)“")
-                    .font(.system(.body, design: .serif))
-                    .italic()
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            // Button für Dropdown
-            Button(action: {
-                withAnimation {
-                    showAuthorDetails.toggle()
-                }
-            }) {
+            // MARK: - Zitat Text (nur Anzeige, keine Navigation/Interaktion)
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text(showAuthorDetails ? "Details ausblenden" : "Mehr über den Autor")
-                        .font(.caption)
-                        .foregroundColor(.blue) // Kräftigeres Blau für Interaktivität
-                    Image(systemName: showAuthorDetails ? "chevron.up" : "chevron.down")
-                        .foregroundColor(.blue)
+                    Image(systemName: "quote.opening")
+                        .font(.subheadline)
+                        .foregroundColor(Color("mainBlue"))
+                        .padding(.bottom, 0)
+                    Spacer()
                 }
-                .padding(.top, 5)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("„\(quote.quote)“")
+                        .font(.system(.body, design: .serif))
+                        .italic()
+                        .foregroundColor(Color("primaryText"))
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Color("cardBackground"))
+                .cornerRadius(12)
             }
-
-            // Autor-Infos (Dropdown)
-            if showAuthorDetails {
-                authorInfoCard
-                    .transition(.slide)  // Sanfte Animation beim Einblenden
-            }
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 10)
         .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.gray.opacity(0.2)]), // Sanfter blauer Verlauf
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )  // Die Hintergrundfarbe bleibt hier
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
-        .navigationDestination(isPresented: $navigateToDetail) {
-            AutorDetailView(authorName: quote.author, selectedQuoteText: quote.quote)
-        }
-    }
-
-    // MARK: - Autor Info Card (Dropdown)
-    private var authorInfoCard: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Über \(quote.author):")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            
-            Text(quote.description)
-                .font(.body)
-                .foregroundColor(.white.opacity(0.8)) // Weiß mit leichtem Durchschein-Effekt
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true) // Verhindert Textabschneiden
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.gray.opacity(0.7)]), // Blau-Grau Verlauf
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color("cardBackground"))
         )
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
-        .padding(.vertical, 5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color("secondaryText").opacity(0.10), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color("buttonColor").opacity(0.07), radius: 6, x: 0, y: 3)
     }
 }

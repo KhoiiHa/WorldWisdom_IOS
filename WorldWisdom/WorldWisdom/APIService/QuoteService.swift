@@ -43,27 +43,38 @@ class QuoteService {
     func fetchQuotes() async throws -> [Quote] {
         let urlString = "\(baseURL)/api/quotes"
 
-        // Fetch Data mit der generierten URL
         guard let url = URL(string: urlString) else {
             throw QuoteError.networkError("Ungültige URL")
         }
 
-        // Abrufen der Zitate von der API
-        let quotes: [Quote] = try await fetchData(from: url)
+        do {
+            let quotes: [Quote] = try await fetchData(from: url)
 
-        #if DEBUG
-        print("🧠 \(quotes.count) Zitate erfolgreich von Mockoon geladen.")
-        print(quotes.map { $0.author })
-        #endif
+            #if DEBUG
+            print("🧠 \(quotes.count) Zitate erfolgreich von Mockoon geladen.")
+            #endif
 
-        // Initialisiere alle Zitate mit isFavorite = false (Favoriten werden separat gespeichert)
-        let updatedQuotes = quotes.map { quote -> Quote in
-            var modifiedQuote = quote
-            modifiedQuote.isFavorite = false
-            return modifiedQuote
+            return quotes.map { var q = $0; q.isFavorite = false; return q }
+        } catch {
+            print("⚠️ Fehler beim Laden über API – Fallback wird geladen.")
+            let fallbackQuotes = loadFallbackQuotes()
+            return fallbackQuotes.map { var q = $0; q.isFavorite = false; return q }
+        }
+    }
+
+    private func loadFallbackQuotes() -> [Quote] {
+        guard let url = Bundle.main.url(forResource: "QuotesFallback", withExtension: "json") else {
+            print("❌ Fallback-Datei nicht gefunden.")
+            return []
         }
 
-        // Gib die bearbeiteten Zitate zurück
-        return updatedQuotes
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            return try decoder.decode([Quote].self, from: data)
+        } catch {
+            print("❌ Fehler beim Laden der Fallback-Quotes: \(error)")
+            return []
+        }
     }
 }

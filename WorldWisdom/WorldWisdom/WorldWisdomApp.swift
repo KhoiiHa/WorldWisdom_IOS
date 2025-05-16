@@ -50,10 +50,12 @@ struct WorldWisdomApp: App {
                             }
                         }
                 }
+                .preferredColorScheme(.dark)
             } else {
                 if userViewModel.isLoggedIn {
                     NavigationStack {
                         MainTabView()
+                            .preferredColorScheme(.dark)
                     }
                     .environmentObject(userViewModel)
                     .environmentObject(quoteViewModel)
@@ -68,6 +70,7 @@ struct WorldWisdomApp: App {
                     }
                 } else {
                     StartView()
+                        .preferredColorScheme(.dark)
                         .environmentObject(userViewModel)
                         .environmentObject(quoteViewModel)
                         .environmentObject(firebaseManager)
@@ -87,3 +90,4 @@ struct WorldWisdomApp: App {
         }
     }
 }
+

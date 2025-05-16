@@ -9,16 +9,25 @@
 
 import SwiftUI
 
+// MARK: - InfoView
 // Zeigt eine Übersicht über die App, ihre Funktion und den Entwickler.
 struct InfoView: View {
     @AppStorage("didSeeInfo") private var didSeeInfo = false
+    
     var body: some View {
         ScrollView {
             VStack {
-                VStack(alignment: .leading, spacing: 20) {
+                // MARK: - Hauptinhalt
+                VStack(alignment: .leading, spacing: 22) {
+                    // MARK: Über WorldWisdom
                     HStack(spacing: 10) {
                         Image(systemName: "book.fill")
-                            .foregroundColor(.accentColor)
+                            .font(.system(size: 30))
+                            .foregroundColor(Color("mainBlue"))
+                            .background(
+                                Circle().fill(Color("mainBlue").opacity(0.10))
+                                    .frame(width: 44, height: 44)
+                            )
                         Text("Über WorldWisdom")
                     }
                     .font(.largeTitle)
@@ -30,10 +39,17 @@ struct InfoView: View {
                         .lineSpacing(4)
 
                     Divider()
+                        .padding(.vertical, 6)
 
+                    // MARK: Über den Entwickler
                     HStack(spacing: 10) {
                         Image(systemName: "person.fill")
-                            .foregroundColor(.accentColor)
+                            .font(.system(size: 30))
+                            .foregroundColor(Color("mainBlue"))
+                            .background(
+                                Circle().fill(Color("mainBlue").opacity(0.10))
+                                    .frame(width: 44, height: 44)
+                            )
                         Text("Über den Entwickler")
                     }
                     .font(.title2)
@@ -44,10 +60,17 @@ struct InfoView: View {
                         .lineSpacing(4)
 
                     Divider()
+                        .padding(.vertical, 6)
 
+                    // MARK: Technologien
                     HStack(spacing: 10) {
                         Image(systemName: "wrench.and.screwdriver.fill")
-                            .foregroundColor(.accentColor)
+                            .font(.system(size: 30))
+                            .foregroundColor(Color("mainBlue"))
+                            .background(
+                                Circle().fill(Color("mainBlue").opacity(0.10))
+                                    .frame(width: 44, height: 44)
+                            )
                         Text("Technologien")
                     }
                     .font(.title2)
@@ -62,6 +85,7 @@ struct InfoView: View {
                     }
                     .lineSpacing(4)
 
+                    // MARK: Button zum Bestätigen
                     Button(action: {
                         didSeeInfo = true
                     }) {
@@ -69,24 +93,26 @@ struct InfoView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.accentColor)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .background(Color("mainBlue"))
+                            .foregroundColor(Color("primaryText"))
+                            .cornerRadius(12)
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top)
+                    .padding(.top, 10)
 
                     Spacer()
                 }
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.systemBackground))
-                        .shadow(color: .gray.opacity(0.2), radius: 6, x: 0, y: 4)
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(.ultraThinMaterial)
+                        .shadow(color: Color("secondaryText").opacity(0.16), radius: 10, x: 0, y: 4)
                 )
-                .padding()
+                .padding(.vertical, 36)
+                .padding(.horizontal, 12)
             }
         }
+        .background(Color("background").ignoresSafeArea())
         .navigationTitle("Über die App")
     }
 }

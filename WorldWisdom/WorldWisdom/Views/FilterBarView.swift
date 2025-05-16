@@ -12,7 +12,7 @@ import SwiftUI
 /// Zeigt eine horizontale Leiste mit Kategorie-Buttons zur Filterung von Zitaten.
 /// Unterstützt die Auswahl einzelner Kategorien sowie eine "Alle"-Option.
 
-// MARK: - HeaderView
+// MARK: - FilterBar
 struct FilterBar: View {
     @Binding var selectedCategory: String?
     let categories: [String]
@@ -34,26 +34,29 @@ struct FilterBar: View {
                 }
             }
             .padding(.horizontal)
-            .background(Color(UIColor.systemBackground)) // Hintergrund für den Dark Mode
+            .background(Color("background").ignoresSafeArea()) // Hintergrundfarbe aus Asset-Katalog
         }
     }
     
     // MARK: - Hilfsfunktion für Kategorie-Buttons
+    /// Erzeugt einen Button für eine Kategorie mit entsprechendem Stil
     private func categoryButton(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.caption)
+                .font(.subheadline)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(
-                    isSelected ? Color.accentColor.opacity(0.2) : Color.clear
+                    isSelected
+                        ? Color("mainBlue").opacity(0.2) // Akzentfarbe mit Transparenz bei Auswahl
+                        : Color("cardBackground") // Kartenhintergrundfarbe sonst
                 )
-                .cornerRadius(8)
+                .cornerRadius(10)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.accentColor : Color.gray, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(isSelected ? Color("mainBlue") : Color("secondaryText").opacity(0.4), lineWidth: 1) // Rahmenfarbe
                 )
-                .foregroundColor(isSelected ? .accentColor : .primary) // Textfarbe anpassen
+                .foregroundColor(isSelected ? Color("mainBlue") : Color("primaryText")) // Textfarbe anpassen
         }
         .buttonStyle(PlainButtonStyle())
     }

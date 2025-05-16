@@ -5,7 +5,6 @@
 //  Created by Vu Minh Khoi Ha on 22.01.25.
 //
 
-
 import SwiftUI
 
 /// Registrierungsbildschirm für neue Benutzer.
@@ -13,6 +12,7 @@ import SwiftUI
 
 // MARK: - RegisterView
 struct RegisterView: View {
+    // MARK: - Zustände für Eingaben und Navigation
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLoading: Bool = false
@@ -24,6 +24,7 @@ struct RegisterView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                // Titel
                 Text("Registrieren")
                     .font(.largeTitle)
                     .padding()
@@ -44,7 +45,7 @@ struct RegisterView: View {
                     .accessibilityLabel("Passwort-Eingabefeld")
                     .accessibilityHint("Gib dein Passwort ein")
 
-                // Registrierungsbutton
+                // Registrierungsbutton oder Ladeindikator
                 if isLoading {
                     ProgressView() // Ladeindikator
                         .padding(.top, 20)
@@ -64,8 +65,8 @@ struct RegisterView: View {
                         Text("Registrieren")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
+                            .background(Color("buttonColor"))
+                            .foregroundColor(Color("primaryText"))
                             .cornerRadius(10)
                             .accessibilityLabel("Registrierungsbutton")
                             .accessibilityHint("Klicke hier, um dich zu registrieren")
@@ -76,7 +77,7 @@ struct RegisterView: View {
                 // Anzeige einer Fehlermeldung, falls vorhanden
                 if let errorMessage = userViewModel.errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(.red)
+                        .foregroundColor(Color("mainBlue"))
                         .padding(.top, 10)
                         .accessibilityLabel("Fehlermeldung")
                         .accessibilityHint(errorMessage)
@@ -84,12 +85,13 @@ struct RegisterView: View {
 
                 // Zurück zur AuthenticationView Button
                 NavigationLink("Zurück zur Anmeldung", destination: AuthenticationView())
-                    .foregroundColor(.blue)
+                    .foregroundColor(Color("mainBlue"))
                     .padding(.top, 20)
 
                 Spacer()
             }
             .padding()
+            .background(Color("background").ignoresSafeArea()) // Hintergrundfarbe aus Asset-Katalog
             .onAppear {
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
                 Task {
