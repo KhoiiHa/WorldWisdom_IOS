@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577939/worldwisdom_icon.png" alt="WorldWisdom Icon" width="120" />
+</p>
+
 # WorldWisdom 🌟📖  
 
 ## „Entdecke die Weisheit der Welt – in einer App“ 🌍💬  
@@ -117,7 +121,7 @@ SwiftUI · Firebase · SwiftData · Offline-Modus · MVVM · API-Simulation
 ## 👨‍💻 Über den Entwickler
 
 > 👋 Entwickelt von **Minh Khoi Ha**  
-> 📍 Hamburg · App - Developer seit 2024  
+> 📍 Hamburg · App Developer seit 2024  
 > 💡 Fokus: SwiftUI · SwiftData · Firebase · Offline-First Apps
 
 ---
