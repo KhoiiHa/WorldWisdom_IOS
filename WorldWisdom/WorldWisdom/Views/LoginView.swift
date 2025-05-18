@@ -12,6 +12,7 @@ import SwiftUI
 
 // MARK: - LoginView
 struct LoginView: View {
+    @AppStorage("isDarkMode") private var isDarkMode = true
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLoading: Bool = false
@@ -69,6 +70,8 @@ struct LoginView: View {
                             .accessibilityLabel("Anmeldebutton")
                             .accessibilityHint("Klicke hier, um dich anzumelden")
                     }
+                    .disabled(email.isEmpty || password.isEmpty)
+                    .opacity((email.isEmpty || password.isEmpty) ? 0.5 : 1.0)
                     .padding(.top, 20)
                 }
 
@@ -84,6 +87,7 @@ struct LoginView: View {
                 Spacer()
             }
             .padding()
+            .colorScheme(isDarkMode ? .dark : .light)
             .onAppear {
                 // Überprüfen, ob der Benutzer bereits angemeldet ist
                 Task {

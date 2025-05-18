@@ -12,6 +12,7 @@ import SwiftUI
 
 struct FavoriteView: View {
     @EnvironmentObject var favoriteManager: FavoriteManager
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showErrorMessage: Bool = false
     @State private var errorMessage: String?
     @State private var successMessage: String?
@@ -56,6 +57,14 @@ struct FavoriteView: View {
                 )
                 .cornerRadius(10)
                 .padding(.horizontal)
+                
+                if !networkMonitor.isConnected {
+                    Text("⚠️ Offline-Modus – Favoriten werden lokal angezeigt")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                }
                 
                 // Liste der Favoriten
                 List {
@@ -130,6 +139,7 @@ struct FavoriteView: View {
             .background(Color("background").ignoresSafeArea())
             .navigationDestination(item: $selectedQuote) { quote in
                 AutorDetailView(authorName: quote.author, selectedQuoteText: quote.quote)
+                    .environmentObject(networkMonitor)
             }
         }
     }

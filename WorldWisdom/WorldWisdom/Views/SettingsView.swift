@@ -12,6 +12,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("isDarkMode") private var isDarkMode = false
     @EnvironmentObject var firebaseManager: FirebaseManager
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     @Environment(\.presentationMode) var presentationMode
     @State private var shouldNavigateToStart = false
 
@@ -22,9 +23,16 @@ struct SettingsView: View {
                 Color("background").ignoresSafeArea()
                 ScrollView {
                     VStack(spacing: 32) {
+                        if !networkMonitor.isConnected {
+                            Text("⚠️ Offline-Modus – Änderungen werden ggf. nicht synchronisiert")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal)
+                        }
                         // MARK: - Konto & Benachrichtigungen
                         SettingsSection(title: "Konto & Benachrichtigungen") {
-                            NavigationLink(destination: ProfileView()) {
+                            NavigationLink(destination: ProfileView().environmentObject(networkMonitor)) {
                                 SettingsRow(iconName: "person.circle", label: "Profil", color: .blue)
                             }
                             Divider()
@@ -81,9 +89,9 @@ struct SettingsView: View {
             .navigationDestination(isPresented: $shouldNavigateToStart) {
                 StartView()
                     .environmentObject(firebaseManager)
+                    .environmentObject(networkMonitor)
             }
         }
-        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 
     private func logout() {

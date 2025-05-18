@@ -21,11 +21,18 @@ struct HomeView: View {
     @State private var randomAuthorFact: (author: String, fact: String)? = nil
     @State private var recommendedQuotes: [Quote] = []
     @State private var selectedQuote: Quote?
+    @EnvironmentObject var networkMonitor: NetworkMonitor
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 25) {
+                    if !networkMonitor.isConnected {
+                        Text("⚠️ Offline-Modus – Zitate werden aus der App geladen")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                     // MARK: Willkommen
                     welcomeSection
 
@@ -55,9 +62,7 @@ struct HomeView: View {
             .navigationTitle("Home")
             .background(Color("background"))
             .task {
-                if quoteViewModel.quotes.isEmpty {
-                    await loadQuotes()
-                }
+                await loadQuotes()
                 if quoteViewModel.randomQuote == nil {
                     await quoteViewModel.getRandomQuote()
                 }
@@ -74,6 +79,7 @@ struct HomeView: View {
         }
         .navigationDestination(item: $selectedQuote) { quote in
             AutorDetailView(authorName: quote.author)
+                .environmentObject(networkMonitor)
         }
     }
 

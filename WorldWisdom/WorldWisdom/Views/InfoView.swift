@@ -12,6 +12,7 @@ import SwiftUI
 // MARK: - InfoView
 // Zeigt eine Übersicht über die App, ihre Funktion und den Entwickler.
 struct InfoView: View {
+    @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("didSeeInfo") private var didSeeInfo = false
     
     var body: some View {
@@ -55,7 +56,7 @@ struct InfoView: View {
                     .font(.title2)
                     .fontWeight(.semibold)
 
-                    Text("Diese App wurde von Minh Khoi Ha entwickelt – als persönliches iOS-Projekt, um SwiftUI, Firebase und SwiftData in einem realistischen Szenario einzusetzen. Ziel war es, ein funktionales, inspirierendes und technisch sauberes Portfolio-Projekt zu erstellen.")
+                    Text("Diese App wurde von Minh Khoi Ha entwickelt – als Teil meines iOS-Entwickler-Portfolios. Sie zeigt, wie ich komplexe Technologien wie SwiftUI, SwiftData und Firebase praxisnah miteinander verbinde. Ich habe WorldWisdom entworfen, um meine Fähigkeiten im Bereich App-Architektur, Offline-Nutzung und UI-Design unter Beweis zu stellen.")
                         .font(.body)
                         .lineSpacing(4)
 
@@ -77,11 +78,11 @@ struct InfoView: View {
                     .fontWeight(.semibold)
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("• SwiftUI – Benutzeroberfläche")
-                        Text("• Firebase – Authentifizierung & Cloud-Datenbank")
-                        Text("• SwiftData – Lokale Datenspeicherung & Offline-Modus")
-                        Text("• MVVM – Architekturstruktur")
-                        Text("• Cloudinary – Autorenbilder")
+                        Text("• SwiftUI – Reaktive UI mit modernen View-Buildern")
+                        Text("• Firebase – Authentifizierung und Cloud-Synchronisation")
+                        Text("• SwiftData – Persistenz & Offline-Speicherung")
+                        Text("• MVVM – Saubere Trennung von Logik und UI")
+                        Text("• Cloudinary – Dynamisches Laden von Autorenbildern")
                     }
                     .lineSpacing(4)
 
@@ -114,5 +115,9 @@ struct InfoView: View {
         }
         .background(Color("background").ignoresSafeArea())
         .navigationTitle("Über die App")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.clear, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .colorScheme(isDarkMode ? .dark : .light)
     }
 }

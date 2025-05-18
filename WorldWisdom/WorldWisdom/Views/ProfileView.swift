@@ -12,12 +12,21 @@ import SwiftUI
 
 // MARK: - ProfileView
 struct ProfileView: View {
+    @AppStorage("isDarkMode") private var isDarkMode = true
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     // MARK: - View Body
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     // MARK: - Profilbereich
+                    if !networkMonitor.isConnected {
+                        Text("⚠️ Offline-Modus – Profilbild wird ggf. nicht geladen")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
                     VStack(spacing: 12) {
                         // 🔹 Profilbild mit Rahmen und Zoom-Effekt
                         ZStack {
@@ -55,18 +64,18 @@ struct ProfileView: View {
                         }
 
                         // 🔹 Benutzername
-                        Text("Benutzername")
+                        Text("Minh Khoi Ha")
                             .font(.title3.bold())
                             .foregroundColor(Color("primaryText"))
                             .multilineTextAlignment(.center)
 
                         // 🔹 Benutzerstatus (optional)
-                        Text("Mitglied seit 2023")
+                        Text("Swift-Entwickler seit 2023 – Portfolio-App 2025")
                             .font(.caption)
                             .foregroundColor(Color("secondaryText"))
 
                         // 🔹 Benutzerbeschreibung (optional)
-                        Text("Ich liebe inspirierende Zitate und teile sie gerne mit anderen.")
+                        Text("Diese App entstand aus meinem Interesse an Mental Health, SwiftUI und professioneller App-Entwicklung.")
                             .font(.subheadline)
                             .foregroundColor(Color("secondaryText"))
                             .multilineTextAlignment(.center)
@@ -123,6 +132,7 @@ struct ProfileView: View {
             }
             .navigationTitle("Profil")
             .background(Color("background").ignoresSafeArea())
+            .colorScheme(isDarkMode ? .dark : .light)
         }
     }
 }

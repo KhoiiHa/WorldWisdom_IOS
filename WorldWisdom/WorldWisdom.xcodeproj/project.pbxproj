@@ -24,33 +24,9 @@
 		A61EA9872D35538000878C44 /* WorldWisdom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorldWisdom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A622AD202DD761DC00A3B5DB /* Exceptions for "WorldWisdom" folder in "WorldWisdom" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Resources/QuotesFallback.json,
-			);
-			target = A61EA9862D35538000878C44 /* WorldWisdom */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		A622AD212DD761DC00A3B5DB /* Exceptions for "WorldWisdom" folder in "Compile Sources" phase from "WorldWisdom" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = A61EA9832D35538000878C44 /* Sources */;
-			membershipExceptions = (
-				Resources/QuotesFallback.json,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A61EA9892D35538000878C44 /* WorldWisdom */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A622AD202DD761DC00A3B5DB /* Exceptions for "WorldWisdom" folder in "WorldWisdom" target */,
-				A622AD212DD761DC00A3B5DB /* Exceptions for "WorldWisdom" folder in "Compile Sources" phase from "WorldWisdom" target */,
-			);
 			path = WorldWisdom;
 			sourceTree = "<group>";
 		};

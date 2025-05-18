@@ -18,6 +18,7 @@ struct GalerieScreen: View {
     @Query var quotes: [QuoteEntity]
     @State private var searchText: String = ""
     @State private var selectedAuthor: String? = nil
+    @EnvironmentObject var networkMonitor: NetworkMonitor
 
     // MARK: - Favoritenlogik
     /// Prüft, ob ein Autor mindestens 3 Favoriten-Zitate hat
@@ -50,6 +51,13 @@ struct GalerieScreen: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 15) {
+                if !networkMonitor.isConnected {
+                    Text("⚠️ Offline-Modus – Lokale Autoren-Daten werden angezeigt")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                }
                 // Suchfeld für Autoren
                 TextField("Autor suchen", text: $searchText)
                     .padding(10)
@@ -126,6 +134,7 @@ struct GalerieScreen: View {
             // Navigation zur Detailansicht des ausgewählten Autors
             .navigationDestination(item: $selectedAuthor) { author in
                 AutorDetailView(authorName: author)
+                    .environmentObject(networkMonitor)
             }
         }
         .background(Color("background").ignoresSafeArea())

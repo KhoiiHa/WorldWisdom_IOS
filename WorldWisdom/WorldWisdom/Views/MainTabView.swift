@@ -12,6 +12,7 @@ import SwiftUI
 
 // MARK: - MainTabView
 struct MainTabView: View {
+    @AppStorage("isDarkMode") private var isDarkMode = true
     @EnvironmentObject var userViewModel: UserViewModel // Benutzer ViewModel über EnvironmentObject
     @EnvironmentObject var quoteViewModel: QuoteViewModel // Quote ViewModel über EnvironmentObject
 
@@ -56,6 +57,7 @@ struct MainTabView: View {
         .background(Color("background").ignoresSafeArea())
         // MARK: - Akzentfarbe aus Asset-Katalog
         .accentColor(Color("mainBlue"))
+        .colorScheme(isDarkMode ? .dark : .light)
         // MARK: - Aktionen beim Erscheinen der View
         .onAppear {
             // Optionale Aktionen, wenn die TabView erscheint (z.B. Daten aktualisieren)

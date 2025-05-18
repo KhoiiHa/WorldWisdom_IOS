@@ -18,10 +18,13 @@ struct WorldWisdomApp: App {
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var firebaseManager = FirebaseManager.shared
     @StateObject private var favoriteManager = FavoriteManager.shared
+    @StateObject private var networkMonitor = NetworkMonitor()
     
     @StateObject private var quoteViewModel = QuoteViewModel()
     let container: ModelContainer
     @AppStorage("didSeeInfo") private var didSeeInfo = false
+    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore = false
 
     // MARK: - Initialisierung von Firebase & SwiftData
     init() {
@@ -39,46 +42,56 @@ struct WorldWisdomApp: App {
     // MARK: - Szenenaufbau (Loginprüfung & View-Weiche)
     var body: some Scene {
         WindowGroup {
-            if !didSeeInfo {
-                NavigationStack {
-                    InfoView()
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Weiter") {
-                                    didSeeInfo = true
+            Group {
+                if !didSeeInfo {
+                    NavigationStack {
+                        InfoView()
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("Weiter") {
+                                        didSeeInfo = true
+                                    }
                                 }
                             }
-                        }
-                }
-                .preferredColorScheme(.dark)
-            } else {
-                if userViewModel.isLoggedIn {
-                    NavigationStack {
-                        MainTabView()
-                            .preferredColorScheme(.dark)
-                    }
-                    .environmentObject(userViewModel)
-                    .environmentObject(quoteViewModel)
-                    .environmentObject(firebaseManager)
-                    .environmentObject(favoriteManager)
-                    .modelContainer(container)
-                    .onAppear {
-                        // Synchronisiere Daten nur nach erfolgreicher Anmeldung
-                        Task {
-                            await syncData()
-                        }
                     }
                 } else {
-                    StartView()
-                        .preferredColorScheme(.dark)
+                    if userViewModel.isLoggedIn {
+                        NavigationStack {
+                            MainTabView()
+                                .id(isDarkMode)
+                                .environmentObject(networkMonitor)
+                        }
                         .environmentObject(userViewModel)
                         .environmentObject(quoteViewModel)
                         .environmentObject(firebaseManager)
                         .environmentObject(favoriteManager)
                         .modelContainer(container)
+                        .onAppear {
+                            // Synchronisiere Daten nur nach erfolgreicher Anmeldung
+                            Task {
+                                await syncData()
+                            }
+                        }
+                    } else {
+                        StartView()
+                            .environmentObject(userViewModel)
+                            .environmentObject(quoteViewModel)
+                            .environmentObject(firebaseManager)
+                            .environmentObject(favoriteManager)
+                            .environmentObject(networkMonitor)
+                            .modelContainer(container)
+                            .onAppear {
+                                if !hasLaunchedBefore {
+                                    isDarkMode = true
+                                    hasLaunchedBefore = true
+                                }
+                            }
+                    }
                 }
             }
+            .id(isDarkMode)
         }
+        .environment(\.colorScheme, isDarkMode ? .dark : .light)
     }
 
     // MARK: - Datensynchronisation
@@ -90,4 +103,3 @@ struct WorldWisdomApp: App {
         }
     }
 }
-

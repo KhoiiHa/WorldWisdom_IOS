@@ -70,6 +70,7 @@ class QuoteViewModel: ObservableObject {
             print("⚠️ Fehler beim Laden über API – Fallback wird geladen.")
             let fallbackQuotes = loadQuotesFromFallback()
             self.quotes = fallbackQuotes
+            try? await swiftDataSyncManager.storeFallbackQuotes(fallbackQuotes)
         }
     }
 

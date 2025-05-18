@@ -6,8 +6,9 @@
 //
 
 import Network
+import Combine
 
-class NetworkMonitor {
+class NetworkMonitor: ObservableObject {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue.global(qos: .background)
     
@@ -22,12 +23,16 @@ class NetworkMonitor {
     init() {
         monitor.pathUpdateHandler = { path in
             if path.status == .satisfied {
-                self.isConnected = true
+                DispatchQueue.main.async {
+                    self.isConnected = true
+                }
                 #if DEBUG
                 print("🌐 Verbindung hergestellt (Debug)")
                 #endif
             } else {
-                self.isConnected = false
+                DispatchQueue.main.async {
+                    self.isConnected = false
+                }
                 #if DEBUG
                 print("⚠️ Keine Internetverbindung (Debug)")
                 #endif

@@ -14,6 +14,7 @@ import SwiftUI
 struct StartView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var quoteViewModel: QuoteViewModel
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var navigateToMain = false
     @State private var navigateToRegister = false
     @State private var navigateToLogin = false
@@ -63,6 +64,14 @@ struct StartView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                     
+                    if !networkMonitor.isConnected {
+                        Text("⚠️ Kein Internet – Zitate werden aus der App geladen")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
+                    
                     // Button für anonyme Nutzung
                     Button("Los geht’s") {
                         Task {
@@ -104,6 +113,7 @@ struct StartView: View {
                 MainTabView()
                     .environmentObject(userViewModel)
                     .environmentObject(quoteViewModel)
+                    .environmentObject(networkMonitor)
             }
         }
     }

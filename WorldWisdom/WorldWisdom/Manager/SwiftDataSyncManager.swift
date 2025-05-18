@@ -104,6 +104,14 @@ class SwiftDataSyncManager {
         }
     }
 
+    // MARK: - Fallback-Zitate speichern
+    // Speichert eine Liste von Fallback-Zitaten in SwiftData
+    func storeFallbackQuotes(_ quotes: [Quote]) async throws {
+        for quote in quotes {
+            try await addQuote(quote)
+        }
+    }
+
     // MARK: - Zitate abrufen
     // Asynchrone Methode zum Abrufen der Zitate
     func fetchQuotesAsync(request: FetchDescriptor<QuoteEntity>) async throws -> [QuoteEntity] {

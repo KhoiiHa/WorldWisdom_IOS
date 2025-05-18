@@ -12,6 +12,7 @@ import SwiftUI
 
 // MARK: - RegisterView
 struct RegisterView: View {
+    @AppStorage("isDarkMode") private var isDarkMode = true
     // MARK: - Zustände für Eingaben und Navigation
     @State private var email: String = ""
     @State private var password: String = ""
@@ -71,13 +72,15 @@ struct RegisterView: View {
                             .accessibilityLabel("Registrierungsbutton")
                             .accessibilityHint("Klicke hier, um dich zu registrieren")
                     }
+                    .disabled(email.isEmpty || password.isEmpty)
+                    .opacity((email.isEmpty || password.isEmpty) ? 0.5 : 1.0)
                     .padding(.top, 20)
                 }
 
                 // Anzeige einer Fehlermeldung, falls vorhanden
                 if let errorMessage = userViewModel.errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(Color("mainBlue"))
+                        .foregroundColor(.red)
                         .padding(.top, 10)
                         .accessibilityLabel("Fehlermeldung")
                         .accessibilityHint(errorMessage)
@@ -98,6 +101,7 @@ struct RegisterView: View {
                     await userViewModel.checkCurrentUser()
                 }
             }
+            .colorScheme(isDarkMode ? .dark : .light)
             .navigationDestination(isPresented: $isRegistered) {
                 MainTabView() // Weiterleitung zur MainTabView nach erfolgreicher Registrierung
             }

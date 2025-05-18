@@ -12,6 +12,8 @@ import Foundation
 
 
 struct AutorDetailView: View {
+    @AppStorage("isDarkMode") private var isDarkMode = true
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var currentImageIndex: Int = 0
     let authorName: String
     let selectedQuoteText: String? // optional für gezieltes Anzeigen
@@ -46,6 +48,12 @@ struct AutorDetailView: View {
             
             ScrollView {
                 VStack(spacing: 20) {
+                    if !networkMonitor.isConnected {
+                        Text("⚠️ Offline-Modus – Lokale Zitate werden angezeigt")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                     // MARK: Autor-Bild mit Pfeilen
                     authorImage
                     
@@ -92,6 +100,12 @@ struct AutorDetailView: View {
                         .cornerRadius(15)
                         .shadow(color: Color("buttonColor").opacity(0.13), radius: 4, x: 0, y: 2)
                     }
+                    if filteredQuotes.isEmpty {
+                        Text("Keine Zitate für diesen Autor verfügbar.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .padding()
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 30)
@@ -100,8 +114,10 @@ struct AutorDetailView: View {
         .navigationTitle(quote?.author ?? authorName)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.easeInOut(duration: 0.5), value: currentImageIndex) // Animation für Bildwechsel
+        .colorScheme(isDarkMode ? .dark : .light)
         .navigationDestination(item: $selectedQuote) { quote in
             AutorDetailView(authorName: quote.author, selectedQuoteText: quote.quoteText)
+                .environmentObject(networkMonitor)
         }
     }
     

@@ -12,6 +12,7 @@ import SDWebImageSwiftUI
 
 struct FavoriteQuoteCardView: View {
     @EnvironmentObject var favoriteManager: FavoriteManager
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     let quote: Quote
 
     // MARK: - View Body
@@ -31,6 +32,12 @@ struct FavoriteQuoteCardView: View {
                     .foregroundColor(Color("secondaryText"))
 
                 Spacer()
+            }
+            
+            if !networkMonitor.isConnected {
+                Text("⚠️ Offline – Bild möglicherweise nicht verfügbar")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
             }
             
             // MARK: - Zitat Text (nur Anzeige, keine Navigation/Interaktion)

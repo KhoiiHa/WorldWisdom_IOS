@@ -12,6 +12,7 @@ import SDWebImageSwiftUI
 
 struct ExplorerView: View {
     @ObservedObject var quoteViewModel: QuoteViewModel
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var searchQuery: String = ""
     @State private var selectedTag: String? = nil
     @State private var showErrorMessage: Bool = false
@@ -35,6 +36,13 @@ struct ExplorerView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 15) {
+                if !networkMonitor.isConnected {
+                    Text("⚠️ Offline-Modus – Zitate werden aus der App geladen")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                }
                 searchBar
                 tagFilterView
 
@@ -89,6 +97,7 @@ struct ExplorerView: View {
             }
             .navigationDestination(item: $selectedQuote) { quote in
                 AutorDetailView(authorName: quote.author)
+                    .environmentObject(networkMonitor)
             }
         }
     }
