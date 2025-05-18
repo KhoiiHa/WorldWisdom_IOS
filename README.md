@@ -11,7 +11,7 @@ Ob für Studierende 📚, Berufstätige 💼 oder kreative Köpfe 🎨 – die A
 
 | Home View | Explorer View | Favoriten View | Autoren-Detail View | Galerie View | Info View | Settings View |
 |-----------|---------------|----------------|---------------------|--------------|-----------|----------------|
-| ![Home](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.03_aa5zkj.png) | ![Explorer](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.14_f1k3kd.png) | ![Favoriten](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.34_g2cflh.png) | ![AutorDetail](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.43_aqo0fw.png) | ![Galerie](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.42_qcgswh.png) | ![Info](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.10.11_t5ggch.png) | ![Settings](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577931/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.15.13.jpeg) |
+| ![Home](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.03_aa5zkj.png) | ![Explorer](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.14_f1k3kd.png) | ![Favoriten](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.34_g2cflh.png) | ![AutorDetail](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.43_aqo0fw.png) | ![Galerie](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.42_qcgswh.png) | ![Info](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.10.11_t5ggch.png) | ![Settings](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577930/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.15.13_f9jqrh.png) |
 
 ---
 
@@ -117,7 +117,7 @@ SwiftUI · Firebase · SwiftData · Offline-Modus · MVVM · API-Simulation
 ## 👨‍💻 Über den Entwickler
 
 > 👋 Entwickelt von **Minh Khoi Ha**  
-> 📍 Hamburg · iOS Developer seit 2024  
+> 📍 Hamburg · App - Developer seit 2024  
 > 💡 Fokus: SwiftUI · SwiftData · Firebase · Offline-First Apps
 
 ---
