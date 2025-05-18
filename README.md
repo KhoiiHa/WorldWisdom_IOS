@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577939/worldwisdom_icon.png" alt="WorldWisdom Icon" width="120" />
+  <img src="[https://res.cloudinary.com/dpaehynl2/image/upload/v1747577939/worldwisdom_icon.png](https://res.cloudinary.com/dpaehynl2/image/upload/v1747579900/WorldWisdom_App_tvuuor.png)" alt="WorldWisdom Icon" width="120" />
 </p>
 
 # WorldWisdom 🌟📖  
