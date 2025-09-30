@@ -2,141 +2,96 @@
   <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747579900/WorldWisdom_App_tvuuor.png" alt="WorldWisdom Icon" width="120" />
 </p>
 
+# **WorldWisdom – iOS-App für Zitate & Inspiration** 🌟📖  
+*Entdecke die Weisheit der Welt – direkt in einer App*  
 
-# WorldWisdom 🌟📖  
-
-## „Entdecke die Weisheit der Welt – in einer App“ 🌍💬  
-
-**WorldWisdom** ist eine native iOS-Zitat-App, die motivierende und tiefgründige Zitate aus Literatur, Wissenschaft und Philosophie vereint.  
-Ob für Studierende 📚, Berufstätige 💼 oder kreative Köpfe 🎨 – die App begleitet dich mit klugen Gedanken durch deinen Tag.  
+> ✨ **WorldWisdom** ist eine native iOS-Zitat-App, die motivierende und tiefgründige Zitate aus Literatur, Wissenschaft und Philosophie vereint.  
+> Ob für Studierende 📚, Berufstätige 💼 oder kreative Köpfe 🎨 – die App begleitet dich mit klugen Gedanken durch den Tag.  
 
 ---
 
-## 📱 Design-Eindrücke  
-
-| Home View | Explorer View | Favoriten View | Autoren-Detail View | Galerie View | Info View | Settings View |
-|-----------|---------------|----------------|---------------------|--------------|-----------|----------------|
-| ![Home](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.03_aa5zkj.png) | ![Explorer](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.14_f1k3kd.png) | ![Favoriten](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.34_g2cflh.png) | ![AutorDetail](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.43_aqo0fw.png) | ![Galerie](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.42_qcgswh.png) | ![Info](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.10.11_t5ggch.png) | ![Settings](https://res.cloudinary.com/dpaehynl2/image/upload/v1747577930/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.15.13_f9jqrh.png) |
+## 📄 **Case Study**
+👉 *(Case Study PDF wird bald hier verlinkt)*
 
 ---
 
-## ✨ Funktionen  
+## 🚀 **Highlights**
 
-- [x] **Zitat des Tages + Empfehlungen** über Mockoon API  
-- [x] **Favoriten speichern und verwalten** 💖  
-- [x] **Autorengalerie mit Live-Suche und A–Z-Sortierung** 📚🔍  
-- [x] **Autoren-Detailansicht mit Bild, Biografie & Zitaten** 👤  
-- [x] **Offline-Modus mit SwiftData (Fallback bei fehlender API)**  
-- [x] **Dark Mode** (standardmäßig aktiviert; umschaltbar in den Einstellungen) 🌙  
-- [x] **Automatischer Login** über Firebase Auth  
-- [x] **Zitate nach Kategorien filtern**  
+- Native iOS-App mit **SwiftUI + MVVM**
+- **Zitate des Tages & Empfehlungen** über Mockoon API
+- **Favoriten speichern & verwalten** 💖
+- **Autorengalerie mit Suche & Sortierung** 📚🔍
+- **Autoren-Detailansicht** mit Bild, Biografie & Zitaten 👤
+- **Offline-Modus mit SwiftData (Fallback)**  
+- **Firebase Auth** für automatischen Login
+- **Dark Mode** standardmäßig aktiviert 🌙
 
 ---
 
-## 🧠 Architektur & Technik  
+## 🖼️ **Screenshots (5 Kern-Views)**
 
-### 🧱 Architektur
-- **MVVM** – saubere Trennung von View, Logik und Datenfluss  
+<p align="center">
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.03_aa5zkj.png" alt="Home View" width="220" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.14_f1k3kd.png" alt="Explorer View" width="220" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577932/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.12.34_g2cflh.png" alt="Favoriten View" width="220" />
+</p>
+
+<p align="center">
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577935/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.43_aqo0fw.png" alt="Autoren-Detail View" width="220" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577930/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.15.13_f9jqrh.png" alt="Settings View" width="220" />
+</p>
+
+---
+
+## 🧩 **Architektur & Technik**
+
 - **SwiftUI** – moderne, deklarative UI  
+- **MVVM** – saubere Trennung von View, Logik und Datenfluss  
 - **SwiftData** – persistente Offline-Datenhaltung  
 - **Firebase** – Authentifizierung & Cloud-Speicherung  
-
-### 🔐 Datenverwaltung
-- **Firebase Authentication** (anonym oder via E-Mail)  
-- **Cloud Firestore** zur Speicherung der Favoriten  
-- **SwiftData** als Fallback bei fehlender Internetverbindung  
-- **Cloudinary** für das dynamische Laden der Autorenbilder  
-
-### 🌐 API & Netzwerk
-- **Mockoon REST API** simuliert die produktive API lokal  
-- **URLSession** für Netzwerkanfragen mit Fehlerbehandlung  
-- **`NetworkMonitor.swift`** zur automatischen Umschaltung bei fehlender Verbindung  
-
-### 🔍 Suche & Filter
-- Live-Autorensuche in der GalerieView  
-- Alphabetische Sortierung  
-- Automatische Validierung ungültiger Einträge  
-
-### 📦 Frameworks & Tools
-- `Firebase SDK`  
-- `Cloudinary SDK`  
-- `SwiftData`, `URLSession`  
-- `SDWebImageSwiftUI`, `SwiftLint`  
-- `Xcode`, `GitHub`, `Mockoon`  
+- **Cloud Firestore** – Speicherung der Favoriten  
+- **Cloudinary** – dynamisches Laden von Autorenbildern  
+- **Mockoon API** – lokale Simulation der Zitate-API  
+- **URLSession & NetworkMonitor** – Netzwerkanfragen & Offline-Erkennung  
 
 ---
 
-## 🤖 Einsatz von KI (z. B. ChatGPT)
+## 🔐 **Setup & Nutzung**
 
-**WorldWisdom** wurde technisch, strukturell und textlich mit Unterstützung von **ChatGPT Plus 4.0** entwickelt.  
-Der Einsatz erfolgte gezielt in folgenden Bereichen:
+Dieses Projekt ist ein **Portfolio-Showcase**.  
+Screenshots und die Case Study PDF zeigen die wichtigsten Funktionen.  
 
-- Strukturierung & Architekturberatung  
-- SwiftData-Fallback & Fehlerbehandlung  
-- Debugging, Refactoring & Testing  
-- Textoptimierung von UI & README  
-- Unterstützung bei Feature-Entscheidungen  
+👉 Wer die App lokal starten möchte, findet hier die Setup-Anleitung:
 
-> Die finale Umsetzung erfolgte **vollständig manuell** in Swift & SwiftUI.  
-> ChatGPT diente als technischer Sparringspartner im Entwicklungsprozess.
-
----
-
-## 🔮 Geplante Erweiterungen
-
-- [ ] Push Notifications für tägliche Zitate  
-- [ ] Eigene Zitate veröffentlichen (Community-Funktion)  
-- [ ] Kommentar- & Like-System  
-- [ ] Apple Sign-In & CloudKit  
-- [ ] Mehrsprachigkeit (DE/EN)  
-- [ ] Lokaler Zitat-Editor mit Entwürfen  
+### ⚙️ Setup in Xcode
+1. Repository clonen & in Xcode öffnen  
+2. Firebase einrichten: `GoogleService-Info.plist` hinzufügen  
+3. Mockoon installieren für die lokale API-Simulation  
+4. Build & Run in Xcode  
 
 ---
 
-## ⚠️ Hinweis zu Bugs & Weiterentwicklung
+## 🔮 **Geplante Erweiterungen**
 
-Diese App ist funktional stabil, **wird aber weiterhin aktiv optimiert**.  
-Kleinere Bugs oder visuelle Ungenauigkeiten können vorkommen – insbesondere bei:
-
-- Wechsel zwischen Authentifizierungsstatus  
-- Dark-Mode-Darstellung bei Fallback-Daten  
-- Randfällen bei Kategorie-Filterung  
-
-> Rückmeldungen oder Pull Requests sind jederzeit willkommen!
+- Push Notifications für tägliche Zitate  
+- Community-Funktionen (eigene Zitate, Kommentare, Likes)  
+- Apple Sign-In & Mehrsprachigkeit (DE/EN)  
 
 ---
 
-## 🚀 Motivation & Zielsetzung  
+## 📆 **Projektstatus**
 
-**WorldWisdom** entstand als iOS-Portfolio-App zur praxisnahen Umsetzung moderner Technologien:  
-SwiftUI · Firebase · SwiftData · Offline-Modus · MVVM · API-Simulation
-
-**Ziel:**  
-- Stabiler Offline-Modus mit Fallback  
-- Klar strukturierter SwiftUI-Code  
-- Modularer Aufbau mit ViewModels  
-- Realistische App-Nutzung – auch im Bewerbungsprozess
+- 🔄 **Letztes Update:** September 2025  
+- ✅ **Aktueller Stand:** iOS-Version fertig für Portfolio (inkl. Firebase, Offline-Sync & Dark Mode)  
 
 ---
 
-## 👨‍💻 Über den Entwickler
+## 🤝 **Kontakt & Links**
 
-> 👋 Entwickelt von **Minh Khoi Ha**  
-> 📍 Hamburg · App Developer seit 2024  
-> 💡 Fokus: SwiftUI · SwiftData · Firebase · Offline-First Apps
-
----
-
-### 📂 Quellcode & Lizenz
-
-Dieses Projekt ist Open Source und dient ausschließlich zu Lern- und Demonstrationszwecken.  
-**Lizenz:** MIT
+💼 [LinkedIn](www.linkedin.com/in/minh-khoi-ha-209561142)  
+🌐 [GitHub Repo](https://github.com/KhoiiHa/MindGear-iOS)  
 
 ---
 
-**🧠 Lass dich inspirieren. Täglich. Direkt aus der Hosentasche.**  
-📲 Jetzt ausprobieren & WorldWisdom erleben.
-
----
-
-*📘 Diese README ist auf Deutsch verfasst. Eine englische Version folgt bei Bedarf.*
+**🚀 WorldWisdom – Lass dich inspirieren. Täglich. Direkt aus der Hosentasche.**  
+👉 Entwickelt als Teil meines iOS-Portfolios (SwiftUI · Firebase · SwiftData).
