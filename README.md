@@ -1,34 +1,46 @@
 <p align="center">
-  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747579900/WorldWisdom_App_tvuuor.png" alt="WorldWisdom Icon" width="120" />
+  <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1759332525/WorldWisdom_README_Optimized_1600x900_mldceo.png" alt="WorldWisdom Logo" width="600" />
 </p>
 
 # **WorldWisdom – iOS-App für Zitate & Inspiration** 🌟📖  
-*Entdecke die Weisheit der Welt – direkt in einer App*  
+*Entdecke die Weisheit der Welt – im Pocket-Format.*
 
-> ✨ **WorldWisdom** ist eine native iOS-Zitat-App, die motivierende und tiefgründige Zitate aus Literatur, Wissenschaft und Philosophie vereint.  
-> Ob für Studierende 📚, Berufstätige 💼 oder kreative Köpfe 🎨 – die App begleitet dich mit klugen Gedanken durch den Tag.  
-
----
-
-## 📄 **Case Study**
-👉 *(Case Study PDF wird bald hier verlinkt)*
+> ✨ **WorldWisdom** ist eine native iOS-Zitat-App für motivierende & tiefgründige Gedanken – kuratiert aus Literatur, Wissenschaft & Philosophie.  
+> Ob für Studierende 📚, Berufstätige 💼 oder kreative Köpfe 🎨 – diese App begleitet dich mit klugen Impulsen durch den Tag.
 
 ---
 
-## 🚀 **Highlights**
+## 📄 Case Study
 
-- Native iOS-App mit **SwiftUI + MVVM**
-- **Zitate des Tages & Empfehlungen** über Mockoon API
-- **Favoriten speichern & verwalten** 💖
-- **Autorengalerie mit Suche & Sortierung** 📚🔍
-- **Autoren-Detailansicht** mit Bild, Biografie & Zitaten 👤
-- **Offline-Modus mit SwiftData (Fallback)**  
-- **Firebase Auth** für automatischen Login
-- **Dark Mode** standardmäßig aktiviert 🌙
+📘 [PDF ansehen → WorldWisdom Case Study.pdf](./WorldWisdom%20Case%20Study.pdf)  
+Enthält Architektur, Designansätze & persönliche Learnings.
 
 ---
 
-## 🖼️ **Screenshots (5 Kern-Views)**
+## 🚀 Highlights
+
+- 📱 **SwiftUI + MVVM** – native iOS-Architektur  
+- 💬 **Zitate des Tages + Favoritenverwaltung**  
+- 👤 **Autoren-Galerie + Detailansicht**  
+- 🔌 **Offline-Modus (SwiftData Fallback)**  
+- 🔐 **Firebase Auth & Geräte-Sync**  
+- 🌙 **Dark Mode + typografisches UI**
+
+---
+
+## 🧩 Architektur & Technologien
+
+- **SwiftUI** – moderne, deklarative UI  
+- **MVVM** – klare Trennung von View & Logik  
+- **SwiftData** – persistente Offline-Speicherung  
+- **Firebase Auth & Firestore** – Login & Geräte-Sync  
+- **Cloudinary** – dynamisches Autorenbild-Handling  
+- **Mockoon API** – lokale Zitate-Simulation (Entwicklung)  
+- **URLSession + NetworkMonitor** – API-Calls & Offline-Erkennung
+
+---
+
+## 🖼️ Screenshots
 
 <p align="center">
   <img src="https://res.cloudinary.com/dpaehynl2/image/upload/v1747577934/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-05-18_at_16.11.03_aa5zkj.png" alt="Home View" width="220" />
@@ -43,55 +55,43 @@
 
 ---
 
-## 🧩 **Architektur & Technik**
+## 🔐 Setup
 
-- **SwiftUI** – moderne, deklarative UI  
-- **MVVM** – saubere Trennung von View, Logik und Datenfluss  
-- **SwiftData** – persistente Offline-Datenhaltung  
-- **Firebase** – Authentifizierung & Cloud-Speicherung  
-- **Cloud Firestore** – Speicherung der Favoriten  
-- **Cloudinary** – dynamisches Laden von Autorenbildern  
-- **Mockoon API** – lokale Simulation der Zitate-API  
-- **URLSession & NetworkMonitor** – Netzwerkanfragen & Offline-Erkennung  
+> Dieses Projekt ist ein **Portfolio-Showcase**.  
+> Screenshots & Case Study zeigen die App-Funktionalität.
 
----
+### 🛠️ Lokale Nutzung in Xcode:
 
-## 🔐 **Setup & Nutzung**
+1. Projekt clonen & in Xcode öffnen  
+2. `GoogleService-Info.plist` für Firebase einfügen  
+3. Mockoon starten (lokale API)  
+4. Build & Run ausführen ✅  
 
-Dieses Projekt ist ein **Portfolio-Showcase**.  
-Screenshots und die Case Study PDF zeigen die wichtigsten Funktionen.  
-
-👉 Wer die App lokal starten möchte, findet hier die Setup-Anleitung:
-
-### ⚙️ Setup in Xcode
-1. Repository clonen & in Xcode öffnen  
-2. Firebase einrichten: `GoogleService-Info.plist` hinzufügen  
-3. Mockoon installieren für die lokale API-Simulation  
-4. Build & Run in Xcode  
+> 🔌 **Hinweis:** Offline-Modus & Fallbacks funktionieren auch ohne aktive API-Verbindung.
 
 ---
 
-## 🔮 **Geplante Erweiterungen**
+## 🔮 Geplante Erweiterungen
 
-- Push Notifications für tägliche Zitate  
-- Community-Funktionen (eigene Zitate, Kommentare, Likes)  
-- Apple Sign-In & Mehrsprachigkeit (DE/EN)  
-
----
-
-## 📆 **Projektstatus**
-
-- 🔄 **Letztes Update:** September 2025  
-- ✅ **Aktueller Stand:** iOS-Version fertig für Portfolio (inkl. Firebase, Offline-Sync & Dark Mode)  
+- 🔔 Push Notifications für Tageszitate  
+- 🌐 Community-Funktionen (eigene Zitate, Kommentare)  
+- 🍎 Apple Sign-In & Mehrsprachigkeit (DE/EN)
 
 ---
 
-## 🤝 **Kontakt & Links**
+## 📆 Projektstatus
 
-💼 [LinkedIn](www.linkedin.com/in/minh-khoi-ha-209561142)  
-🌐 [GitHub Repo](https://github.com/KhoiiHa/MindGear-iOS)  
+- 🗓 **Letztes Update:** Oktober 2025  
+- ✅ **Fertig für Portfolio** (inkl. Firebase, Offline-Sync, Dark Mode)
+
+---
+
+## 🤝 Kontakt
+
+💼 [LinkedIn – Minh Khoi Ha](https://www.linkedin.com/in/minh-khoi-ha-209561142)  
+🌐 [GitHub](https://github.com/KhoiiHa/WorldWisdom_IOS)
 
 ---
 
 **🚀 WorldWisdom – Lass dich inspirieren. Täglich. Direkt aus der Hosentasche.**  
-👉 Entwickelt als Teil meines iOS-Portfolios (SwiftUI · Firebase · SwiftData).
+*Portfolio-App für iOS – entwickelt mit SwiftUI, Firebase, SwiftData.*
